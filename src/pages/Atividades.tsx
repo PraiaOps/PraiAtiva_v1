@@ -159,7 +159,7 @@ const Atividades = () => {
                   <SelectValue placeholder="Todas" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas</SelectItem>
+                  <SelectItem value="all">Todas</SelectItem>
                   {beaches.map(beach => (
                     <SelectItem key={beach} value={beach.toLowerCase()}>{beach}</SelectItem>
                   ))}
@@ -175,7 +175,7 @@ const Atividades = () => {
                   <SelectValue placeholder="Todas" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todas</SelectItem>
+                  <SelectItem value="all">Todas</SelectItem>
                   <SelectItem value="beachvolley">Beach Volley</SelectItem>
                   <SelectItem value="beachtennis">Beach Tennis</SelectItem>
                   <SelectItem value="futebol">Futebol</SelectItem>
@@ -192,7 +192,7 @@ const Atividades = () => {
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="all">Todos</SelectItem>
                   {instructors.map(instructor => (
                     <SelectItem key={instructor} value={instructor.toLowerCase()}>{instructor}</SelectItem>
                   ))}
@@ -208,7 +208,7 @@ const Atividades = () => {
                   <SelectValue placeholder="Todos" />
                 </SelectTrigger>
                 <SelectContent>
-                  <SelectItem value="">Todos</SelectItem>
+                  <SelectItem value="all">Todos</SelectItem>
                   <SelectItem value="manha">Manhã</SelectItem>
                   <SelectItem value="tarde">Tarde</SelectItem>
                   <SelectItem value="noite">Noite</SelectItem>

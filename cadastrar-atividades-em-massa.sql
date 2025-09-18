@@ -17,7 +17,7 @@ BEGIN
     END IF;
     
     -- Inserir Beach Tennis
-    INSERT INTO public.activities (id, instructor_id, title, location_name, beach, time, day_of_week, capacity, price, description, status, enrollments)
+    INSERT INTO public.activities (id, instructor_id, title, location_name, beach, time, date, capacity, price, description, status, enrollments)
     VALUES 
         (gen_random_uuid(), user_uuid, 'Beach Tennis', 'Start Beach Tennis', 'São Francisco (Av. Quintino Bocaiúva)', 'manhã', 'Segunda-feira', 12, 0.00, 'Aulas em grupo e particulares; agendamento necessário.', 'active', 0),
         (gen_random_uuid(), user_uuid, 'Beach Tennis', 'Set Point Beach Tennis', 'São Francisco, Clube Naval Charitas e Camboinhas', 'tarde', 'Sábado', 10, 0.00, 'Aulas regulares; post indica atividades aos sábados e redes disponíveis nos fins de semana.', 'active', 0),
@@ -27,7 +27,7 @@ BEGIN
         (gen_random_uuid(), user_uuid, 'Beach Tennis', 'Craques do Beach Tennis', 'Charitas', 'tarde', 'Sexta-feira', 10, 0.00, 'Aulas por agendamento (sem horários publicados).', 'active', 0);
     
     -- Inserir Vôlei de Praia
-    INSERT INTO public.activities (id, instructor_id, title, location_name, beach, time, day_of_week, capacity, price, description, status, enrollments)
+    INSERT INTO public.activities (id, instructor_id, title, location_name, beach, time, date, capacity, price, description, status, enrollments)
     VALUES 
         (gen_random_uuid(), user_uuid, 'Vôlei de Praia', 'GAVP - Escola de Vôlei Praia Icaraí', 'Av. Jornalista Alberto Francisco Torres, Icaraí', 'tarde', 'Quarta-feira', 16, 0.00, 'Instrutor de vôlei de praia. Telefone: +55 21 97516-2815.', 'active', 0),
         (gen_random_uuid(), user_uuid, 'Vôlei de Praia', 'MDC Beach Volley Training Icaraí', 'Av. Jornalista Alberto Francisco Torres, Icaraí', 'manhã', 'Segunda-feira', 12, 0.00, 'Especializada em beach volley training.', 'active', 0),
@@ -36,7 +36,7 @@ BEGIN
         (gen_random_uuid(), user_uuid, 'Vôlei de Praia', 'AVN – Academia do Vôlei Niterói (Clube Central de Icaraí)', 'Clube Central de Icaraí', 'tarde', 'Quinta-feira', 18, 0.00, 'Escolinha de iniciação para adultos e crianças. Contato: (21) 96910-5323.', 'active', 0);
     
     -- Inserir Futevôlei
-    INSERT INTO public.activities (id, instructor_id, title, location_name, beach, time, day_of_week, capacity, price, description, status, enrollments)
+    INSERT INTO public.activities (id, instructor_id, title, location_name, beach, time, date, capacity, price, description, status, enrollments)
     VALUES 
         (gen_random_uuid(), user_uuid, 'Futevôlei', 'MF Futevôlei', 'Praia de Icaraí, em frente à Praça Getúlio Vargas', 'tarde', 'Terça-feira', 8, 0.00, 'Treinos regulares; contato via WhatsApp. Mensalidades disponibilizadas no Wellhub.', 'active', 0),
         (gen_random_uuid(), user_uuid, 'Futevôlei', 'Equipe Kaito Futevôlei', 'São Francisco (Av. Quintino Bocaiúva)', 'manhã', 'Quinta-feira', 10, 0.00, 'Aulas para diferentes níveis (iniciante, intermediário/avançado).', 'active', 0),
@@ -44,7 +44,7 @@ BEGIN
         (gen_random_uuid(), user_uuid, 'Futevôlei', 'Projeto Social "Nós por Nós"', 'Ponta D''Areia / Centro de Niterói', 'manhã', 'Sábado', 20, 0.00, 'Aulas gratuitas para crianças/adolescentes.', 'active', 0);
     
     -- Inserir Canoa Havaiana
-    INSERT INTO public.activities (id, instructor_id, title, location_name, beach, time, day_of_week, capacity, price, description, status, enrollments)
+    INSERT INTO public.activities (id, instructor_id, title, location_name, beach, time, date, capacity, price, description, status, enrollments)
     VALUES 
         (gen_random_uuid(), user_uuid, 'Canoa Havaiana', 'Lilia Godoi Assessoria Esportiva Canoa Havaiana', 'São Francisco, Rua Caraíbas, 9, Niterói – RJ', 'manhã', 'Segunda-feira', 8, 0.00, 'Oferece modalidades, pacotes mensais, academia de instrutores qualificados. Telefone: (21) 3619-7411', 'active', 0),
         (gen_random_uuid(), user_uuid, 'Canoa Havaiana', 'Clube de Canoa Havaiana Niterói Hoe – Gragoatá / São Domingos', 'Rua Cel. Tamarindo, 78, Gragoatá, Niterói', 'tarde', 'Terça-feira', 12, 0.00, 'Telefone: (21) 98004-9748. Não achei horários divulgados online.', 'active', 0),
@@ -69,9 +69,8 @@ GROUP BY u.email;
 SELECT 
     a.title,
     a.location_name,
-    a.city,
     a.beach,
-    a.day_of_week,
+    a.date,
     a.time,
     a.capacity,
     a.price,

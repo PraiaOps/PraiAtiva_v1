@@ -6,7 +6,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ActivityCard from "@/components/ActivityCard";
 import { Search, Filter } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useMemo } from "react";
+import { useLocation } from "react-router-dom";
 import { supabase, Activity } from "@/lib/supabase";
 import beachvolleyImage from "@/assets/beachvolley.jpg";
 import beachtennisImage from "@/assets/beachtennis.jpg";
@@ -14,6 +15,8 @@ import futebolImage from "@/assets/futebol.jpg";
 import canoaImage from "@/assets/canoa-havaiana.jpg";
 
 const Atividades = () => {
+  const location = useLocation();
+  
   const [filters, setFilters] = useState({
     search: "",
     city: "",
@@ -22,12 +25,23 @@ const Atividades = () => {
     instructor: "",
     time: "",
     dayOfWeek: "", // Novo: filtro por dia da semana
-    priceRange: "", // Novo: filtro por faixa de preço
+    priceRange: "", // Filtro por faixa de preço dinâmica
+    category: "", // Filtro por categoria (sea/sand)
   });
   
   const [activities, setActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [instructorNames, setInstructorNames] = useState<{ [key: string]: string }>({});
+
+  // Determinar categoria baseada no tipo de atividade
+  const getActivityCategory = (title: string) => {
+    const activityTitle = title.toLowerCase();
+    if (activityTitle.includes('surf') || activityTitle.includes('paddle') || activityTitle.includes('natação') || 
+        activityTitle.includes('canoa') || activityTitle.includes('havaiana')) {
+      return 'sea';
+    }
+    return 'sand';
+  };
 
   // Função para obter a imagem baseada no tipo de atividade
   const getActivityImage = (title: string) => {
@@ -45,15 +59,6 @@ const Atividades = () => {
       // Imagem padrão se não encontrar correspondência
       return beachvolleyImage;
     }
-  };
-
-  // Determinar categoria baseada no tipo de atividade
-  const getActivityCategory = (title: string) => {
-    const activityTitle = title.toLowerCase();
-    if (activityTitle.includes('canoa') || activityTitle.includes('havaiana') || activityTitle.includes('paddle')) {
-      return 'sea' as const;
-    }
-    return 'sand' as const;
   };
 
   // Buscar atividades ativas do Supabase
@@ -103,6 +108,62 @@ const Atividades = () => {
   };
 
   // Scroll para o topo quando a página carregar e buscar atividades
+  // Gerar faixas de preço dinâmicas baseadas nas atividades
+  const priceRanges = useMemo(() => {
+    if (activities.length === 0) {
+      return [
+        { value: "free", label: "Gratuito (R$ 0)", min: 0, max: 0 }
+      ];
+    }
+    
+    const prices = activities.map(activity => activity.price);
+    const minPrice = Math.min(...prices);
+    const maxPrice = Math.max(...prices);
+    
+    const ranges = [];
+    
+    // Sempre incluir "Todos"
+    ranges.push({ value: "all", label: "Todos os preços" });
+    
+    // Se há atividades gratuitas
+    if (minPrice === 0) {
+      ranges.push({ value: "free", label: "Gratuito (R$ 0)", min: 0, max: 0 });
+    }
+    
+    // Se há apenas atividades gratuitas
+    if (maxPrice === 0) {
+      return ranges;
+    }
+    
+    // Criar faixas baseadas no range real de preços
+    if (maxPrice <= 50) {
+      ranges.push({ value: "low", label: `Até R$ ${maxPrice}`, min: minPrice > 0 ? minPrice : 1, max: maxPrice });
+    } else if (maxPrice <= 100) {
+      if (minPrice > 0 || ranges.some(r => r.value === "free")) {
+        ranges.push({ value: "low", label: "R$ 1 - R$ 50", min: 1, max: 50 });
+      }
+      ranges.push({ value: "medium", label: `R$ 51 - R$ ${maxPrice}`, min: 51, max: maxPrice });
+    } else {
+      if (minPrice > 0 || ranges.some(r => r.value === "free")) {
+        ranges.push({ value: "low", label: "R$ 1 - R$ 50", min: 1, max: 50 });
+      }
+      ranges.push({ value: "medium", label: "R$ 51 - R$ 100", min: 51, max: 100 });
+      ranges.push({ value: "high", label: `Acima de R$ 100`, min: 101, max: maxPrice });
+    }
+    
+    return ranges;
+  }, [activities]);
+
+  // Ler parâmetros da URL e aplicar filtros automáticos
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const category = searchParams.get('category');
+    
+    if (category) {
+      setFilters(prev => ({ ...prev, category }));
+    }
+  }, [location.search]);
+
   useEffect(() => {
     window.scrollTo(0, 0);
     fetchActivities();
@@ -150,22 +211,22 @@ const Atividades = () => {
       return false;
     }
 
-    // Filtro por faixa de preço
+    // Filtro por faixa de preço dinâmica
     if (filters.priceRange && filters.priceRange !== 'all') {
-      const price = activity.price;
-      switch (filters.priceRange) {
-        case 'free':
-          if (price > 0) return false;
-          break;
-        case 'low':
-          if (price <= 0 || price > 50) return false;
-          break;
-        case 'medium':
-          if (price <= 50 || price > 100) return false;
-          break;
-        case 'high':
-          if (price <= 100) return false;
-          break;
+      const selectedRange = priceRanges.find(range => range.value === filters.priceRange);
+      if (selectedRange && selectedRange.min !== undefined && selectedRange.max !== undefined) {
+        const price = activity.price;
+        if (price < selectedRange.min || price > selectedRange.max) {
+          return false;
+        }
+      }
+    }
+
+    // Filtro por categoria (sea/sand)
+    if (filters.category && filters.category !== 'all') {
+      const activityCategory = getActivityCategory(activity.title);
+      if (activityCategory !== filters.category) {
+        return false;
       }
     }
 
@@ -211,12 +272,6 @@ const Atividades = () => {
     "Domingo"
   ];
 
-  const priceRanges = [
-    { value: "free", label: "Gratuito (R$ 0)" },
-    { value: "low", label: "Baixo (R$ 1 - R$ 50)" },
-    { value: "medium", label: "Médio (R$ 51 - R$ 100)" },
-    { value: "high", label: "Alto (Acima de R$ 100)" }
-  ];
 
   return (
     <div className="min-h-screen bg-background">
@@ -265,6 +320,7 @@ const Atividades = () => {
                     time: "",
                     dayOfWeek: "",
                     priceRange: "",
+                    category: "",
                   })}
                 >
                   <Filter className="h-4 w-4 mr-2" />
@@ -273,7 +329,7 @@ const Atividades = () => {
               </div>
 
               {/* Filter Options */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4">
                 {/* City Filter */}
                 <div>
                   <label className="text-sm font-medium mb-2 block">Cidade</label>
@@ -285,6 +341,21 @@ const Atividades = () => {
                       <SelectItem value="all">Todas</SelectItem>
                       <SelectItem value="niteroi">Niterói</SelectItem>
                       <SelectItem value="rio">Rio de Janeiro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Category Filter */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Categoria</label>
+                  <Select value={filters.category} onValueChange={(value) => setFilters(prev => ({ ...prev, category: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todas" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas</SelectItem>
+                      <SelectItem value="sea">No mar</SelectItem>
+                      <SelectItem value="sand">Na areia e calçadão</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -371,7 +442,7 @@ const Atividades = () => {
                   </Select>
                 </div>
 
-                {/* Price Range Filter */}
+                {/* Dynamic Price Range Filter */}
                 <div>
                   <label className="text-sm font-medium mb-2 block">Preço</label>
                   <Select value={filters.priceRange} onValueChange={(value) => setFilters(prev => ({ ...prev, priceRange: value }))}>
@@ -379,7 +450,6 @@ const Atividades = () => {
                       <SelectValue placeholder="Todos" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="all">Todos</SelectItem>
                       {priceRanges.map((range) => (
                         <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
                       ))}

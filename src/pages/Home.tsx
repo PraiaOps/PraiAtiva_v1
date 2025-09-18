@@ -12,6 +12,9 @@ import beachvolleyImage from "@/assets/beachvolley.jpg";
 import beachtennisImage from "@/assets/beachtennis.jpg";
 import futebolImage from "@/assets/futebol.jpg";
 import canoaImage from "@/assets/canoa-havaiana.jpg";
+// Imports para eventos
+import beachTennisEventImg from "@/assets/beachtennis.jpg";
+import canoaHavaianaEventImg from "@/assets/canoa-havaiana.jpg";
 
 const Home = () => {
   const [activities, setActivities] = useState<SupabaseActivity[]>([]);
@@ -63,20 +66,21 @@ const Home = () => {
         return;
       }
 
-      // Buscar nomes dos instrutores
+      // Buscar nomes dos instrutores com preferência de visibilidade
       const instructorIds = [...new Set(activitiesData?.map(activity => activity.instructor_id))];
       
       if (instructorIds.length > 0) {
         const { data: usersData, error: usersError } = await supabase
           .from('users')
-          .select('id, name')
+          .select('id, name, show_name')
           .in('id', instructorIds);
 
         if (usersError) {
           console.error('Erro ao buscar instrutores:', usersError);
         } else {
           const namesMap = usersData?.reduce((acc, user) => {
-            acc[user.id] = user.name;
+            // Mostrar nome apenas se show_name for true, senão não mostrar nada
+            acc[user.id] = user.show_name ? user.name : '';
             return acc;
           }, {} as { [key: string]: string }) || {};
           setInstructorNames(namesMap);
@@ -99,8 +103,9 @@ const Home = () => {
   // Converter atividades do Supabase para formato do ActivityCard
   const convertedActivities = activities.map(activity => ({
     title: activity.title,
+    locationName: activity.location_name || 'Local não especificado',
     location: activity.beach,
-    instructor: instructorNames[activity.instructor_id] || 'Instrutor',
+      instructor: instructorNames[activity.instructor_id] || '',
     time: `${activity.time}`,
     capacity: `${activity.enrollments}/${activity.capacity}`,
     price: `R$ ${activity.price.toFixed(2)}`,
@@ -287,12 +292,16 @@ const Home = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               {/* Event 1 - Circuito Niteroiense de Beach Tennis */}
               <Card className="overflow-hidden">
-                <div className="relative h-48">
-                  <div className="w-full h-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
-                    <div className="text-center text-white">
-                      <div className="text-4xl font-bold mb-2">🎾</div>
-                      <div className="text-sm font-semibold">BEACH TENNIS</div>
-                      <div className="text-xs opacity-90">CIRCUITO NITEROIENSE</div>
+                <div className="relative h-48 overflow-hidden">
+                  <img 
+                    src={beachTennisEventImg} 
+                    alt="4ª Etapa do Circuito Niteroiense de Beach Tennis"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/30"></div>
+                  <div className="absolute bottom-4 left-4">
+                    <div className="text-sm font-semibold text-white bg-black/50 px-2 py-1 rounded">
+                      BEACH TENNIS
                     </div>
                   </div>
                 </div>
@@ -318,12 +327,16 @@ const Home = () => {
 
               {/* Event 2 - Super Paddle Canoa Havaiana */}
               <Card className="overflow-hidden">
-                <div className="relative h-48">
-                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
-                    <div className="text-center text-white">
-                      <div className="text-4xl font-bold mb-2">🚣</div>
-                      <div className="text-sm font-semibold">SUPER PADDLE</div>
-                      <div className="text-xs opacity-90">CANOA HAVAIANA</div>
+                <div className="relative h-48 overflow-hidden">
+                  <img 
+                    src={canoaHavaianaEventImg} 
+                    alt="3ª Etapa do Super Paddle (Canoa Havaiana)"
+                    className="w-full h-full object-cover"
+                  />
+                  <div className="absolute inset-0 bg-black/30"></div>
+                  <div className="absolute bottom-4 left-4">
+                    <div className="text-sm font-semibold text-white bg-black/50 px-2 py-1 rounded">
+                      CANOA HAVAIANA
                     </div>
                   </div>
                 </div>

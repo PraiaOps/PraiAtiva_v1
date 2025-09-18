@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
-import { Plus, Edit, Trash2, Users, Calendar, MapPin, Clock } from "lucide-react";
+import { Plus, Edit, Trash2, Users, Calendar, MapPin, Clock, CircleDollarSign, Waves, Trophy, Zap, Dumbbell, Target } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -27,9 +27,10 @@ const Dashboard = () => {
   const [isEditActivityOpen, setIsEditActivityOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<any>(null);
   const [newActivity, setNewActivity] = useState({
+    locationName: "",
     title: "",
     beach: "",
-    date: "",
+    day: "",
     time: "",
     capacity: "",
     price: "",
@@ -52,6 +53,33 @@ const Dashboard = () => {
     "Futebol",
     "Canoa Havaiana",
   ];
+
+  const daysOfWeek = [
+    "Segunda-feira",
+    "Terça-feira",
+    "Quarta-feira",
+    "Quinta-feira",
+    "Sexta-feira",
+    "Sábado",
+    "Domingo",
+  ];
+
+  const getActivityIcon = (title: string) => {
+    switch (title) {
+      case "Beach Tennis":
+        return <Target className="h-4 w-4 text-primary" />;
+      case "Beach Volley":
+        return <Trophy className="h-4 w-4 text-primary" />;
+      case "Futebol":
+        return <Zap className="h-4 w-4 text-primary" />;
+      case "Canoa Havaiana":
+        return <Waves className="h-4 w-4 text-primary" />;
+      case "Musculação":
+        return <Dumbbell className="h-4 w-4 text-primary" />;
+      default:
+        return <Target className="h-4 w-4 text-primary" />;
+    }
+  };
 
   // Função para obter a imagem baseada no tipo de atividade
   const getActivityImage = (title: string) => {
@@ -121,7 +149,7 @@ const Dashboard = () => {
     }
     
     // Validar campos obrigatórios
-    if (!newActivity.title || !newActivity.beach || !newActivity.date || !newActivity.time || !newActivity.capacity || !newActivity.price) {
+    if (!newActivity.locationName || !newActivity.title || !newActivity.beach || !newActivity.day || !newActivity.time || !newActivity.capacity || newActivity.price === "") {
       toast({
         title: "Erro",
         description: "Por favor, preencha todos os campos obrigatórios",
@@ -132,9 +160,10 @@ const Dashboard = () => {
 
     try {
       const activityData = {
+        location_name: newActivity.locationName,
         title: newActivity.title,
         beach: `${newActivity.beach}, Niterói`,
-        date: newActivity.date,
+        date: newActivity.day,
         time: newActivity.time as "manhã" | "tarde" | "noite",
         capacity: parseInt(newActivity.capacity),
         price: parseFloat(newActivity.price),
@@ -153,9 +182,10 @@ const Dashboard = () => {
         // Fechar modal e limpar formulário
         setIsNewActivityOpen(false);
         setNewActivity({
+          locationName: "",
           title: "",
           beach: "",
-          date: "",
+          day: "",
           time: "",
           capacity: "",
           price: "",
@@ -181,9 +211,10 @@ const Dashboard = () => {
   const handleEditActivity = (activity: any) => {
     setEditingActivity(activity);
     setNewActivity({
+      locationName: activity.location_name || "",
       title: activity.title,
       beach: activity.beach.replace(", Niterói", ""),
-      date: activity.date,
+      day: activity.date,
       time: activity.time,
       capacity: activity.capacity.toString(),
       price: activity.price.toString(),
@@ -196,7 +227,7 @@ const Dashboard = () => {
     e.preventDefault();
     
     // Validar campos obrigatórios
-    if (!newActivity.title || !newActivity.beach || !newActivity.date || !newActivity.time || !newActivity.capacity || !newActivity.price) {
+    if (!newActivity.locationName || !newActivity.title || !newActivity.beach || !newActivity.day || !newActivity.time || !newActivity.capacity || newActivity.price === "") {
       toast({
         title: "Erro",
         description: "Por favor, preencha todos os campos obrigatórios",
@@ -207,9 +238,10 @@ const Dashboard = () => {
 
     try {
       const activityData = {
+        location_name: newActivity.locationName,
         title: newActivity.title,
         beach: `${newActivity.beach}, Niterói`,
-        date: newActivity.date,
+        date: newActivity.day,
         time: newActivity.time as "manhã" | "tarde" | "noite",
         capacity: parseInt(newActivity.capacity),
         price: parseFloat(newActivity.price),
@@ -228,9 +260,10 @@ const Dashboard = () => {
         setIsEditActivityOpen(false);
         setEditingActivity(null);
         setNewActivity({
+          locationName: "",
           title: "",
           beach: "",
-          date: "",
+          day: "",
           time: "",
           capacity: "",
           price: "",
@@ -347,6 +380,18 @@ const Dashboard = () => {
                     <DialogTitle>Criar Nova Atividade</DialogTitle>
                   </DialogHeader>
                   <form onSubmit={handleCreateActivity} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="location-name">Nome do local de atuação *</Label>
+                      <Input
+                        id="location-name"
+                        type="text"
+                        value={newActivity.locationName}
+                        onChange={(e) => setNewActivity(prev => ({ ...prev, locationName: e.target.value }))}
+                        placeholder="Ex: Academia de Beach Tennis Icaraí"
+                        required
+                      />
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="activity-type">Tipo de Atividade *</Label>
@@ -385,14 +430,20 @@ const Dashboard = () => {
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="date">Data *</Label>
-                        <Input
-                          id="date"
-                          type="date"
-                          value={newActivity.date}
-                          onChange={(e) => setNewActivity(prev => ({ ...prev, date: e.target.value }))}
-                          required
-                        />
+                        <Label htmlFor="day">Dia da Semana *</Label>
+                        <Select 
+                          value={newActivity.day} 
+                          onValueChange={(value) => setNewActivity(prev => ({ ...prev, day: value }))}
+                        >
+                          <SelectTrigger id="day">
+                            <SelectValue placeholder="Selecione o dia" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {daysOfWeek.map((day) => (
+                              <SelectItem key={day} value={day}>{day}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                       
                       <div className="space-y-2">
@@ -471,6 +522,18 @@ const Dashboard = () => {
                     <DialogTitle>Editar Atividade</DialogTitle>
                   </DialogHeader>
                   <form onSubmit={handleUpdateActivity} className="space-y-4">
+                    <div className="space-y-2">
+                      <Label htmlFor="edit-location-name">Nome do local de atuação *</Label>
+                      <Input
+                        id="edit-location-name"
+                        type="text"
+                        value={newActivity.locationName}
+                        onChange={(e) => setNewActivity(prev => ({ ...prev, locationName: e.target.value }))}
+                        placeholder="Ex: Academia de Beach Tennis Icaraí"
+                        required
+                      />
+                    </div>
+
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="edit-activity-type">Tipo de Atividade *</Label>
@@ -509,14 +572,20 @@ const Dashboard = () => {
                     
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="edit-date">Data *</Label>
-                        <Input
-                          id="edit-date"
-                          type="date"
-                          value={newActivity.date}
-                          onChange={(e) => setNewActivity(prev => ({ ...prev, date: e.target.value }))}
-                          required
-                        />
+                        <Label htmlFor="edit-day">Dia da Semana *</Label>
+                        <Select 
+                          value={newActivity.day} 
+                          onValueChange={(value) => setNewActivity(prev => ({ ...prev, day: value }))}
+                        >
+                          <SelectTrigger id="edit-day">
+                            <SelectValue placeholder="Selecione o dia" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {daysOfWeek.map((day) => (
+                              <SelectItem key={day} value={day}>{day}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
                       </div>
                       
                       <div className="space-y-2">
@@ -556,9 +625,10 @@ const Dashboard = () => {
                           id="edit-price"
                           type="number"
                           step="0.01"
+                          min="0"
                           value={newActivity.price}
                           onChange={(e) => setNewActivity(prev => ({ ...prev, price: e.target.value }))}
-                          placeholder="Ex: 25.00"
+                          placeholder="Ex: 25.00 (0 para gratuito)"
                           required
                         />
                       </div>
@@ -663,14 +733,18 @@ const Dashboard = () => {
                   <CardContent className="p-6">
                     <div className="space-y-4">
                       <div>
-                        <h3 className="text-xl font-semibold">{activity.title}</h3>
+                        <h3 className="text-xl font-semibold text-primary">{activity.location_name}</h3>
                         <p className="text-sm text-muted-foreground">{activity.beach}</p>
                       </div>
                       
                       <div className="grid grid-cols-2 gap-4 text-sm">
                         <div className="flex items-center space-x-2">
+                          {getActivityIcon(activity.title)}
+                          <span>{activity.title}</span>
+                        </div>
+                        <div className="flex items-center space-x-2">
                           <Calendar className="h-4 w-4 text-primary" />
-                          <span>{new Date(activity.date).toLocaleDateString('pt-BR')}</span>
+                          <span>{activity.date}</span>
                         </div>
                         <div className="flex items-center space-x-2">
                           <Clock className="h-4 w-4 text-primary" />
@@ -681,7 +755,8 @@ const Dashboard = () => {
                           <span>{activity.enrollments}/{activity.capacity}</span>
                         </div>
                         <div className="flex items-center space-x-2">
-                          <span className="font-medium text-primary">R$ {activity.price.toFixed(2)}</span>
+                          <CircleDollarSign className="h-4 w-4 text-primary" />
+                          <span>R$ {activity.price.toFixed(2)}</span>
                         </div>
                       </div>
                       

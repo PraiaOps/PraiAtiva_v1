@@ -1,8 +1,10 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Calendar, Clock, Users, CircleDollarSign, Waves, Trophy, Zap, Dumbbell, Target } from "lucide-react";
 
 interface ActivityCardProps {
   title: string;
+  locationName: string;
   location: string;
   instructor: string;
   time: string;
@@ -12,8 +14,26 @@ interface ActivityCardProps {
   category: 'sea' | 'sand';
 }
 
+const getActivityIcon = (title: string) => {
+  switch (title) {
+    case "Beach Tennis":
+      return <Target className="h-4 w-4 text-primary" />;
+    case "Beach Volley":
+      return <Trophy className="h-4 w-4 text-primary" />;
+    case "Futebol":
+      return <Zap className="h-4 w-4 text-primary" />;
+    case "Canoa Havaiana":
+      return <Waves className="h-4 w-4 text-primary" />;
+    case "Musculação":
+      return <Dumbbell className="h-4 w-4 text-primary" />;
+    default:
+      return <Target className="h-4 w-4 text-primary" />;
+  }
+};
+
 const ActivityCard = ({ 
   title, 
+  locationName,
   location, 
   instructor, 
   time, 
@@ -37,28 +57,29 @@ const ActivityCard = ({
         </div>
       </div>
       
-      <CardContent className="p-4 space-y-3">
+      <CardContent className="p-4 space-y-4">
         <div>
-          <h3 className="font-semibold text-lg">{title}</h3>
-          <p className="text-sm text-muted-foreground">{instructor}</p>
+          <h3 className="font-semibold text-lg text-primary">{locationName}</h3>
+          <p className="text-sm text-muted-foreground">{location}</p>
+          {instructor && <p className="text-xs text-muted-foreground">{instructor}</p>}
         </div>
         
-        <div className="space-y-2 text-sm">
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Local:</span>
-            <span>{location}</span>
+        <div className="grid grid-cols-2 gap-3 text-sm">
+          <div className="flex items-center space-x-2">
+            {getActivityIcon(title)}
+            <span>{title}</span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Horário:</span>
-            <span>{time}</span>
+          <div className="flex items-center space-x-2">
+            <Clock className="h-4 w-4 text-primary" />
+            <span className="capitalize">{time}</span>
           </div>
-          <div className="flex justify-between">
-            <span className="text-muted-foreground">Capacidade:</span>
+          <div className="flex items-center space-x-2">
+            <Users className="h-4 w-4 text-primary" />
             <span>{capacity}</span>
           </div>
-          <div className="flex justify-between font-medium">
-            <span className="text-muted-foreground">Preço:</span>
-            <span className="text-primary">{price}</span>
+          <div className="flex items-center space-x-2">
+            <CircleDollarSign className="h-4 w-4 text-primary" />
+            <span>{price}</span>
           </div>
         </div>
         

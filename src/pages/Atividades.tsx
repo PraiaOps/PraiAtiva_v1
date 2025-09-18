@@ -21,7 +21,8 @@ const Atividades = () => {
     activity: "",
     instructor: "",
     time: "",
-    date: "",
+    dayOfWeek: "", // Novo: filtro por dia da semana
+    priceRange: "", // Novo: filtro por faixa de preço
   });
   
   const [activities, setActivities] = useState<Activity[]>([]);
@@ -72,22 +73,23 @@ const Atividades = () => {
         return;
       }
 
-      // Buscar nomes dos instrutores
+      // Buscar nomes dos instrutores com preferência de visibilidade
       const instructorIds = [...new Set(activitiesData?.map(activity => activity.instructor_id))];
       
       if (instructorIds.length > 0) {
         const { data: usersData, error: usersError } = await supabase
           .from('users')
-          .select('id, name')
+          .select('id, name, show_name')
           .in('id', instructorIds);
 
         if (usersError) {
           console.error('Erro ao buscar instrutores:', usersError);
         } else {
-          const namesMap = usersData?.reduce((acc, user) => {
-            acc[user.id] = user.name;
-            return acc;
-          }, {} as { [key: string]: string }) || {};
+        const namesMap = usersData?.reduce((acc, user) => {
+          // Mostrar nome apenas se show_name for true, senão não mostrar nada
+          acc[user.id] = user.show_name ? user.name : '';
+          return acc;
+        }, {} as { [key: string]: string }) || {};
           setInstructorNames(namesMap);
         }
       }
@@ -106,11 +108,76 @@ const Atividades = () => {
     fetchActivities();
   }, []);
 
-  // Converter atividades do Supabase para formato do ActivityCard
-  const convertedActivities = activities.map(activity => ({
+  // Filtrar atividades baseado nos filtros selecionados
+  const filteredActivities = activities.filter(activity => {
+    // Filtro por busca (nome do local ou título da atividade)
+    if (filters.search && 
+        !activity.location_name?.toLowerCase().includes(filters.search.toLowerCase()) &&
+        !activity.title.toLowerCase().includes(filters.search.toLowerCase())) {
+      return false;
+    }
+
+
+    // Filtro por praia
+    if (filters.beach && filters.beach !== 'all' && 
+        activity.beach.toLowerCase() !== filters.beach.toLowerCase()) {
+      return false;
+    }
+
+    // Filtro por tipo de atividade
+    if (filters.activity && filters.activity !== 'all' && 
+        activity.title.toLowerCase() !== filters.activity.toLowerCase()) {
+      return false;
+    }
+
+    // Filtro por instrutor
+    if (filters.instructor && filters.instructor !== 'all') {
+      const instructorName = instructorNames[activity.instructor_id] || '';
+      if (instructorName.toLowerCase() !== filters.instructor.toLowerCase()) {
+        return false;
+      }
+    }
+
+    // Filtro por horário
+    if (filters.time && filters.time !== 'all' && 
+        activity.time !== filters.time) {
+      return false;
+    }
+
+    // Filtro por dia da semana
+    if (filters.dayOfWeek && filters.dayOfWeek !== 'all' && 
+        activity.date !== filters.dayOfWeek) {
+      return false;
+    }
+
+    // Filtro por faixa de preço
+    if (filters.priceRange && filters.priceRange !== 'all') {
+      const price = activity.price;
+      switch (filters.priceRange) {
+        case 'free':
+          if (price > 0) return false;
+          break;
+        case 'low':
+          if (price <= 0 || price > 50) return false;
+          break;
+        case 'medium':
+          if (price <= 50 || price > 100) return false;
+          break;
+        case 'high':
+          if (price <= 100) return false;
+          break;
+      }
+    }
+
+    return true;
+  });
+
+  // Converter atividades filtradas para formato do ActivityCard
+  const convertedActivities = filteredActivities.map(activity => ({
     title: activity.title,
+    locationName: activity.location_name || 'Local não especificado',
     location: activity.beach,
-    instructor: instructorNames[activity.instructor_id] || 'Instrutor',
+      instructor: instructorNames[activity.instructor_id] || '',
     time: `${activity.time}`,
     capacity: `${activity.enrollments}/${activity.capacity}`,
     price: `R$ ${activity.price.toFixed(2)}`,
@@ -132,6 +199,23 @@ const Atividades = () => {
     "Beach Tennis",
     "Futebol",
     "Canoa Havaiana",
+  ];
+
+  const daysOfWeek = [
+    "Segunda-feira",
+    "Terça-feira", 
+    "Quarta-feira",
+    "Quinta-feira",
+    "Sexta-feira",
+    "Sábado",
+    "Domingo"
+  ];
+
+  const priceRanges = [
+    { value: "free", label: "Gratuito (R$ 0)" },
+    { value: "low", label: "Baixo (R$ 1 - R$ 50)" },
+    { value: "medium", label: "Médio (R$ 51 - R$ 100)" },
+    { value: "high", label: "Alto (Acima de R$ 100)" }
   ];
 
   return (
@@ -160,7 +244,7 @@ const Atividades = () => {
                 <div className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                   <Input 
-                    placeholder="Buscar atividades, instrutores ou praias..."
+                    placeholder="Buscar atividades, locais, instrutores ou praias..."
                     className="pl-10"
                     value={filters.search}
                     onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
@@ -170,10 +254,26 @@ const Atividades = () => {
                   <Search className="h-4 w-4 mr-2" />
                   Buscar
                 </Button>
+                <Button 
+                  variant="outline"
+                  onClick={() => setFilters({
+                    search: "",
+                    city: "",
+                    beach: "",
+                    activity: "",
+                    instructor: "",
+                    time: "",
+                    dayOfWeek: "",
+                    priceRange: "",
+                  })}
+                >
+                  <Filter className="h-4 w-4 mr-2" />
+                  Limpar
+                </Button>
               </div>
 
               {/* Filter Options */}
-              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-7 gap-4">
                 {/* City Filter */}
                 <div>
                   <label className="text-sm font-medium mb-2 block">Cidade</label>
@@ -230,9 +330,11 @@ const Atividades = () => {
                     </SelectTrigger>
                     <SelectContent>
                       <SelectItem value="all">Todos</SelectItem>
-                      {Object.values(instructorNames).map((name, index) => (
-                        <SelectItem key={index} value={name.toLowerCase()}>{name}</SelectItem>
-                      ))}
+                      {Object.values(instructorNames)
+                        .filter(name => name && name.trim() !== '') // Filtrar nomes vazios
+                        .map((name, index) => (
+                          <SelectItem key={index} value={name.toLowerCase()}>{name}</SelectItem>
+                        ))}
                     </SelectContent>
                   </Select>
                 </div>
@@ -253,14 +355,36 @@ const Atividades = () => {
                   </Select>
                 </div>
 
-                {/* Date Filter */}
+                {/* Day of Week Filter */}
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Data</label>
-                  <Input
-                    type="date"
-                    value={filters.date}
-                    onChange={(e) => setFilters(prev => ({ ...prev, date: e.target.value }))}
-                  />
+                  <label className="text-sm font-medium mb-2 block">Dia da Semana</label>
+                  <Select value={filters.dayOfWeek} onValueChange={(value) => setFilters(prev => ({ ...prev, dayOfWeek: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todos" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos</SelectItem>
+                      {daysOfWeek.map((day) => (
+                        <SelectItem key={day} value={day}>{day}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Price Range Filter */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Preço</label>
+                  <Select value={filters.priceRange} onValueChange={(value) => setFilters(prev => ({ ...prev, priceRange: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todos" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos</SelectItem>
+                      {priceRanges.map((range) => (
+                        <SelectItem key={range.value} value={range.value}>{range.label}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
               </div>
             </CardContent>

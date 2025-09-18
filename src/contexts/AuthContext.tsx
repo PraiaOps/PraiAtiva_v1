@@ -25,12 +25,14 @@ interface User {
   phone?: string;
   city?: string;
   bio?: string;
+  show_name: boolean;
   created_at: string;
   updated_at: string;
 }
 
 interface AuthContextType {
   user: User | null;
+  setUser: (user: User | null) => void;
   login: (email: string, password: string) => Promise<boolean>;
   logout: () => void;
   isLoading: boolean;
@@ -122,7 +124,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           id: supabaseUser.id,
           email: supabaseUser.email || '',
           name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'Usuário',
-          role: 'aluno',
+          role: 'instrutor', // Mudança: todos novos usuários são instrutores
+          show_name: true, // Valor padrão: mostrar nome
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
         };
@@ -203,6 +206,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   const value: AuthContextType = {
     user,
+    setUser,
     login,
     logout,
     isLoading,

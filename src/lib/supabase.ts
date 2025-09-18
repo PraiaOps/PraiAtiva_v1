@@ -18,6 +18,7 @@ export interface User {
   phone?: string
   city?: string
   bio?: string
+  show_name: boolean
   created_at: string
   updated_at: string
 }
@@ -25,10 +26,11 @@ export interface User {
 export interface Activity {
   id: string
   instructor_id: string
+  location_name: string
   title: string
   beach: string
-  date: string
-  time: string
+  date: 'Segunda-feira' | 'Terça-feira' | 'Quarta-feira' | 'Quinta-feira' | 'Sexta-feira' | 'Sábado' | 'Domingo'
+  time: 'manhã' | 'tarde' | 'noite'
   capacity: number
   price: number
   description?: string

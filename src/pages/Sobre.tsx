@@ -117,39 +117,6 @@ const Sobre = () => {
         </div>
       </section>
 
-      {/* Team Section */}
-      <section className="py-16 bg-muted">
-        <div className="container mx-auto px-4">
-          <div className="max-w-4xl mx-auto text-center">
-            <h2 className="text-3xl font-bold text-primary mb-8">Nossa equipe</h2>
-            
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-              <Card className="p-6">
-                <div className="w-24 h-24 bg-primary rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl text-primary-foreground font-bold">PP</span>
-                </div>
-                <h3 className="text-xl font-semibold text-primary mb-2">Paulo Peregrino</h3>
-                <p className="text-muted-foreground mb-4">Idealizador, CEO e Marketing</p>
-                <p className="text-sm text-muted-foreground">
-                  Praticante de vôlei de praia desde 2015, superou 3 dos 4 cânceres e transformou sua luta em inspiração para conectar pessoas através do esporte.
-                </p>
-              </Card>
-              
-              <Card className="p-6">
-                <div className="w-24 h-24 bg-primary rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl text-primary-foreground font-bold">MT</span>
-                </div>
-                <h3 className="text-xl font-semibold text-primary mb-2">Marina Torres</h3>
-                <p className="text-muted-foreground mb-4">Head de Operações</p>
-                <p className="text-sm text-muted-foreground">
-                  Especialista em turismo e lazer, com foco em experiências memoráveis na praia.
-                </p>
-              </Card>
-            </div>
-          </div>
-        </div>
-      </section>
-
       {/* CTA Section */}
       <section className="py-16">
         <div className="container mx-auto px-4 text-center">

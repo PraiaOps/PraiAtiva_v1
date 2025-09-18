@@ -1,8 +1,11 @@
 import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
+import { useAuth } from "@/contexts/AuthContext";
+import { LogOut, User } from "lucide-react";
 
 const Header = () => {
   const location = useLocation();
+  const { user, logout, isAuthenticated } = useAuth();
 
   const isActive = (path: string) => location.pathname === path;
 
@@ -47,16 +50,39 @@ const Header = () => {
 
         {/* Auth Buttons */}
         <div className="flex items-center space-x-3">
-          <Link to="/login">
-            <Button variant="ghost" className="text-primary-foreground hover:text-cta hover:bg-primary-hover">
-              Entrar
-            </Button>
-          </Link>
-          <Link to="/cadastro">
-            <Button variant="cta">
-              Cadastrar
-            </Button>
-          </Link>
+          {isAuthenticated ? (
+            <>
+              <div className="flex items-center space-x-2 text-sm">
+                <User className="h-4 w-4" />
+                <span>Olá, {user?.name}</span>
+              </div>
+              <Link to="/dashboard">
+                <Button variant="ghost" className="text-primary-foreground hover:text-cta hover:bg-primary-hover">
+                  Dashboard
+                </Button>
+              </Link>
+              <Button 
+                variant="ghost" 
+                className="text-primary-foreground hover:text-cta hover:bg-primary-hover"
+                onClick={logout}
+              >
+                <LogOut className="h-4 w-4" />
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button variant="ghost" className="text-primary-foreground hover:text-cta hover:bg-primary-hover">
+                  Entrar
+                </Button>
+              </Link>
+              <Link to="/cadastro">
+                <Button variant="cta">
+                  Cadastrar
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
       </div>
     </header>

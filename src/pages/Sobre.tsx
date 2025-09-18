@@ -33,44 +33,30 @@ const Sobre = () => {
           <div className="max-w-4xl mx-auto">
             <Card className="p-8">
               <h2 className="text-3xl font-bold text-primary mb-6">A história</h2>
-              <div className="space-y-6 text-muted-foreground">
+              <div className="space-y-6 text-foreground">
                 <p>
-                  Como praticante de vôlei de praia desde 2015, quando a ideia surgiu, já vivia as "dores" que
-                  o PRAIATIVA veio resolver: encontrar e se conectar facilmente a todas as atividades de
-                  esporte, lazer e turismo exclusivamente nas praias. O que não se consegue pela internet,
-                  nem no local, onde dependemos dos banners ao longo do calçadão, ou, com sorte, de uma
-                  indicação que dê o "match". Cansei de passar por isso.
+                  Como praticante de vôlei de praia desde 2015, quando a ideia surgiu, já vivia as "dores" que o PRAIATIVA veio resolver: encontrar e se conectar facilmente a todas as atividades de esporte, lazer e turismo exclusivamente nas praias. O que não se consegue pela internet, nem no local, onde dependemos dos banners ao longo do calçadão, ou, com sorte, de uma indicação que dê o "match". Cansei de passar por isso.
                 </p>
                 
                 <p>
-                  Mas foi em maio de 2018 que vi que a minha história estava para sempre conectada a do
-                  PRAIATIVA.
+                  Mas foi em maio de 2018 que vi que a minha história estaria para sempre conectada a do PRAIATIVA. Quando resolvi não parar com meu vôlei de praia mesmo nos períodos de quimioterapia na luta contra 3 dos 4 cânceres que tive daí até 2023. Fui me fortalecendo, física e mentalmente, embora tenha sido desenganado pelos médicos em novembro de 2021! Com a ajuda de Deus e da ciência (um tratamento revolucionário), estou em remissão total desde abril de 2023. Nunca desisti.
                 </p>
                 
-                <div className="mt-8">
-                  <Button 
-                    variant="outline" 
-                    onClick={() => toggleSection('history')}
-                    className="flex items-center space-x-2"
-                  >
-                    <span>{expandedSection === 'history' ? 'Leia menos' : 'Leia mais'}</span>
-                    <ChevronDown className={`h-4 w-4 transition-transform ${expandedSection === 'history' ? 'rotate-180' : ''}`} />
-                  </Button>
-                  
-                  {expandedSection === 'history' && (
-                    <div className="mt-6 space-y-4 text-muted-foreground">
-                      <p>
-                        Em 2018, percebi que havia uma lacuna significativa no mercado de atividades nas praias.
-                        As pessoas queriam se exercitar, se divertir e aproveitar o litoral brasileiro, mas não
-                        tinham uma plataforma centralizada para encontrar essas oportunidades.
-                      </p>
-                      <p>
-                        Foi então que nasceu a visão do PRAIATIVA: criar uma ponte entre quem busca atividades
-                        e quem as oferece, sempre focando na experiência única que apenas as praias podem proporcionar.
-                      </p>
-                    </div>
-                  )}
-                </div>
+                <p>
+                  PRAIATIVA acabou se tornando parte dessa minha "missão" de tentar inspirar outros a agirem assim, na vida ou em seus projetos.
+                </p>
+                
+                <p>
+                  Por trás de cada atividade, de cada praticante, há uma história de superação. Dos que precisam vencer o sedentarismo, que tantas doenças graves, mortes e prejuízo financeiro traz a pessoas, empresas e governos. Daqueles que precisam de informação e motivação para escolher uma opção 100% no seu perfil. Dos instrutores que precisam de apoio na gestão de seu negócio na praia, o sustento da sua vida.
+                </p>
+                
+                <p>
+                  PRAIATIVA surgiu nesse ambiente, de falta de informação e necessidade de superação. E tem tudo para se fortalecer: Rio (capital) e Niterói estão juntas lutando para sediar os Panamericanos de 2031! Fomos selecionados e em abril/25 estamos iniciando o programa de incubação da Prefeitura de Niterói e Universidade Federal Fluminense (UFF). Agora, é avançar e se tornar realidade até o verão de 2025. Contamos com seu apoio! Obrigado.
+                </p>
+                
+                <p className="font-semibold text-primary">
+                  Paulo Peregrino - idealizador, CEO e Marketing do PRAIATIVA
+                </p>
               </div>
             </Card>
           </div>
@@ -83,7 +69,7 @@ const Sobre = () => {
           <div className="max-w-4xl mx-auto">
             <Card className="p-8">
               <h2 className="text-3xl font-bold text-primary mb-6">A missão</h2>
-              <p className="text-lg text-muted-foreground">
+              <p className="text-lg text-foreground">
                 Ser uma ferramenta essencial na rotina daqueles que querem conquistar uma qualidade de
                 vida mais ativa, preventiva e integrada à Natureza, inspirando todos na busca da saúde
                 física, mental e social através das atividades na praia.
@@ -140,12 +126,12 @@ const Sobre = () => {
             <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
               <Card className="p-6">
                 <div className="w-24 h-24 bg-primary rounded-full mx-auto mb-4 flex items-center justify-center">
-                  <span className="text-2xl text-primary-foreground font-bold">PS</span>
+                  <span className="text-2xl text-primary-foreground font-bold">PP</span>
                 </div>
-                <h3 className="text-xl font-semibold text-primary mb-2">Paulo Santos</h3>
-                <p className="text-muted-foreground mb-4">Fundador & CEO</p>
+                <h3 className="text-xl font-semibold text-primary mb-2">Paulo Peregrino</h3>
+                <p className="text-muted-foreground mb-4">Idealizador, CEO e Marketing</p>
                 <p className="text-sm text-muted-foreground">
-                  Praticante de vôlei de praia desde 2015, apaixonado por conectar pessoas através do esporte.
+                  Praticante de vôlei de praia desde 2015, superou 3 dos 4 cânceres e transformou sua luta em inspiração para conectar pessoas através do esporte.
                 </p>
               </Card>
               

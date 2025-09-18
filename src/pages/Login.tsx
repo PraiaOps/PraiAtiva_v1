@@ -2,19 +2,48 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useState } from "react";
+import { useAuth } from "@/contexts/AuthContext";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const { login, isLoading } = useAuth();
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implementar lógica de login
-    console.log("Login:", { email, password });
+    
+    if (!email || !password) {
+      toast({
+        title: "Erro",
+        description: "Por favor, preencha todos os campos",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    const success = await login(email, password);
+    
+    if (success) {
+      toast({
+        title: "Sucesso",
+        description: "Login realizado com sucesso!",
+      });
+      navigate("/dashboard");
+    } else {
+      toast({
+        title: "Erro",
+        description: "Email ou senha incorretos",
+        variant: "destructive",
+      });
+    }
   };
 
   return (
@@ -61,26 +90,12 @@ const Login = () => {
                 />
               </div>
               
-              <Button type="submit" variant="cta" className="w-full">
-                Entrar
-                <span className="ml-2">→</span>
+              <Button type="submit" variant="cta" className="w-full" disabled={isLoading}>
+                {isLoading ? "Entrando..." : "Entrar"}
+                {!isLoading && <span className="ml-2">→</span>}
               </Button>
             </form>
             
-            <div className="text-center text-sm text-muted-foreground">
-              <p>Acesso rápido para testes:</p>
-              <div className="flex flex-wrap gap-2 justify-center mt-2">
-                <Button variant="outline" size="sm" className="text-xs">
-                  Entrar como Admin
-                </Button>
-                <Button variant="cta" size="sm" className="text-xs">
-                  Entrar como Instrutor
-                </Button>
-                <Button variant="secondary" size="sm" className="text-xs">
-                  Entrar como Aluno
-                </Button>
-              </div>
-            </div>
             
             <div className="text-center">
               <p className="text-sm text-muted-foreground">
@@ -88,6 +103,9 @@ const Login = () => {
                 <Link to="/cadastro" className="text-accent hover:underline font-medium">
                   Cadastre-se
                 </Link>
+              </p>
+              <p className="text-xs text-muted-foreground mt-2">
+                Ou use as credenciais de teste: admin@praiativa.com / admin123
               </p>
             </div>
             
@@ -101,6 +119,7 @@ const Login = () => {
       </div>
       
       <Footer />
+      <Toaster />
     </div>
   );
 };

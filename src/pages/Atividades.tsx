@@ -6,7 +6,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ActivityCard from "@/components/ActivityCard";
 import { Search, Filter } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import beachvolleyImage from "@/assets/beachvolley.jpg";
 import beachtennisImage from "@/assets/beachtennis.jpg";
 import futebolImage from "@/assets/futebol.jpg";
@@ -22,6 +22,11 @@ const Atividades = () => {
     time: "",
     date: "",
   });
+
+  // Scroll para o topo quando a página carregar
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   // Mock data for MVP
   const activities = [

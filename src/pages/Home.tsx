@@ -54,9 +54,6 @@ const Home = () => {
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto space-y-6">
-            <div className="text-sm opacity-90 bg-white/10 backdrop-blur-sm rounded-full px-4 py-2 inline-block">
-              Em breve - Seja um dos primeiros
-            </div>
             
             <h1 className="text-4xl md:text-6xl font-bold leading-tight">
               Chegou a hora dessa{" "}
@@ -111,7 +108,7 @@ const Home = () => {
                 </Button>
               </Link>
               <Link to="/atividades">
-                <Button variant="outline" size="lg" className="w-full sm:w-auto text-white border-white hover:bg-white hover:text-primary">
+                <Button variant="outline" size="lg" className="w-full sm:w-auto bg-white text-primary border-white hover:bg-white/90 hover:text-primary">
                   Explorar atividades
                 </Button>
               </Link>
@@ -167,9 +164,11 @@ const Home = () => {
                   <p className="text-sm opacity-90 mb-3">
                     Surf, Stand Up Paddle, Natação e mais
                   </p>
-                  <Button variant="outline" size="sm" className="text-white border-white hover:bg-white hover:text-primary">
-                    Ver atividades <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                  <Link to="/atividades">
+                    <Button variant="outline" size="sm" className="bg-white text-primary border-white hover:bg-white/90 hover:text-primary">
+                      Ver atividades <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </Card>
@@ -189,9 +188,11 @@ const Home = () => {
                   <p className="text-sm opacity-90 mb-3">
                     Vôlei, Futevôlei, Corrida e mais
                   </p>
-                  <Button variant="outline" size="sm" className="text-white border-white hover:bg-white hover:text-primary">
-                    Ver atividades <ArrowRight className="ml-2 h-4 w-4" />
-                  </Button>
+                  <Link to="/atividades">
+                    <Button variant="outline" size="sm" className="bg-white text-primary border-white hover:bg-white/90 hover:text-primary">
+                      Ver atividades <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
                 </div>
               </div>
             </Card>
@@ -204,6 +205,87 @@ const Home = () => {
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>
+          </div>
+        </div>
+      </section>
+
+      {/* Events Section - Qual é a boa? */}
+      <section className="py-16 bg-muted">
+        <div className="container mx-auto px-4">
+          <div className="max-w-6xl mx-auto">
+            <h2 className="text-3xl font-bold text-primary text-center mb-12">Qual é a boa?</h2>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+              {/* Event 1 - Circuito Niteroiense de Beach Tennis */}
+              <Card className="overflow-hidden">
+                <div className="relative h-48">
+                  <div className="w-full h-full bg-gradient-to-br from-orange-500 to-red-500 flex items-center justify-center">
+                    <div className="text-center text-white">
+                      <div className="text-4xl font-bold mb-2">🎾</div>
+                      <div className="text-sm font-semibold">BEACH TENNIS</div>
+                      <div className="text-xs opacity-90">CIRCUITO NITEROIENSE</div>
+                    </div>
+                  </div>
+                </div>
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm">Esporte</span>
+                    <span className="text-sm text-muted-foreground">Sáb 11 e Dom 12 de Outubro</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-primary mb-3">
+                    4ª ETAPA DO CIRCUITO NITEROIENSE DE BEACH TENNIS
+                  </h3>
+                  <p className="text-muted-foreground mb-2">
+                    <strong>Horário:</strong> 7:00 às 16:00 (sáb) / 7:00 às 15:00 (dom)
+                  </p>
+                  <p className="text-muted-foreground mb-4">
+                    <strong>Local:</strong> Praia de Icaraí - Avenida Jornalista Alberto Francisco Torres
+                  </p>
+                  <Button variant="outline" className="text-primary border-primary hover:bg-primary hover:text-primary-foreground">
+                    Ver detalhes <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
+
+              {/* Event 2 - Super Paddle Canoa Havaiana */}
+              <Card className="overflow-hidden">
+                <div className="relative h-48">
+                  <div className="w-full h-full bg-gradient-to-br from-blue-500 to-cyan-500 flex items-center justify-center">
+                    <div className="text-center text-white">
+                      <div className="text-4xl font-bold mb-2">🚣</div>
+                      <div className="text-sm font-semibold">SUPER PADDLE</div>
+                      <div className="text-xs opacity-90">CANOA HAVAIANA</div>
+                    </div>
+                  </div>
+                </div>
+                <CardContent className="p-6">
+                  <div className="flex items-center gap-2 mb-3">
+                    <span className="bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm">Esporte</span>
+                    <span className="text-sm text-muted-foreground">Sáb 18 de Outubro</span>
+                  </div>
+                  <h3 className="text-xl font-bold text-primary mb-3">
+                    3ª ETAPA DO SUPER PADDLE (CANOA HAVAIANA)
+                  </h3>
+                  <p className="text-muted-foreground mb-2">
+                    <strong>Horário:</strong> 6:00 às 17:00
+                  </p>
+                  <p className="text-muted-foreground mb-4">
+                    <strong>Local:</strong> Praia de Itaipu
+                  </p>
+                  <Button variant="outline" className="text-primary border-primary hover:bg-primary hover:text-primary-foreground">
+                    Ver detalhes <ArrowRight className="ml-2 h-4 w-4" />
+                  </Button>
+                </CardContent>
+              </Card>
+            </div>
+
+            <div className="text-center mt-12">
+              <Link to="/eventos">
+                <Button variant="outline" size="lg" className="text-primary border-primary hover:bg-primary hover:text-primary-foreground">
+                  Ver todos os eventos <ArrowRight className="ml-2 h-5 w-5" />
+                </Button>
+              </Link>
+            </div>
           </div>
         </div>
       </section>

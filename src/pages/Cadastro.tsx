@@ -3,11 +3,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Link } from "react-router-dom";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useState } from "react";
 import { Check } from "lucide-react";
+import { supabase } from "@/lib/supabase";
+import { useToast } from "@/hooks/use-toast";
+import { Toaster } from "@/components/ui/toaster";
 
 const Cadastro = () => {
   const [formData, setFormData] = useState({
@@ -17,12 +21,123 @@ const Cadastro = () => {
     confirmPassword: "",
     phone: "",
     bio: "",
+    role: "aluno" as "aluno" | "instrutor",
   });
+  const [isLoading, setIsLoading] = useState(false);
+  const navigate = useNavigate();
+  const { toast } = useToast();
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    // TODO: Implementar lógica de cadastro
-    console.log("Cadastro:", formData);
+    setIsLoading(true);
+
+    try {
+      console.log('📝 Iniciando cadastro...', { email: formData.email, role: formData.role });
+      
+      // Validar senhas
+      if (formData.password !== formData.confirmPassword) {
+        toast({
+          title: "Erro",
+          description: "As senhas não coincidem",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      console.log('🚀 Criando usuário no Supabase Auth...');
+      // Criar usuário no Supabase Auth
+      const { data: authData, error: authError } = await supabase.auth.signUp({
+        email: formData.email,
+        password: formData.password,
+        options: {
+          data: {
+            full_name: formData.name,
+          }
+        }
+      });
+
+      console.log('📊 Resultado Auth:', { authData: !!authData, error: authError?.message });
+
+      if (authError) {
+        console.error('❌ Erro Auth:', authError);
+        toast({
+          title: "Erro no cadastro",
+          description: authError.message,
+          variant: "destructive",
+        });
+        return;
+      }
+
+      if (authData.user) {
+        console.log('✅ Usuário criado no Auth, criando perfil na tabela...');
+        // Criar perfil do usuário na tabela users
+        const profileData = {
+          id: authData.user.id,
+          email: formData.email,
+          name: formData.name,
+          role: formData.role,
+          phone: formData.phone || null,
+          bio: formData.bio || null,
+          city: 'Niterói',
+        };
+        
+        console.log('📋 Dados do perfil a inserir:', profileData);
+        
+        const { data: insertedProfile, error: profileError } = await supabase
+          .from('users')
+          .insert([profileData])
+          .select();
+
+        console.log('📊 Resultado perfil:', { 
+          insertedProfile, 
+          error: profileError?.message,
+          details: profileError?.details,
+          hint: profileError?.hint 
+        });
+
+        if (profileError) {
+          console.error('❌ Erro ao criar perfil:', profileError);
+          toast({
+            title: "Aviso",
+            description: "Usuário criado, mas houve erro no perfil. Tente fazer login.",
+            variant: "destructive",
+          });
+        } else {
+          console.log('✅ Perfil criado com sucesso!');
+          toast({
+            title: "Cadastro realizado!",
+            description: "Conta criada com sucesso! Você pode fazer login agora.",
+          });
+        }
+
+        // Limpar formulário
+        setFormData({
+          name: "",
+          email: "",
+          password: "",
+          confirmPassword: "",
+          phone: "",
+          bio: "",
+          role: "aluno",
+        });
+
+        // Redirecionar para login após 2 segundos
+        setTimeout(() => {
+          navigate('/login');
+        }, 2000);
+      } else {
+        console.log('❌ Nenhum usuário retornado do Auth');
+      }
+    } catch (error) {
+      console.error('Erro no cadastro:', error);
+      toast({
+        title: "Erro",
+        description: "Ocorreu um erro inesperado. Tente novamente.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -40,9 +155,9 @@ const Cadastro = () => {
         <div className="max-w-2xl mx-auto">
           <Card>
             <CardHeader className="text-center">
-              <CardTitle className="text-2xl text-primary">Cadastro de Instrutor</CardTitle>
+              <CardTitle className="text-2xl text-primary">Cadastro</CardTitle>
               <p className="text-muted-foreground">
-                Cadastre-se como instrutor para oferecer aulas e atividades na praia.
+                Crie sua conta para acessar todas as funcionalidades da plataforma.
               </p>
             </CardHeader>
             
@@ -92,6 +207,24 @@ const Cadastro = () => {
                       required
                     />
                   </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="role">Tipo de usuário *</Label>
+                  <Select 
+                    value={formData.role} 
+                    onValueChange={(value: "aluno" | "instrutor") => 
+                      setFormData(prev => ({ ...prev, role: value }))
+                    }
+                  >
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione seu tipo de usuário" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="aluno">Aluno - Quero participar de atividades</SelectItem>
+                      <SelectItem value="instrutor">Instrutor - Quero oferecer atividades</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
                 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -146,8 +279,14 @@ const Cadastro = () => {
                   />
                 </div>
                 
-                <Button type="submit" variant="cta" className="w-full" size="lg">
-                  Cadastrar como Instrutor
+                <Button 
+                  type="submit" 
+                  variant="cta" 
+                  className="w-full" 
+                  size="lg"
+                  disabled={isLoading}
+                >
+                  {isLoading ? "Cadastrando..." : "Cadastrar"}
                 </Button>
               </form>
               
@@ -165,6 +304,7 @@ const Cadastro = () => {
       </div>
       
       <Footer />
+      <Toaster />
     </div>
   );
 };

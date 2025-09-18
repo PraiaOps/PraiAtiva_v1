@@ -136,18 +136,22 @@ const Home = () => {
 
             {/* Quick Links */}
             <div className="flex flex-wrap justify-center gap-4 pt-4">
-              <Link to="/blog">
-                <Button variant="ghost" className="text-white border border-white/30 hover:bg-white/10">
-                  <ArrowRight className="mr-2 h-4 w-4" />
-                  Blog
-                </Button>
-              </Link>
-              <Link to="/tv-praiativa">
-                <Button variant="ghost" className="text-white border border-white/30 hover:bg-white/10">
-                  <ArrowRight className="mr-2 h-4 w-4" />
-                  TV PraiAtiva
-                </Button>
-              </Link>
+              <Button 
+                variant="ghost" 
+                className="text-white border border-white/30 hover:bg-white/10"
+                onClick={() => window.open('https://www.praiativa.com.br/blog', '_blank')}
+              >
+                <ArrowRight className="mr-2 h-4 w-4" />
+                Blog
+              </Button>
+              <Button 
+                variant="ghost" 
+                className="text-white border border-white/30 hover:bg-white/10"
+                onClick={() => window.open('https://www.youtube.com/@praiativasuaatividadesuapr3965', '_blank')}
+              >
+                <ArrowRight className="mr-2 h-4 w-4" />
+                TV PraiAtiva
+              </Button>
               <Link to="/sobre">
                 <Button variant="ghost" className="text-white border border-white/30 hover:bg-white/10">
                   <ArrowRight className="mr-2 h-4 w-4" />
@@ -201,7 +205,9 @@ const Home = () => {
                 questão de treino: precisam ser praticadas sempre.
               </p>
               <p className="font-medium text-primary">
-                Vamos nessa? Descubra a sua praia e se joga!
+                <Link to="/sobre" className="hover:text-primary/80 hover:scale-105 transition-all duration-200 cursor-pointer inline-block">
+                  Vamos nessa? Descubra mais sobre nossa história
+                </Link>
               </p>
             </div>
           </div>

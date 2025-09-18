@@ -68,8 +68,22 @@ const Footer = () => {
             <h3 className="font-semibold text-cta">Contato</h3>
             <div className="space-y-2 text-sm">
               <p>📍 Av. Atlântica, Copacabana - Rio de Janeiro, RJ</p>
-              <p>📧 contato@praiativa.com.br</p>
-              <p>📞 (21) 9999-9999</p>
+              <p>
+                📧 <a 
+                  href="mailto:praiativaops@gmail.com" 
+                  className="hover:text-cta transition-colors cursor-pointer underline"
+                >
+                  praiativaops@gmail.com
+                </a>
+              </p>
+              <p>
+                📞 <a 
+                  href="tel:+5521995512227" 
+                  className="hover:text-cta transition-colors cursor-pointer underline"
+                >
+                  (21) 99551-2227
+                </a>
+              </p>
             </div>
           </div>
 

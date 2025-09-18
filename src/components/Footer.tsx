@@ -1,7 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Instagram, Facebook, Twitter } from "lucide-react";
+import { Instagram, Facebook, Youtube } from "lucide-react";
 
 const Footer = () => {
   return (
@@ -17,14 +17,29 @@ const Footer = () => {
               Conectando pessoas a atividades ao ar livre nas mais belas praias do Brasil.
             </p>
             <div className="flex space-x-3">
-              <Button variant="ghost" size="sm" className="p-2 hover:bg-primary-hover">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="p-2 hover:bg-primary-hover"
+                onClick={() => window.open('https://www.instagram.com/praiativa/', '_blank')}
+              >
                 <Instagram className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="sm" className="p-2 hover:bg-primary-hover">
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="p-2 hover:bg-primary-hover"
+                onClick={() => window.open('https://www.facebook.com/praiativa/?ref=pl_edit_xav_ig_profile_page_web#', '_blank')}
+              >
                 <Facebook className="h-4 w-4" />
               </Button>
-              <Button variant="ghost" size="sm" className="p-2 hover:bg-primary-hover">
-                <Twitter className="h-4 w-4" />
+              <Button 
+                variant="ghost" 
+                size="sm" 
+                className="p-2 hover:bg-primary-hover"
+                onClick={() => window.open('https://www.youtube.com/@praiativasuaatividadesuapr3965', '_blank')}
+              >
+                <Youtube className="h-4 w-4" />
               </Button>
             </div>
           </div>
@@ -38,9 +53,6 @@ const Footer = () => {
               </Link>
               <Link to="/atividades" className="block text-sm hover:text-cta transition-colors">
                 Atividades
-              </Link>
-              <Link to="/instrutores" className="block text-sm hover:text-cta transition-colors">
-                Instrutores
               </Link>
               <Link to="/sobre" className="block text-sm hover:text-cta transition-colors">
                 Sobre

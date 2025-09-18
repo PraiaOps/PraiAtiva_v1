@@ -5,6 +5,8 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ActivityCard from "@/components/ActivityCard";
 import { ArrowRight, Star, Users, Activity, MapPin } from "lucide-react";
+import { useState, useEffect } from "react";
+import { supabase, Activity as SupabaseActivity } from "@/lib/supabase";
 import heroImage from "@/assets/hero-beach.jpg";
 import beachvolleyImage from "@/assets/beachvolley.jpg";
 import beachtennisImage from "@/assets/beachtennis.jpg";
@@ -12,38 +14,99 @@ import futebolImage from "@/assets/futebol.jpg";
 import canoaImage from "@/assets/canoa-havaiana.jpg";
 
 const Home = () => {
-  const activities = [
-    {
-      title: "Beach Volley",
-      location: "Icaraí, Niterói", 
-      instructor: "Lucas Silva",
-      time: "09:00 às 10:00",
-      capacity: "8/12",
-      price: "R$ 25,00",
-      image: beachvolleyImage,
-      category: "sand" as const,
-    },
-    {
-      title: "Beach Tennis",
-      location: "Copacabana, Rio de Janeiro",
-      instructor: "Ana Costa", 
-      time: "16:00 às 17:00",
-      capacity: "6/8",
-      price: "R$ 35,00", 
-      image: beachtennisImage,
-      category: "sand" as const,
-    },
-    {
-      title: "Surf",
-      location: "Barra da Tijuca, Rio de Janeiro",
-      instructor: "Pedro Waves",
-      time: "07:00 às 09:00", 
-      capacity: "4/6",
-      price: "R$ 80,00",
-      image: canoaImage,
-      category: "sea" as const,
-    },
-  ];
+  const [activities, setActivities] = useState<SupabaseActivity[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [instructorNames, setInstructorNames] = useState<{ [key: string]: string }>({});
+
+  // Função para obter a imagem baseada no tipo de atividade
+  const getActivityImage = (title: string) => {
+    const activityTitle = title.toLowerCase();
+    
+    if (activityTitle.includes('beach volley') || activityTitle.includes('volley') || activityTitle.includes('vôlei')) {
+      return beachvolleyImage;
+    } else if (activityTitle.includes('beach tennis') || activityTitle.includes('tennis')) {
+      return beachtennisImage;
+    } else if (activityTitle.includes('futebol') || activityTitle.includes('football')) {
+      return futebolImage;
+    } else if (activityTitle.includes('canoa') || activityTitle.includes('havaiana') || activityTitle.includes('paddle')) {
+      return canoaImage;
+    } else {
+      // Imagem padrão se não encontrar correspondência
+      return beachvolleyImage;
+    }
+  };
+
+  // Determinar categoria baseada no tipo de atividade
+  const getActivityCategory = (title: string) => {
+    const activityTitle = title.toLowerCase();
+    if (activityTitle.includes('canoa') || activityTitle.includes('havaiana') || activityTitle.includes('paddle')) {
+      return 'sea' as const;
+    }
+    return 'sand' as const;
+  };
+
+  // Buscar atividades em destaque do Supabase
+  const fetchFeaturedActivities = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Buscar as 6 primeiras atividades ativas
+      const { data: activitiesData, error: activitiesError } = await supabase
+        .from('activities')
+        .select('*')
+        .eq('status', 'active')
+        .order('created_at', { ascending: false })
+        .limit(6);
+
+      if (activitiesError) {
+        console.error('Erro ao buscar atividades:', activitiesError);
+        return;
+      }
+
+      // Buscar nomes dos instrutores
+      const instructorIds = [...new Set(activitiesData?.map(activity => activity.instructor_id))];
+      
+      if (instructorIds.length > 0) {
+        const { data: usersData, error: usersError } = await supabase
+          .from('users')
+          .select('id, name')
+          .in('id', instructorIds);
+
+        if (usersError) {
+          console.error('Erro ao buscar instrutores:', usersError);
+        } else {
+          const namesMap = usersData?.reduce((acc, user) => {
+            acc[user.id] = user.name;
+            return acc;
+          }, {} as { [key: string]: string }) || {};
+          setInstructorNames(namesMap);
+        }
+      }
+
+      setActivities(activitiesData || []);
+    } catch (error) {
+      console.error('Erro ao buscar atividades:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Buscar atividades quando o componente montar
+  useEffect(() => {
+    fetchFeaturedActivities();
+  }, []);
+
+  // Converter atividades do Supabase para formato do ActivityCard
+  const convertedActivities = activities.map(activity => ({
+    title: activity.title,
+    location: activity.beach,
+    instructor: instructorNames[activity.instructor_id] || 'Instrutor',
+    time: `${activity.time}`,
+    capacity: `${activity.enrollments}/${activity.capacity}`,
+    price: `R$ ${activity.price.toFixed(2)}`,
+    image: getActivityImage(activity.title),
+    category: getActivityCategory(activity.title),
+  }));
 
   return (
     <div className="min-h-screen bg-background">
@@ -296,19 +359,53 @@ const Home = () => {
           <h2 className="text-3xl font-bold text-center mb-12 text-primary">
             Atividades em Destaque
           </h2>
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {activities.map((activity, index) => (
-              <ActivityCard key={index} {...activity} />
-            ))}
-          </div>
-          <div className="text-center mt-8">
-            <Link to="/atividades">
-              <Button variant="outline">
-                Ver todas as atividades
-                <ArrowRight className="ml-2 h-4 w-4" />
-              </Button>
-            </Link>
-          </div>
+          
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1,2,3,4,5,6].map((i) => (
+                <Card key={i} className="animate-pulse">
+                  <div className="h-48 bg-muted-foreground/10 rounded-t-lg"></div>
+                  <CardContent className="p-4">
+                    <div className="h-4 bg-muted-foreground/10 rounded mb-2"></div>
+                    <div className="h-3 bg-muted-foreground/10 rounded mb-1"></div>
+                    <div className="h-3 bg-muted-foreground/10 rounded mb-1"></div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : convertedActivities.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground text-lg mb-4">
+                Nenhuma atividade cadastrada ainda.
+              </p>
+              <p className="text-muted-foreground mb-6">
+                Seja o primeiro a criar uma atividade!
+              </p>
+              <Link to="/login">
+                <Button variant="default">
+                  Criar Atividade
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {convertedActivities.map((activity, index) => (
+                <ActivityCard key={index} {...activity} />
+              ))}
+            </div>
+          )}
+
+          {!isLoading && convertedActivities.length > 0 && (
+            <div className="text-center mt-8">
+              <Link to="/atividades">
+                <Button variant="outline">
+                  Ver todas as atividades
+                  <ArrowRight className="ml-2 h-4 w-4" />
+                </Button>
+              </Link>
+            </div>
+          )}
         </div>
       </section>
 

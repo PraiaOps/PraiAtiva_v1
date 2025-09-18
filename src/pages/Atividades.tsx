@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 import ActivityCard from "@/components/ActivityCard";
 import { Search, Filter } from "lucide-react";
 import { useState, useEffect } from "react";
+import { supabase, Activity } from "@/lib/supabase";
 import beachvolleyImage from "@/assets/beachvolley.jpg";
 import beachtennisImage from "@/assets/beachtennis.jpg";
 import futebolImage from "@/assets/futebol.jpg";
@@ -22,75 +23,100 @@ const Atividades = () => {
     time: "",
     date: "",
   });
+  
+  const [activities, setActivities] = useState<Activity[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [instructorNames, setInstructorNames] = useState<{ [key: string]: string }>({});
 
-  // Scroll para o topo quando a página carregar
+  // Função para obter a imagem baseada no tipo de atividade
+  const getActivityImage = (title: string) => {
+    const activityTitle = title.toLowerCase();
+    
+    if (activityTitle.includes('beach volley') || activityTitle.includes('volley') || activityTitle.includes('vôlei')) {
+      return beachvolleyImage;
+    } else if (activityTitle.includes('beach tennis') || activityTitle.includes('tennis')) {
+      return beachtennisImage;
+    } else if (activityTitle.includes('futebol') || activityTitle.includes('football')) {
+      return futebolImage;
+    } else if (activityTitle.includes('canoa') || activityTitle.includes('havaiana') || activityTitle.includes('paddle')) {
+      return canoaImage;
+    } else {
+      // Imagem padrão se não encontrar correspondência
+      return beachvolleyImage;
+    }
+  };
+
+  // Determinar categoria baseada no tipo de atividade
+  const getActivityCategory = (title: string) => {
+    const activityTitle = title.toLowerCase();
+    if (activityTitle.includes('canoa') || activityTitle.includes('havaiana') || activityTitle.includes('paddle')) {
+      return 'sea' as const;
+    }
+    return 'sand' as const;
+  };
+
+  // Buscar atividades ativas do Supabase
+  const fetchActivities = async () => {
+    try {
+      setIsLoading(true);
+      
+      // Buscar atividades ativas
+      const { data: activitiesData, error: activitiesError } = await supabase
+        .from('activities')
+        .select('*')
+        .eq('status', 'active')
+        .order('date', { ascending: true });
+
+      if (activitiesError) {
+        console.error('Erro ao buscar atividades:', activitiesError);
+        return;
+      }
+
+      // Buscar nomes dos instrutores
+      const instructorIds = [...new Set(activitiesData?.map(activity => activity.instructor_id))];
+      
+      if (instructorIds.length > 0) {
+        const { data: usersData, error: usersError } = await supabase
+          .from('users')
+          .select('id, name')
+          .in('id', instructorIds);
+
+        if (usersError) {
+          console.error('Erro ao buscar instrutores:', usersError);
+        } else {
+          const namesMap = usersData?.reduce((acc, user) => {
+            acc[user.id] = user.name;
+            return acc;
+          }, {} as { [key: string]: string }) || {};
+          setInstructorNames(namesMap);
+        }
+      }
+
+      setActivities(activitiesData || []);
+    } catch (error) {
+      console.error('Erro ao buscar atividades:', error);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  // Scroll para o topo quando a página carregar e buscar atividades
   useEffect(() => {
     window.scrollTo(0, 0);
+    fetchActivities();
   }, []);
 
-  // Mock data for MVP
-  const activities = [
-    {
-      title: "Beach Volley",
-      location: "Icaraí, Niterói",
-      instructor: "Lucas Silva",
-      time: "09:00 às 10:00",
-      capacity: "8/12",
-      price: "R$ 25,00",
-      image: beachvolleyImage,
-      category: "sand" as const,
-    },
-    {
-      title: "Beach Tennis",
-      location: "Copacabana, Niterói",
-      instructor: "Ana Costa",
-      time: "16:00 às 17:00",
-      capacity: "6/8",
-      price: "R$ 35,00",
-      image: beachtennisImage,
-      category: "sand" as const,
-    },
-    {
-      title: "Futebol",
-      location: "Piratininga, Niterói",
-      instructor: "Carlos Santos",
-      time: "18:00 às 19:00",
-      capacity: "16/20",
-      price: "R$ 15,00",
-      image: futebolImage,
-      category: "sand" as const,
-    },
-    {
-      title: "Canoa Havaiana",
-      location: "Camboinhas, Niterói",
-      instructor: "Marina Waves",
-      time: "07:00 às 08:30",
-      capacity: "4/6",
-      price: "R$ 60,00",
-      image: canoaImage,
-      category: "sea" as const,
-    },
-    {
-      title: "Beach Volley",
-      location: "Itaipu, Niterói",
-      instructor: "Pedro Lima",
-      time: "19:00 às 20:00",
-      capacity: "10/12",
-      price: "R$ 20,00",
-      image: beachvolleyImage,
-      category: "sand" as const,
-    },
-    {
-      title: "Beach Tennis",
-      location: "São Francisco, Niterói",
-      instructor: "Julia Fernandes",
-      time: "08:00 às 09:00",
-      capacity: "4/8",
-      price: "R$ 40,00",
-      image: beachtennisImage,
-      category: "sand" as const,
-    },
-  ];
+  // Converter atividades do Supabase para formato do ActivityCard
+  const convertedActivities = activities.map(activity => ({
+    title: activity.title,
+    location: activity.beach,
+    instructor: instructorNames[activity.instructor_id] || 'Instrutor',
+    time: `${activity.time}`,
+    capacity: `${activity.enrollments}/${activity.capacity}`,
+    price: `R$ ${activity.price.toFixed(2)}`,
+    image: getActivityImage(activity.title),
+    category: getActivityCategory(activity.title),
+  }));
 
   const beaches = [
     "Icaraí",
@@ -101,13 +127,11 @@ const Atividades = () => {
     "São Francisco",
   ];
 
-  const instructors = [
-    "Lucas Silva",
-    "Ana Costa", 
-    "Carlos Santos",
-    "Marina Waves",
-    "Pedro Lima",
-    "Julia Fernandes",
+  const activityTypes = [
+    "Beach Volley",
+    "Beach Tennis",
+    "Futebol",
+    "Canoa Havaiana",
   ];
 
   return (
@@ -115,122 +139,132 @@ const Atividades = () => {
       <Header />
       
       {/* Hero Section */}
-      <section className="hero-ocean py-16 text-center text-white">
-        <div className="container mx-auto px-4">
-          <h1 className="text-4xl md:text-5xl font-bold mb-4">
-            Descubra Atividades nas Praias
+      <section className="py-20 bg-gradient-to-br from-primary to-primary/80 text-white">
+        <div className="container mx-auto px-4 text-center">
+          <h1 className="text-4xl md:text-6xl font-bold mb-6">
+            Encontre sua Atividade
           </h1>
-          <div className="max-w-xl mx-auto">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-5 w-5" />
-              <Input
-                placeholder="Busque por atividades, praias ou instrutores..."
-                value={filters.search}
-                onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
-                className="pl-10 bg-white/90 backdrop-blur-sm border-0 text-foreground"
-              />
-            </div>
-          </div>
+          <p className="text-xl mb-8 max-w-2xl mx-auto">
+            Descubra atividades incríveis nas praias de Niterói e Rio de Janeiro
+          </p>
         </div>
       </section>
 
       {/* Filters */}
-      <section className="py-8 bg-muted">
+      <section className="py-8 bg-muted/50">
         <div className="container mx-auto px-4">
-          <div className="flex items-center gap-4 mb-6">
-            <Filter className="h-5 w-5 text-primary" />
-            <h2 className="text-lg font-semibold">Filtros</h2>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-4">
-            {/* City Filter */}
-            <div>
-              <label className="text-sm font-medium mb-2 block">Cidade</label>
-              <Select value={filters.city} onValueChange={(value) => setFilters(prev => ({ ...prev, city: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Niterói" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="niteroi">Niterói</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+          <Card>
+            <CardContent className="p-6">
+              {/* Search Bar */}
+              <div className="flex gap-4 mb-6">
+                <div className="flex-1 relative">
+                  <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
+                  <Input 
+                    placeholder="Buscar atividades, instrutores ou praias..."
+                    className="pl-10"
+                    value={filters.search}
+                    onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
+                  />
+                </div>
+                <Button variant="default">
+                  <Search className="h-4 w-4 mr-2" />
+                  Buscar
+                </Button>
+              </div>
 
-            {/* Beach Filter */}
-            <div>
-              <label className="text-sm font-medium mb-2 block">Praia</label>
-              <Select value={filters.beach} onValueChange={(value) => setFilters(prev => ({ ...prev, beach: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Todas" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas</SelectItem>
-                  {beaches.map(beach => (
-                    <SelectItem key={beach} value={beach.toLowerCase()}>{beach}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+              {/* Filter Options */}
+              <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-6 gap-4">
+                {/* City Filter */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Cidade</label>
+                  <Select value={filters.city} onValueChange={(value) => setFilters(prev => ({ ...prev, city: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todas" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas</SelectItem>
+                      <SelectItem value="niteroi">Niterói</SelectItem>
+                      <SelectItem value="rio">Rio de Janeiro</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            {/* Activity Filter */}
-            <div>
-              <label className="text-sm font-medium mb-2 block">Atividade</label>
-              <Select value={filters.activity} onValueChange={(value) => setFilters(prev => ({ ...prev, activity: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Todas" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todas</SelectItem>
-                  <SelectItem value="beachvolley">Beach Volley</SelectItem>
-                  <SelectItem value="beachtennis">Beach Tennis</SelectItem>
-                  <SelectItem value="futebol">Futebol</SelectItem>
-                  <SelectItem value="canoa-havaiana">Canoa Havaiana</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                {/* Beach Filter */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Praia</label>
+                  <Select value={filters.beach} onValueChange={(value) => setFilters(prev => ({ ...prev, beach: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todas" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas</SelectItem>
+                      {beaches.map((beach) => (
+                        <SelectItem key={beach} value={beach.toLowerCase()}>{beach}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            {/* Instructor Filter */}
-            <div>
-              <label className="text-sm font-medium mb-2 block">Instrutor</label>
-              <Select value={filters.instructor} onValueChange={(value) => setFilters(prev => ({ ...prev, instructor: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Todos" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos</SelectItem>
-                  {instructors.map(instructor => (
-                    <SelectItem key={instructor} value={instructor.toLowerCase()}>{instructor}</SelectItem>
-                  ))}
-                </SelectContent>
-              </Select>
-            </div>
+                {/* Activity Filter */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Atividade</label>
+                  <Select value={filters.activity} onValueChange={(value) => setFilters(prev => ({ ...prev, activity: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todas" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todas</SelectItem>
+                      {activityTypes.map((activity) => (
+                        <SelectItem key={activity} value={activity.toLowerCase()}>{activity}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            {/* Time Filter */}
-            <div>
-              <label className="text-sm font-medium mb-2 block">Horário</label>
-              <Select value={filters.time} onValueChange={(value) => setFilters(prev => ({ ...prev, time: value }))}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Todos" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">Todos</SelectItem>
-                  <SelectItem value="manha">Manhã</SelectItem>
-                  <SelectItem value="tarde">Tarde</SelectItem>
-                  <SelectItem value="noite">Noite</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
+                {/* Instructor Filter */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Instrutor</label>
+                  <Select value={filters.instructor} onValueChange={(value) => setFilters(prev => ({ ...prev, instructor: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todos" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos</SelectItem>
+                      {Object.values(instructorNames).map((name, index) => (
+                        <SelectItem key={index} value={name.toLowerCase()}>{name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
 
-            {/* Date Filter */}
-            <div>
-              <label className="text-sm font-medium mb-2 block">Data</label>
-              <Input
-                type="date"
-                value={filters.date}
-                onChange={(e) => setFilters(prev => ({ ...prev, date: e.target.value }))}
-              />
-            </div>
-          </div>
+                {/* Time Filter */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Horário</label>
+                  <Select value={filters.time} onValueChange={(value) => setFilters(prev => ({ ...prev, time: value }))}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Todos" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="all">Todos</SelectItem>
+                      <SelectItem value="manha">Manhã</SelectItem>
+                      <SelectItem value="tarde">Tarde</SelectItem>
+                      <SelectItem value="noite">Noite</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </div>
+
+                {/* Date Filter */}
+                <div>
+                  <label className="text-sm font-medium mb-2 block">Data</label>
+                  <Input
+                    type="date"
+                    value={filters.date}
+                    onChange={(e) => setFilters(prev => ({ ...prev, date: e.target.value }))}
+                  />
+                </div>
+              </div>
+            </CardContent>
+          </Card>
         </div>
       </section>
 
@@ -239,25 +273,51 @@ const Atividades = () => {
         <div className="container mx-auto px-4">
           <div className="flex justify-between items-center mb-8">
             <h2 className="text-2xl font-bold">
-              {activities.length} atividades encontradas
+              {isLoading ? 'Carregando...' : `${convertedActivities.length} atividades encontradas`}
             </h2>
             <Button variant="outline">
               Ordenar por preço
             </Button>
           </div>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {activities.map((activity, index) => (
-              <ActivityCard key={index} {...activity} />
-            ))}
-          </div>
+          {isLoading ? (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {[1,2,3,4,5,6].map((i) => (
+                <Card key={i} className="animate-pulse">
+                  <div className="h-48 bg-muted rounded-t-lg"></div>
+                  <CardContent className="p-4">
+                    <div className="h-4 bg-muted rounded mb-2"></div>
+                    <div className="h-3 bg-muted rounded mb-1"></div>
+                    <div className="h-3 bg-muted rounded mb-1"></div>
+                  </CardContent>
+                </Card>
+              ))}
+            </div>
+          ) : convertedActivities.length === 0 ? (
+            <div className="text-center py-12">
+              <p className="text-muted-foreground text-lg mb-4">
+                Nenhuma atividade encontrada.
+              </p>
+              <p className="text-muted-foreground">
+                Tente ajustar os filtros ou criar uma nova atividade no dashboard.
+              </p>
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+              {convertedActivities.map((activity, index) => (
+                <ActivityCard key={index} {...activity} />
+              ))}
+            </div>
+          )}
 
           {/* Load More */}
-          <div className="text-center mt-12">
-            <Button variant="outline" size="lg">
-              Carregar mais atividades
-            </Button>
-          </div>
+          {!isLoading && convertedActivities.length > 0 && (
+            <div className="text-center mt-12">
+              <Button variant="outline" size="lg">
+                Carregar mais atividades
+              </Button>
+            </div>
+          )}
         </div>
       </section>
 

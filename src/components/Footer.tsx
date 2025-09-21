@@ -67,13 +67,13 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="font-semibold text-cta">Contato</h3>
             <div className="space-y-2 text-sm">
-              <p>📍 Av. Atlântica, Copacabana - Rio de Janeiro, RJ</p>
+              <p>📍 Icaraí, Niterói - RJ</p>
               <p>
                 📧 <a 
-                  href="mailto:praiativaops@gmail.com" 
+                  href="mailto:praiativa@praiativa.com.br" 
                   className="hover:text-cta transition-colors cursor-pointer underline"
                 >
-                  praiativaops@gmail.com
+                  praiativa@praiativa.com.br
                 </a>
               </p>
               <p>
@@ -109,10 +109,10 @@ const Footer = () => {
         <div className="border-t border-primary-hover mt-8 pt-8 flex flex-col md:flex-row justify-between items-center text-sm">
           <p>© 2025 PraiAtiva. Todos os direitos reservados.</p>
           <div className="flex space-x-4 mt-4 md:mt-0">
-            <Link to="/termos" className="hover:text-cta transition-colors">
+            <Link to="/termos-de-uso" className="hover:text-cta transition-colors">
               Termos de Uso
             </Link>
-            <Link to="/privacidade" className="hover:text-cta transition-colors">
+            <Link to="/politica-de-privacidade" className="hover:text-cta transition-colors">
               Política de Privacidade
             </Link>
             <Link to="/faq" className="hover:text-cta transition-colors">

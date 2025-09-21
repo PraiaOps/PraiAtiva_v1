@@ -21,7 +21,7 @@ const Cadastro = () => {
     confirmPassword: "",
     phone: "",
     bio: "",
-    role: "aluno" as "aluno" | "instrutor",
+    role: "instrutor" as "aluno" | "instrutor",
   });
   const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
@@ -118,7 +118,7 @@ const Cadastro = () => {
           confirmPassword: "",
           phone: "",
           bio: "",
-          role: "aluno",
+          role: "instrutor",
         });
 
         // Redirecionar para login após 2 segundos
@@ -221,7 +221,6 @@ const Cadastro = () => {
                       <SelectValue placeholder="Selecione seu tipo de usuário" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="aluno">Aluno - Quero participar de atividades</SelectItem>
                       <SelectItem value="instrutor">Instrutor - Quero oferecer atividades</SelectItem>
                     </SelectContent>
                   </Select>

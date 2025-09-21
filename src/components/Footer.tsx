@@ -57,14 +57,22 @@ const Footer = () => {
               <Link to="/sobre" className="block text-sm hover:text-cta transition-colors">
                 Sobre
               </Link>
-              <Link to="/contato" className="block text-sm hover:text-cta transition-colors">
+              <button 
+                onClick={() => {
+                  document.getElementById('contato')?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                  });
+                }}
+                className="block text-sm hover:text-cta transition-colors cursor-pointer text-left"
+              >
                 Contato
-              </Link>
+              </button>
             </div>
           </div>
 
           {/* Contact Section */}
-          <div className="space-y-4">
+          <div id="contato" className="space-y-4">
             <h3 className="font-semibold text-cta">Contato</h3>
             <div className="space-y-2 text-sm">
               <p>📍 Icaraí, Niterói - RJ</p>

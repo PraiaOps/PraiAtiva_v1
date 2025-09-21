@@ -40,12 +40,17 @@ const Header = () => {
           >
             SOBRE
           </Link>
-          <Link 
-            to="/contato" 
-            className={`hover:text-cta transition-colors ${isActive('/contato') ? 'text-cta' : ''}`}
+          <button 
+            onClick={() => {
+              document.getElementById('contato')?.scrollIntoView({
+                behavior: 'smooth',
+                block: 'start'
+              });
+            }}
+            className="hover:text-cta transition-colors cursor-pointer"
           >
             CONTATO
-          </Link>
+          </button>
         </nav>
 
         {/* Auth Buttons */}

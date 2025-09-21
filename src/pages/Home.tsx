@@ -163,12 +163,19 @@ const Home = () => {
                   Sobre nós
                 </Button>
               </Link>
-              <Link to="/contato">
-                <Button variant="ghost" className="text-white border border-white/30 hover:bg-white/10">
-                  <ArrowRight className="mr-2 h-4 w-4" />
-                  Contato
-                </Button>
-              </Link>
+              <Button 
+                variant="ghost" 
+                className="text-white border border-white/30 hover:bg-white/10"
+                onClick={() => {
+                  document.getElementById('contato')?.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                  });
+                }}
+              >
+                <ArrowRight className="mr-2 h-4 w-4" />
+                Contato
+              </Button>
             </div>
 
             {/* Main CTAs */}
@@ -231,14 +238,21 @@ const Home = () => {
                 <div className="absolute bottom-4 left-4 text-white">
                   <h3 className="text-2xl font-bold mb-2">No mar</h3>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    <span className="bg-accent px-3 py-1 rounded-full text-sm">Surf</span>
-                    <span className="bg-accent px-3 py-1 rounded-full text-sm">Stand Up Paddle</span>
-                    <span className="bg-accent px-3 py-1 rounded-full text-sm">Natação</span>
+                    {activities
+                      .filter(activity => getActivityCategory(activity.title) === 'sea')
+                      .slice(0, 3)
+                      .map((activity, index) => (
+                        <span key={index} className="bg-accent px-3 py-1 rounded-full text-sm">
+                          {activity.title}
+                        </span>
+                      ))}
                   </div>
                   <p className="text-sm opacity-90 mb-3">
-                    Surf, Stand Up Paddle, Natação e mais
+                    {activities.filter(activity => getActivityCategory(activity.title) === 'sea').length > 0 
+                      ? `${activities.filter(activity => getActivityCategory(activity.title) === 'sea').length} atividade${activities.filter(activity => getActivityCategory(activity.title) === 'sea').length > 1 ? 's' : ''} disponível${activities.filter(activity => getActivityCategory(activity.title) === 'sea').length > 1 ? 'eis' : ''}`
+                      : 'Nenhuma atividade disponível'}
                   </p>
-                  <Link to="/atividades">
+                  <Link to="/atividades?category=sea">
                     <Button variant="outline" size="sm" className="bg-white text-primary border-white hover:bg-white/90 hover:text-primary">
                       Ver atividades <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
@@ -255,14 +269,21 @@ const Home = () => {
                 <div className="absolute bottom-4 left-4 text-white">
                   <h3 className="text-2xl font-bold mb-2">Na areia e calçadão</h3>
                   <div className="flex flex-wrap gap-2 mb-4">
-                    <span className="bg-cta px-3 py-1 rounded-full text-sm">Vôlei</span>
-                    <span className="bg-cta px-3 py-1 rounded-full text-sm">Futevôlei</span>
-                    <span className="bg-cta px-3 py-1 rounded-full text-sm">Corrida</span>
+                    {activities
+                      .filter(activity => getActivityCategory(activity.title) === 'sand')
+                      .slice(0, 3)
+                      .map((activity, index) => (
+                        <span key={index} className="bg-cta px-3 py-1 rounded-full text-sm">
+                          {activity.title}
+                        </span>
+                      ))}
                   </div>
                   <p className="text-sm opacity-90 mb-3">
-                    Vôlei, Futevôlei, Corrida e mais
+                    {activities.filter(activity => getActivityCategory(activity.title) === 'sand').length > 0 
+                      ? `${activities.filter(activity => getActivityCategory(activity.title) === 'sand').length} atividade${activities.filter(activity => getActivityCategory(activity.title) === 'sand').length > 1 ? 's' : ''} disponível${activities.filter(activity => getActivityCategory(activity.title) === 'sand').length > 1 ? 'eis' : ''}`
+                      : 'Nenhuma atividade disponível'}
                   </p>
-                  <Link to="/atividades">
+                  <Link to="/atividades?category=sand">
                     <Button variant="outline" size="sm" className="bg-white text-primary border-white hover:bg-white/90 hover:text-primary">
                       Ver atividades <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>

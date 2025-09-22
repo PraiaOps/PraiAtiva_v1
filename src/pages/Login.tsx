@@ -104,9 +104,6 @@ const Login = () => {
                   Cadastre-se
                 </Link>
               </p>
-              <p className="text-xs text-muted-foreground mt-2">
-                Ou use as credenciais de teste: admin@praiativa.com / admin123
-              </p>
             </div>
             
             <div className="text-center">

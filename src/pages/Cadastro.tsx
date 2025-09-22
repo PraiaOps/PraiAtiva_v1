@@ -68,8 +68,34 @@ const Cadastro = () => {
         return;
       }
 
-      if (authData.user) {
-        console.log('✅ Usuário criado no Auth, criando perfil na tabela...');
+      if (authData.user && authData.user.id) {
+        console.log('✅ Usuário criado no Auth, fazendo login...');
+        console.log('🆔 ID do usuário:', authData.user.id);
+        
+        // Verificar se o ID é um UUID válido
+        const uuidRegex = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+        if (!uuidRegex.test(authData.user.id)) {
+          console.error('❌ ID do usuário inválido:', authData.user.id);
+          toast({
+            title: "Erro no cadastro",
+            description: "ID do usuário inválido. Tente novamente.",
+            variant: "destructive",
+          });
+          return;
+        }
+        
+        // Aguardar confirmação de email
+        console.log('📧 Aguardando confirmação de email...');
+        toast({
+          title: "Cadastro realizado com sucesso!",
+          description: "Verifique seu email e clique no link de confirmação para ativar sua conta.",
+          variant: "default",
+        });
+        
+        // Não tentar fazer login automaticamente
+        // O usuário precisa confirmar o email primeiro
+        return;
+        
         // Criar perfil do usuário na tabela users
         const profileData = {
           id: authData.user.id,
@@ -79,6 +105,9 @@ const Cadastro = () => {
           phone: formData.phone || null,
           bio: formData.bio || null,
           city: 'Niterói',
+          show_name: true, // Campo obrigatório
+          created_at: new Date().toISOString(), // Campo obrigatório
+          updated_at: new Date().toISOString(), // Campo obrigatório
         };
         
         console.log('📋 Dados do perfil a inserir:', profileData);
@@ -97,11 +126,27 @@ const Cadastro = () => {
 
         if (profileError) {
           console.error('❌ Erro ao criar perfil:', profileError);
-          toast({
-            title: "Aviso",
-            description: "Usuário criado, mas houve erro no perfil. Tente fazer login.",
-            variant: "destructive",
-          });
+          
+          // Tratar erro específico de constraint de chave estrangeira
+          if (profileError.code === '23503') {
+            toast({
+              title: "Erro de Constraint",
+              description: "Erro de chave estrangeira. Execute o script SQL de correção e tente novamente.",
+              variant: "destructive",
+            });
+          } else if (profileError.message.includes('row-level security')) {
+            toast({
+              title: "Erro de Permissão",
+              description: "Erro de política RLS. Execute o script SQL de correção e tente novamente.",
+              variant: "destructive",
+            });
+          } else {
+            toast({
+              title: "Aviso",
+              description: "Usuário criado, mas houve erro no perfil. Tente fazer login.",
+              variant: "destructive",
+            });
+          }
         } else {
           console.log('✅ Perfil criado com sucesso!');
           toast({

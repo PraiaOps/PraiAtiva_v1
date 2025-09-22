@@ -7,6 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Plus, Edit, Trash2, Users, Calendar, MapPin, Clock, CircleDollarSign, Waves, Trophy, Zap, Dumbbell, Target } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
@@ -35,6 +36,7 @@ const Dashboard = () => {
     beach: "",
     address: "",
     day: "",
+    daysOfWeek: [] as string[],
     time: "",
     capacity: "",
     price: "",
@@ -45,6 +47,16 @@ const Dashboard = () => {
   const cities = [
     "Niterói",
     "Rio de Janeiro",
+  ];
+
+  const daysOfWeek = [
+    "Segunda-feira",
+    "Terça-feira", 
+    "Quarta-feira",
+    "Quinta-feira",
+    "Sexta-feira",
+    "Sábado",
+    "Domingo"
   ];
 
   // Praias baseadas nos dados reais da tabela (sem duplicatas)
@@ -76,16 +88,6 @@ const Dashboard = () => {
     "Futevôlei",
     "Vela",
     "Vôlei de Praia"
-  ];
-
-  const daysOfWeek = [
-    "Segunda-feira",
-    "Terça-feira",
-    "Quarta-feira",
-    "Quinta-feira",
-    "Sexta-feira",
-    "Sábado",
-    "Domingo",
   ];
 
   const getActivityIcon = (title: string) => {
@@ -177,10 +179,10 @@ const Dashboard = () => {
     }
     
     // Validar campos obrigatórios
-    if (!newActivity.locationName || !newActivity.title || !newActivity.city || !newActivity.beach || !newActivity.address || !newActivity.day || !newActivity.time || !newActivity.capacity || newActivity.price === "") {
+    if (!newActivity.locationName || !newActivity.title || !newActivity.city || !newActivity.beach || !newActivity.address || newActivity.daysOfWeek.length === 0 || !newActivity.time || !newActivity.capacity || newActivity.price === "") {
       toast({
         title: "Erro",
-        description: "Por favor, preencha todos os campos obrigatórios",
+        description: "Por favor, preencha todos os campos obrigatórios e selecione pelo menos um dia da semana",
         variant: "destructive",
       });
       return;
@@ -193,7 +195,8 @@ const Dashboard = () => {
         city: newActivity.city as "Niterói" | "Rio de Janeiro",
         beach: newActivity.beach as any, // Será validado pelo banco com a constraint
         address: newActivity.address,
-        date: newActivity.day as "Segunda-feira" | "Terça-feira" | "Quarta-feira" | "Quinta-feira" | "Sexta-feira" | "Sábado" | "Domingo",
+        date: newActivity.daysOfWeek[0] as "Segunda-feira" | "Terça-feira" | "Quarta-feira" | "Quinta-feira" | "Sexta-feira" | "Sábado" | "Domingo", // Primeiro dia para compatibilidade
+        days_of_week: newActivity.daysOfWeek as ("Segunda-feira" | "Terça-feira" | "Quarta-feira" | "Quinta-feira" | "Sexta-feira" | "Sábado" | "Domingo")[],
         time: newActivity.time as "manhã" | "tarde" | "noite",
         capacity: parseInt(newActivity.capacity),
         price: parseFloat(newActivity.price),
@@ -218,6 +221,7 @@ const Dashboard = () => {
           beach: "",
           address: "",
           day: "",
+          daysOfWeek: [],
           time: "",
           capacity: "",
           price: "",
@@ -249,6 +253,7 @@ const Dashboard = () => {
       beach: activity.beach || "",
       address: activity.address || "",
       day: activity.date,
+      daysOfWeek: activity.days_of_week || [activity.date || ""],
       time: activity.time,
       capacity: activity.capacity.toString(),
       price: activity.price.toString(),
@@ -261,10 +266,10 @@ const Dashboard = () => {
     e.preventDefault();
     
     // Validar campos obrigatórios
-    if (!newActivity.locationName || !newActivity.title || !newActivity.city || !newActivity.beach || !newActivity.address || !newActivity.day || !newActivity.time || !newActivity.capacity || newActivity.price === "") {
+    if (!newActivity.locationName || !newActivity.title || !newActivity.city || !newActivity.beach || !newActivity.address || newActivity.daysOfWeek.length === 0 || !newActivity.time || !newActivity.capacity || newActivity.price === "") {
       toast({
         title: "Erro",
-        description: "Por favor, preencha todos os campos obrigatórios",
+        description: "Por favor, preencha todos os campos obrigatórios e selecione pelo menos um dia da semana",
         variant: "destructive",
       });
       return;
@@ -277,7 +282,8 @@ const Dashboard = () => {
         city: newActivity.city as "Niterói" | "Rio de Janeiro",
         beach: newActivity.beach as any, // Será validado pelo banco com a constraint
         address: newActivity.address,
-        date: newActivity.day as "Segunda-feira" | "Terça-feira" | "Quarta-feira" | "Quinta-feira" | "Sexta-feira" | "Sábado" | "Domingo",
+        date: newActivity.daysOfWeek[0] as "Segunda-feira" | "Terça-feira" | "Quarta-feira" | "Quinta-feira" | "Sexta-feira" | "Sábado" | "Domingo", // Primeiro dia para compatibilidade
+        days_of_week: newActivity.daysOfWeek as ("Segunda-feira" | "Terça-feira" | "Quarta-feira" | "Quinta-feira" | "Sexta-feira" | "Sábado" | "Domingo")[],
         time: newActivity.time as "manhã" | "tarde" | "noite",
         capacity: parseInt(newActivity.capacity),
         price: parseFloat(newActivity.price),
@@ -302,6 +308,7 @@ const Dashboard = () => {
           beach: "",
           address: "",
           day: "",
+          daysOfWeek: [],
           time: "",
           capacity: "",
           price: "",

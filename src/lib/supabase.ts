@@ -31,7 +31,8 @@ export interface Activity {
   city: 'Niterói' | 'Rio de Janeiro'
   beach: 'Icaraí' | 'Charitas' | 'São Francisco' | 'Ponta D\'Areia' | 'Camboinhas' | 'Gragoatá' | 'Outra'
   address: string
-  date: 'Segunda-feira' | 'Terça-feira' | 'Quarta-feira' | 'Quinta-feira' | 'Sexta-feira' | 'Sábado' | 'Domingo'
+  date: 'Segunda-feira' | 'Terça-feira' | 'Quarta-feira' | 'Quinta-feira' | 'Sexta-feira' | 'Sábado' | 'Domingo' // Mantido para compatibilidade
+  days_of_week: ('Segunda-feira' | 'Terça-feira' | 'Quarta-feira' | 'Quinta-feira' | 'Sexta-feira' | 'Sábado' | 'Domingo')[]
   time: 'manhã' | 'tarde' | 'noite'
   capacity: number
   price: number

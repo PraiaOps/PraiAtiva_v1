@@ -95,6 +95,34 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     checkActiveSession();
   }, []);
 
+  // Listener para mudanças de autenticação
+  useEffect(() => {
+    const setupAuthListener = async () => {
+      const supabaseClient = await initializeSupabase();
+      if (!supabaseClient) return;
+
+      const { data: { subscription } } = supabaseClient.auth.onAuthStateChange(
+        async (event, session) => {
+          console.log('🔄 Mudança de autenticação:', event, session?.user?.email);
+          
+          if (event === 'SIGNED_IN' && session?.user) {
+            console.log('✅ Usuário logado, carregando perfil...');
+            await fetchUserProfile(session.user);
+          } else if (event === 'SIGNED_OUT') {
+            console.log('👋 Usuário deslogado');
+            setUser(null);
+          }
+        }
+      );
+
+      return () => {
+        subscription.unsubscribe();
+      };
+    };
+
+    setupAuthListener();
+  }, []);
+
   const fetchUserProfile = async (supabaseUser: any) => {
     try {
       console.log('🔍 Buscando perfil para usuário:', supabaseUser.id);

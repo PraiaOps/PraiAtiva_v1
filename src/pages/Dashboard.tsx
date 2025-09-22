@@ -18,6 +18,8 @@ import beachvolleyImage from "@/assets/beachvolley.jpg";
 import beachtennisImage from "@/assets/beachtennis.jpg";
 import futebolImage from "@/assets/futebol.jpg";
 import canoaImage from "@/assets/canoa-havaiana.jpg";
+import velaImage from "@/assets/vela.jpg";
+import circuitoFuncionalImage from "@/assets/circuito-funcional.jpg";
 
 const Dashboard = () => {
   const { user, isLoading: authLoading } = useAuth();
@@ -29,7 +31,9 @@ const Dashboard = () => {
   const [newActivity, setNewActivity] = useState({
     locationName: "",
     title: "",
+    city: "",
     beach: "",
+    address: "",
     day: "",
     time: "",
     capacity: "",
@@ -38,20 +42,40 @@ const Dashboard = () => {
   });
 
 
-  const beaches = [
-    "Icaraí",
-    "Copacabana",
-    "Piratininga", 
-    "Camboinhas",
-    "Itaipu",
-    "São Francisco",
+  const cities = [
+    "Niterói",
+    "Rio de Janeiro",
   ];
 
+  // Praias baseadas nos dados reais da tabela (sem duplicatas)
+  const beachesByCity = {
+    "Niterói": [
+      "Icaraí",
+      "Charitas",
+      "São Francisco", 
+      "Ponta D'Areia",
+      "Camboinhas",
+      "Gragoatá",
+    ],
+    "Rio de Janeiro": [
+      // Por enquanto só Niterói tem atividades
+    ],
+  };
+
+  const getAvailableBeaches = () => {
+    if (!newActivity.city) return ["Outra"];
+    const cityBeaches = beachesByCity[newActivity.city as keyof typeof beachesByCity] || [];
+    return [...cityBeaches, "Outra"];
+  };
+
+  // Tipos de atividades baseados nos dados reais da tabela (sem duplicatas)
   const activityTypes = [
-    "Beach Volley",
-    "Beach Tennis", 
-    "Futebol",
-    "Canoa Havaiana",
+    "Beach Tennis",
+    "Canoa Havaiana", 
+    "Circuito Funcional",
+    "Futevôlei",
+    "Vela",
+    "Vôlei de Praia"
   ];
 
   const daysOfWeek = [
@@ -68,13 +92,15 @@ const Dashboard = () => {
     switch (title) {
       case "Beach Tennis":
         return <Target className="h-4 w-4 text-primary" />;
-      case "Beach Volley":
+      case "Vôlei de Praia":
         return <Trophy className="h-4 w-4 text-primary" />;
-      case "Futebol":
+      case "Futevôlei":
         return <Zap className="h-4 w-4 text-primary" />;
       case "Canoa Havaiana":
         return <Waves className="h-4 w-4 text-primary" />;
-      case "Musculação":
+      case "Vela":
+        return <Waves className="h-4 w-4 text-primary" />;
+      case "Circuito Funcional":
         return <Dumbbell className="h-4 w-4 text-primary" />;
       default:
         return <Target className="h-4 w-4 text-primary" />;
@@ -83,19 +109,21 @@ const Dashboard = () => {
 
   // Função para obter a imagem baseada no tipo de atividade
   const getActivityImage = (title: string) => {
-    const activityTitle = title.toLowerCase();
-    
-    if (activityTitle.includes('beach volley') || activityTitle.includes('volley') || activityTitle.includes('vôlei')) {
-      return beachvolleyImage;
-    } else if (activityTitle.includes('beach tennis') || activityTitle.includes('tennis')) {
-      return beachtennisImage;
-    } else if (activityTitle.includes('futebol') || activityTitle.includes('football')) {
-      return futebolImage;
-    } else if (activityTitle.includes('canoa') || activityTitle.includes('havaiana') || activityTitle.includes('paddle')) {
-      return canoaImage;
-    } else {
-      // Imagem padrão se não encontrar correspondência
-      return beachvolleyImage;
+    switch (title) {
+      case "Beach Tennis":
+        return beachtennisImage;
+      case "Vôlei de Praia":
+        return beachvolleyImage;
+      case "Futevôlei":
+        return futebolImage;
+      case "Canoa Havaiana":
+        return canoaImage;
+      case "Vela":
+        return velaImage;
+      case "Circuito Funcional":
+        return circuitoFuncionalImage;
+      default:
+        return beachvolleyImage;
     }
   };
 
@@ -149,7 +177,7 @@ const Dashboard = () => {
     }
     
     // Validar campos obrigatórios
-    if (!newActivity.locationName || !newActivity.title || !newActivity.beach || !newActivity.day || !newActivity.time || !newActivity.capacity || newActivity.price === "") {
+    if (!newActivity.locationName || !newActivity.title || !newActivity.city || !newActivity.beach || !newActivity.address || !newActivity.day || !newActivity.time || !newActivity.capacity || newActivity.price === "") {
       toast({
         title: "Erro",
         description: "Por favor, preencha todos os campos obrigatórios",
@@ -161,9 +189,11 @@ const Dashboard = () => {
     try {
       const activityData = {
         location_name: newActivity.locationName,
-        title: newActivity.title,
-        beach: `${newActivity.beach}, Niterói`,
-        date: newActivity.day,
+        title: newActivity.title as "Beach Tennis" | "Canoa Havaiana" | "Futevôlei" | "Vôlei de Praia" | "Vela" | "Circuito Funcional",
+        city: newActivity.city as "Niterói" | "Rio de Janeiro",
+        beach: newActivity.beach as any, // Será validado pelo banco com a constraint
+        address: newActivity.address,
+        date: newActivity.day as "Segunda-feira" | "Terça-feira" | "Quarta-feira" | "Quinta-feira" | "Sexta-feira" | "Sábado" | "Domingo",
         time: newActivity.time as "manhã" | "tarde" | "noite",
         capacity: parseInt(newActivity.capacity),
         price: parseFloat(newActivity.price),
@@ -184,7 +214,9 @@ const Dashboard = () => {
         setNewActivity({
           locationName: "",
           title: "",
+          city: "",
           beach: "",
+          address: "",
           day: "",
           time: "",
           capacity: "",
@@ -213,7 +245,9 @@ const Dashboard = () => {
     setNewActivity({
       locationName: activity.location_name || "",
       title: activity.title,
-      beach: activity.beach.replace(", Niterói", ""),
+      city: activity.city || "",
+      beach: activity.beach || "",
+      address: activity.address || "",
       day: activity.date,
       time: activity.time,
       capacity: activity.capacity.toString(),
@@ -227,7 +261,7 @@ const Dashboard = () => {
     e.preventDefault();
     
     // Validar campos obrigatórios
-    if (!newActivity.locationName || !newActivity.title || !newActivity.beach || !newActivity.day || !newActivity.time || !newActivity.capacity || newActivity.price === "") {
+    if (!newActivity.locationName || !newActivity.title || !newActivity.city || !newActivity.beach || !newActivity.address || !newActivity.day || !newActivity.time || !newActivity.capacity || newActivity.price === "") {
       toast({
         title: "Erro",
         description: "Por favor, preencha todos os campos obrigatórios",
@@ -239,9 +273,11 @@ const Dashboard = () => {
     try {
       const activityData = {
         location_name: newActivity.locationName,
-        title: newActivity.title,
-        beach: `${newActivity.beach}, Niterói`,
-        date: newActivity.day,
+        title: newActivity.title as "Beach Tennis" | "Canoa Havaiana" | "Futevôlei" | "Vôlei de Praia" | "Vela" | "Circuito Funcional",
+        city: newActivity.city as "Niterói" | "Rio de Janeiro",
+        beach: newActivity.beach as any, // Será validado pelo banco com a constraint
+        address: newActivity.address,
+        date: newActivity.day as "Segunda-feira" | "Terça-feira" | "Quarta-feira" | "Quinta-feira" | "Sexta-feira" | "Sábado" | "Domingo",
         time: newActivity.time as "manhã" | "tarde" | "noite",
         capacity: parseInt(newActivity.capacity),
         price: parseFloat(newActivity.price),
@@ -262,7 +298,9 @@ const Dashboard = () => {
         setNewActivity({
           locationName: "",
           title: "",
+          city: "",
           beach: "",
+          address: "",
           day: "",
           time: "",
           capacity: "",
@@ -394,6 +432,23 @@ const Dashboard = () => {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
+                        <Label htmlFor="city">Cidade *</Label>
+                        <Select 
+                          value={newActivity.city} 
+                          onValueChange={(value) => setNewActivity(prev => ({ ...prev, city: value, beach: "" }))}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione a cidade" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {cities.map(city => (
+                              <SelectItem key={city} value={city}>{city}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="space-y-2">
                         <Label htmlFor="activity-type">Tipo de Atividade *</Label>
                         <Select 
                           value={newActivity.title} 
@@ -409,22 +464,37 @@ const Dashboard = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="beach">Praia *</Label>
                         <Select 
                           value={newActivity.beach} 
                           onValueChange={(value) => setNewActivity(prev => ({ ...prev, beach: value }))}
+                          disabled={!newActivity.city}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione" />
+                            <SelectValue placeholder={newActivity.city ? "Selecione a praia" : "Primeiro selecione a cidade"} />
                           </SelectTrigger>
                           <SelectContent>
-                            {beaches.map(beach => (
-                              <SelectItem key={beach} value={beach}>{beach}, Niterói</SelectItem>
+                            {getAvailableBeaches().map(beach => (
+                              <SelectItem key={beach} value={beach}>{beach}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="address">Endereço *</Label>
+                        <Input
+                          id="address"
+                          type="text"
+                          value={newActivity.address}
+                          onChange={(e) => setNewActivity(prev => ({ ...prev, address: e.target.value }))}
+                          placeholder="Ex: Avenida Roberto Silveira, 123"
+                          required
+                        />
                       </div>
                     </div>
                     
@@ -536,6 +606,23 @@ const Dashboard = () => {
 
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
+                        <Label htmlFor="edit-city">Cidade *</Label>
+                        <Select 
+                          value={newActivity.city} 
+                          onValueChange={(value) => setNewActivity(prev => ({ ...prev, city: value, beach: "" }))}
+                        >
+                          <SelectTrigger>
+                            <SelectValue placeholder="Selecione a cidade" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {cities.map(city => (
+                              <SelectItem key={city} value={city}>{city}</SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="space-y-2">
                         <Label htmlFor="edit-activity-type">Tipo de Atividade *</Label>
                         <Select 
                           value={newActivity.title} 
@@ -551,22 +638,37 @@ const Dashboard = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      
+                    </div>
+                    
+                    <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="edit-beach">Praia *</Label>
                         <Select 
                           value={newActivity.beach} 
                           onValueChange={(value) => setNewActivity(prev => ({ ...prev, beach: value }))}
+                          disabled={!newActivity.city}
                         >
                           <SelectTrigger>
-                            <SelectValue placeholder="Selecione" />
+                            <SelectValue placeholder={newActivity.city ? "Selecione a praia" : "Primeiro selecione a cidade"} />
                           </SelectTrigger>
                           <SelectContent>
-                            {beaches.map(beach => (
-                              <SelectItem key={beach} value={beach}>{beach}, Niterói</SelectItem>
+                            {getAvailableBeaches().map(beach => (
+                              <SelectItem key={beach} value={beach}>{beach}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
+                      </div>
+                      
+                      <div className="space-y-2">
+                        <Label htmlFor="edit-address">Endereço *</Label>
+                        <Input
+                          id="edit-address"
+                          type="text"
+                          value={newActivity.address}
+                          onChange={(e) => setNewActivity(prev => ({ ...prev, address: e.target.value }))}
+                          placeholder="Ex: Avenida Roberto Silveira, 123"
+                          required
+                        />
                       </div>
                     </div>
                     

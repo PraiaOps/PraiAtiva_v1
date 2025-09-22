@@ -6,6 +6,7 @@ interface ActivityCardProps {
   title: string;
   locationName: string;
   location: string;
+  address?: string;
   instructor: string;
   time: string;
   capacity: string;
@@ -35,6 +36,7 @@ const ActivityCard = ({
   title, 
   locationName,
   location, 
+  address,
   instructor, 
   time, 
   capacity, 
@@ -61,6 +63,7 @@ const ActivityCard = ({
         <div>
           <h3 className="font-semibold text-lg text-primary">{locationName}</h3>
           <p className="text-sm text-muted-foreground">{location}</p>
+          {address && <p className="text-xs text-muted-foreground">{address}</p>}
           {instructor && <p className="text-xs text-muted-foreground">{instructor}</p>}
         </div>
         

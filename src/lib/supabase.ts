@@ -27,8 +27,10 @@ export interface Activity {
   id: string
   instructor_id: string
   location_name: string
-  title: string
-  beach: string
+  title: 'Beach Tennis' | 'Canoa Havaiana' | 'Futevôlei' | 'Vôlei de Praia' | 'Vela' | 'Circuito Funcional'
+  city: 'Niterói' | 'Rio de Janeiro'
+  beach: 'Icaraí' | 'Charitas' | 'São Francisco' | 'Ponta D\'Areia' | 'Camboinhas' | 'Gragoatá' | 'Outra'
+  address: string
   date: 'Segunda-feira' | 'Terça-feira' | 'Quarta-feira' | 'Quinta-feira' | 'Sexta-feira' | 'Sábado' | 'Domingo'
   time: 'manhã' | 'tarde' | 'noite'
   capacity: number

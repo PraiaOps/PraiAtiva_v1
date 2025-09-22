@@ -12,6 +12,8 @@ import beachvolleyImage from "@/assets/beachvolley.jpg";
 import beachtennisImage from "@/assets/beachtennis.jpg";
 import futebolImage from "@/assets/futebol.jpg";
 import canoaImage from "@/assets/canoa-havaiana.jpg";
+import velaImage from "@/assets/vela.jpg";
+import circuitoFuncionalImage from "@/assets/circuito-funcional.jpg";
 // Imports para eventos
 import beachTennisEventImg from "@/assets/beachtennis.jpg";
 import canoaHavaianaEventImg from "@/assets/canoa-havaiana.jpg";
@@ -23,19 +25,21 @@ const Home = () => {
 
   // Função para obter a imagem baseada no tipo de atividade
   const getActivityImage = (title: string) => {
-    const activityTitle = title.toLowerCase();
-    
-    if (activityTitle.includes('beach volley') || activityTitle.includes('volley') || activityTitle.includes('vôlei')) {
-      return beachvolleyImage;
-    } else if (activityTitle.includes('beach tennis') || activityTitle.includes('tennis')) {
-      return beachtennisImage;
-    } else if (activityTitle.includes('futebol') || activityTitle.includes('football')) {
-      return futebolImage;
-    } else if (activityTitle.includes('canoa') || activityTitle.includes('havaiana') || activityTitle.includes('paddle')) {
-      return canoaImage;
-    } else {
-      // Imagem padrão se não encontrar correspondência
-      return beachvolleyImage;
+    switch (title) {
+      case "Beach Tennis":
+        return beachtennisImage;
+      case "Vôlei de Praia":
+        return beachvolleyImage;
+      case "Futevôlei":
+        return futebolImage;
+      case "Canoa Havaiana":
+        return canoaImage;
+      case "Vela":
+        return velaImage;
+      case "Circuito Funcional":
+        return circuitoFuncionalImage;
+      default:
+        return beachvolleyImage;
     }
   };
 
@@ -104,8 +108,9 @@ const Home = () => {
   const convertedActivities = activities.map(activity => ({
     title: activity.title,
     locationName: activity.location_name || 'Local não especificado',
-    location: activity.beach,
-      instructor: instructorNames[activity.instructor_id] || '',
+    location: activity.beach === 'Outra' ? activity.city : `${activity.beach}, ${activity.city}`,
+    address: activity.address || '',
+    instructor: instructorNames[activity.instructor_id] || '',
     time: `${activity.time}`,
     capacity: `${activity.enrollments}/${activity.capacity}`,
     price: `R$ ${activity.price.toFixed(2)}`,

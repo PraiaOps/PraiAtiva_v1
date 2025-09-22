@@ -325,11 +325,9 @@ const Atividades = () => {
       }
     }
 
-    // Filtro por cidade (derivado pela praia pertencer à cidade selecionada)
+    // Filtro por cidade (usando campo city da tabela)
     if (filters.city && filters.city !== 'all') {
-      const cityKey = filters.city as keyof typeof beachesByCity;
-      const cityBeaches = beachesByCity[cityKey]?.map(b => b.toLowerCase()) || [];
-      if (!cityBeaches.includes(activity.beach.toLowerCase())) {
+      if (activity.city !== filters.city) {
         return false;
       }
     }
@@ -458,7 +456,7 @@ const Atividades = () => {
                 {/* City Filter (opções dependem dos demais filtros) */}
                 <div>
                   <label className="text-sm font-medium mb-2 block">Cidade</label>
-                  <Select value={filters.city} onValueChange={(value) => setFilters(prev => ({ ...prev, city: value, beach: 'all' }))}>
+                  <Select value={filters.city} onValueChange={(value) => setFilters(prev => ({ ...prev, city: value, beach: '', activity: '', time: '', dayOfWeek: '', priceRange: '', category: '' }))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Todas" />
                     </SelectTrigger>
@@ -474,7 +472,7 @@ const Atividades = () => {
                 {/* Category Filter */}
                 <div>
                   <label className="text-sm font-medium mb-2 block">Categoria</label>
-                  <Select value={filters.category} onValueChange={(value) => setFilters(prev => ({ ...prev, category: value }))}>
+                  <Select value={filters.category} onValueChange={(value) => setFilters(prev => ({ ...prev, category: value, beach: '', activity: '', time: '', dayOfWeek: '', priceRange: '' }))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Todas" />
                     </SelectTrigger>
@@ -489,7 +487,7 @@ const Atividades = () => {
                 {/* Beach Filter (cascading com cidade e demais filtros) */}
                 <div>
                   <label className="text-sm font-medium mb-2 block">Praia</label>
-                  <Select value={filters.beach} onValueChange={(value) => setFilters(prev => ({ ...prev, beach: value }))}>
+                  <Select value={filters.beach} onValueChange={(value) => setFilters(prev => ({ ...prev, beach: value, activity: '', time: '', dayOfWeek: '', priceRange: '' }))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Todas" />
                     </SelectTrigger>
@@ -505,7 +503,7 @@ const Atividades = () => {
                 {/* Activity Filter (cascading com demais filtros) */}
                 <div>
                   <label className="text-sm font-medium mb-2 block">Atividade</label>
-                  <Select value={filters.activity} onValueChange={(value) => setFilters(prev => ({ ...prev, activity: value }))}>
+                  <Select value={filters.activity} onValueChange={(value) => setFilters(prev => ({ ...prev, activity: value, time: '', dayOfWeek: '', priceRange: '' }))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Todas" />
                     </SelectTrigger>

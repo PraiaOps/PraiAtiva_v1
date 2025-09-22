@@ -1,6 +1,8 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Clock, Users, CircleDollarSign, Waves, Trophy, Zap, Dumbbell, Target } from "lucide-react";
+import { useState } from "react";
+import ActivityDetailsModal from "./ActivityDetailsModal";
 
 interface ActivityCardProps {
   title: string;
@@ -13,6 +15,8 @@ interface ActivityCardProps {
   price: string;
   image: string;
   category: 'sea' | 'sand';
+  dayOfWeek?: string;
+  description?: string;
 }
 
 const getActivityIcon = (title: string) => {
@@ -42,10 +46,21 @@ const ActivityCard = ({
   capacity, 
   price, 
   image,
-  category 
+  category,
+  dayOfWeek,
+  description
 }: ActivityCardProps) => {
+  const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+
+  const handleViewDetails = () => {
+    setIsDetailsModalOpen(true);
+  };
+
+  const handleCloseModal = () => {
+    setIsDetailsModalOpen(false);
+  };
   return (
-    <Card className="card-hover overflow-hidden">
+    <Card className="card-hover overflow-hidden h-full flex flex-col">
       <div className="relative h-48">
         <img 
           src={image} 
@@ -59,35 +74,36 @@ const ActivityCard = ({
         </div>
       </div>
       
-      <CardContent className="p-4 space-y-4">
-        <div>
-          <h3 className="font-semibold text-lg text-primary">{locationName}</h3>
-          <p className="text-sm text-muted-foreground">{location}</p>
-          {address && <p className="text-xs text-muted-foreground">{address}</p>}
-          {instructor && <p className="text-xs text-muted-foreground">{instructor}</p>}
+      <CardContent className="p-4 flex flex-col flex-1">
+        <div className="space-y-4 flex-1">
+          <div>
+            <h3 className="font-semibold text-lg text-primary">{locationName}</h3>
+            <p className="text-sm text-muted-foreground">{location}</p>
+            {instructor && <p className="text-xs text-muted-foreground">{instructor}</p>}
+          </div>
+          
+          <div className="grid grid-cols-2 gap-3 text-sm">
+            <div className="flex items-center space-x-2">
+              {getActivityIcon(title)}
+              <span>{title}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Clock className="h-4 w-4 text-primary" />
+              <span className="capitalize">{time}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Users className="h-4 w-4 text-primary" />
+              <span>{capacity}</span>
+            </div>
+            <div className="flex items-center space-x-2">
+              <CircleDollarSign className="h-4 w-4 text-primary" />
+              <span>{price}</span>
+            </div>
+          </div>
         </div>
         
-        <div className="grid grid-cols-2 gap-3 text-sm">
-          <div className="flex items-center space-x-2">
-            {getActivityIcon(title)}
-            <span>{title}</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Clock className="h-4 w-4 text-primary" />
-            <span className="capitalize">{time}</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <Users className="h-4 w-4 text-primary" />
-            <span>{capacity}</span>
-          </div>
-          <div className="flex items-center space-x-2">
-            <CircleDollarSign className="h-4 w-4 text-primary" />
-            <span>{price}</span>
-          </div>
-        </div>
-        
-        <div className="flex space-x-2 pt-2">
-          <Button variant="outline" size="sm" className="flex-1">
+        <div className="flex space-x-2 pt-4 mt-auto">
+          <Button variant="outline" size="sm" className="flex-1" onClick={handleViewDetails}>
             Ver detalhes
           </Button>
           <Button variant="default" size="sm" className="flex-1">
@@ -95,6 +111,25 @@ const ActivityCard = ({
           </Button>
         </div>
       </CardContent>
+      
+      <ActivityDetailsModal
+        isOpen={isDetailsModalOpen}
+        onClose={handleCloseModal}
+        activity={{
+          title,
+          locationName,
+          location,
+          address,
+          instructor,
+          time,
+          capacity,
+          price,
+          image,
+          category,
+          dayOfWeek,
+          description
+        }}
+      />
     </Card>
   );
 };

@@ -116,6 +116,8 @@ const Home = () => {
     price: `R$ ${activity.price.toFixed(2)}`,
     image: getActivityImage(activity.title),
     category: getActivityCategory(activity.title),
+    dayOfWeek: activity.date,
+    description: activity.description || '',
   }));
 
   return (

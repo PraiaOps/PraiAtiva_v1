@@ -5,7 +5,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ActivityCard from "@/components/ActivityCard";
-import { Search, Filter } from "lucide-react";
+import { Search, Filter, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { usePublicActivities } from "@/hooks/usePublicActivities";
@@ -29,6 +29,10 @@ const Atividades = () => {
     priceRange: "", // Filtro por faixa de preço dinâmica
     category: "", // Filtro por categoria (sea/sand)
   });
+  
+  // Estado de paginação
+  const [currentPage, setCurrentPage] = useState(1);
+  const activitiesPerPage = 9;
   
   const { activities, isLoading, instructorNames } = usePublicActivities();
 
@@ -331,7 +335,7 @@ const Atividades = () => {
   });
 
   // Converter atividades filtradas para formato do ActivityCard
-  const convertedActivities = filteredActivities.map(activity => ({
+  const allConvertedActivities = filteredActivities.map(activity => ({
     title: activity.title,
     locationName: activity.location_name || 'Local não especificado',
     location: activity.beach === 'Outra' ? activity.city : `${activity.beach}, ${activity.city}`,
@@ -345,6 +349,18 @@ const Atividades = () => {
     dayOfWeek: activity.date,
     description: activity.description || '',
   }));
+
+  // Cálculos de paginação
+  const totalActivities = allConvertedActivities.length;
+  const totalPages = Math.ceil(totalActivities / activitiesPerPage);
+  const startIndex = (currentPage - 1) * activitiesPerPage;
+  const endIndex = startIndex + activitiesPerPage;
+  const convertedActivities = allConvertedActivities.slice(startIndex, endIndex);
+
+  // Reset da página quando filtros mudam
+  useEffect(() => {
+    setCurrentPage(1);
+  }, [filters]);
   
   
 
@@ -566,12 +582,67 @@ const Atividades = () => {
             </div>
           )}
 
-          {/* Load More */}
-          {!isLoading && convertedActivities.length > 0 && (
-            <div className="text-center mt-12">
-              <Button variant="outline" size="lg">
-                Carregar mais atividades
-              </Button>
+          {/* Paginação */}
+          {!isLoading && totalPages > 1 && (
+            <div className="flex flex-col items-center mt-12 space-y-4">
+              {/* Informações da página */}
+              <p className="text-sm text-muted-foreground">
+                Mostrando {startIndex + 1} a {Math.min(endIndex, totalActivities)} de {totalActivities} atividades
+              </p>
+              
+              {/* Controles de paginação */}
+              <div className="flex items-center space-x-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                  disabled={currentPage === 1}
+                >
+                  <ChevronLeft className="h-4 w-4" />
+                  Anterior
+                </Button>
+                
+                {/* Números das páginas */}
+                <div className="flex space-x-1">
+                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
+                    // Mostrar apenas algumas páginas por vez
+                    const shouldShow = page === 1 || page === totalPages || 
+                                     (page >= currentPage - 1 && page <= currentPage + 1);
+                    
+                    if (!shouldShow) {
+                      if (page === currentPage - 2 && currentPage > 3) {
+                        return <span key={page} className="px-2 text-muted-foreground">...</span>;
+                      }
+                      if (page === currentPage + 2 && currentPage < totalPages - 2) {
+                        return <span key={page} className="px-2 text-muted-foreground">...</span>;
+                      }
+                      return null;
+                    }
+                    
+                    return (
+                      <Button
+                        key={page}
+                        variant={currentPage === page ? "default" : "outline"}
+                        size="sm"
+                        onClick={() => setCurrentPage(page)}
+                        className="w-10 h-10"
+                      >
+                        {page}
+                      </Button>
+                    );
+                  })}
+                </div>
+                
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                  disabled={currentPage === totalPages}
+                >
+                  Próxima
+                  <ChevronRight className="h-4 w-4" />
+                </Button>
+              </div>
             </div>
           )}
         </div>

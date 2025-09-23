@@ -36,7 +36,10 @@ const Login = () => {
         title: "Sucesso",
         description: "Login realizado com sucesso!",
       });
-      navigate("/dashboard");
+      // Aguardar um pouco para garantir que o contexto foi atualizado
+      setTimeout(() => {
+        navigate("/dashboard");
+      }, 500);
     } else {
       toast({
         title: "Erro",

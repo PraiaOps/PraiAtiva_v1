@@ -130,18 +130,19 @@ const Dashboard = () => {
   };
 
   // Mostrar loading se o usuário ainda está sendo carregado
+  // Loading apenas durante autenticação
   if (authLoading) {
     return (
       <div className="min-h-screen flex items-center justify-center">
         <div className="text-center">
-          <div className="animate-spin rounded-full h-32 w-32 border-b-2 border-primary"></div>
-          <p className="mt-4 text-lg">Carregando dados do usuário...</p>
+          <div className="animate-spin rounded-full h-16 w-16 border-b-2 border-primary mx-auto"></div>
+          <p className="mt-4 text-lg">Verificando autenticação...</p>
         </div>
       </div>
     );
   }
 
-  // Redirecionar se não estiver logado
+  // Redirecionar se não estiver logado (só depois de terminar o loading)
   if (!user) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -833,7 +834,16 @@ const Dashboard = () => {
 
             {/* Activities List */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              {activities.length === 0 ? (
+              {isLoading ? (
+                <div className="col-span-2">
+                  <Card className="text-center p-12">
+                    <CardContent>
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto mb-4"></div>
+                      <p className="text-muted-foreground">Carregando atividades...</p>
+                    </CardContent>
+                  </Card>
+                </div>
+              ) : activities.length === 0 ? (
                 <div className="col-span-2">
                   <Card className="text-center p-12">
                     <CardContent>

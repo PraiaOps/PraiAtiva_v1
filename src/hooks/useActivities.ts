@@ -1,17 +1,26 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase, Activity } from '@/lib/supabase';
 import { useAuth } from '@/contexts/AuthContext';
 
 export const useActivities = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false); // Começar com false
   const { user } = useAuth();
+  const fetchingRef = useRef(false);
+  const lastUserIdRef = useRef<string | null>(null);
 
 
-  const fetchActivities = async () => {
-    if (!user) return;
+  const fetchActivities = useCallback(async () => {
+    if (!user || fetchingRef.current || lastUserIdRef.current === user.id) {
+      console.log('ℹ️ Evitando fetch duplicado de atividades');
+      return;
+    }
+
+    fetchingRef.current = true;
+    lastUserIdRef.current = user.id;
 
     try {
+      console.log('🔍 Buscando atividades do usuário:', user.id);
       setIsLoading(true);
       const { data, error } = await supabase
         .from('activities')
@@ -24,13 +33,15 @@ export const useActivities = () => {
         return;
       }
 
+      console.log('✅ Atividades carregadas:', data?.length || 0);
       setActivities(data || []);
     } catch (error) {
-      console.error('Erro ao buscar atividades:', error);
+      console.error('Erro inesperado ao buscar atividades:', error);
     } finally {
       setIsLoading(false);
+      fetchingRef.current = false;
     }
-  };
+  }, [user]);
 
   const createActivity = async (activityData: Omit<Activity, 'id' | 'instructor_id' | 'created_at' | 'updated_at' | 'enrollments'>) => {
     if (!user) {
@@ -137,13 +148,15 @@ export const useActivities = () => {
   };
 
   useEffect(() => {
-    // Debounce para evitar chamadas excessivas
-    const timeoutId = setTimeout(() => {
-      fetchActivities();
-    }, 100);
+    // Só buscar se o usuário mudou ou se é primeira vez
+    if (user && user.id !== lastUserIdRef.current) {
+      const timeoutId = setTimeout(() => {
+        fetchActivities();
+      }, 100);
 
-    return () => clearTimeout(timeoutId);
-  }, [user]);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [user, fetchActivities]);
 
   return {
     activities,

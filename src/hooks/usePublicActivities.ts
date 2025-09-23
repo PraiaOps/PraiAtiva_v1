@@ -1,13 +1,23 @@
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef, useCallback } from 'react';
 import { supabase, Activity } from '@/lib/supabase';
 
 export const usePublicActivities = () => {
   const [activities, setActivities] = useState<Activity[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [instructorNames, setInstructorNames] = useState<{ [key: string]: string }>({});
+  const fetchingRef = useRef(false);
+  const hasInitializedRef = useRef(false);
 
-  const fetchPublicActivities = async () => {
+  const fetchPublicActivities = useCallback(async () => {
+    if (fetchingRef.current) {
+      console.log('ℹ️ Evitando fetch duplicado de atividades públicas');
+      return;
+    }
+
+    fetchingRef.current = true;
+
     try {
+      console.log('🔍 Buscando atividades públicas...');
       setIsLoading(true);
       
       // Buscar todas as atividades ativas (independente do usuário logado)
@@ -43,22 +53,28 @@ export const usePublicActivities = () => {
         }
       }
 
+      console.log('✅ Atividades públicas carregadas:', activitiesData?.length || 0);
       setActivities(activitiesData || []);
     } catch (error) {
-      console.error('Erro ao buscar atividades públicas:', error);
+      console.error('Erro inesperado ao buscar atividades públicas:', error);
     } finally {
       setIsLoading(false);
+      fetchingRef.current = false;
     }
-  };
+  }, []);
 
   useEffect(() => {
     // Executar apenas uma vez na inicialização
-    const timeoutId = setTimeout(() => {
-      fetchPublicActivities();
-    }, 50);
+    if (!hasInitializedRef.current) {
+      hasInitializedRef.current = true;
+      
+      const timeoutId = setTimeout(() => {
+        fetchPublicActivities();
+      }, 50);
 
-    return () => clearTimeout(timeoutId);
-  }, []);
+      return () => clearTimeout(timeoutId);
+    }
+  }, [fetchPublicActivities]);
 
   return {
     activities,

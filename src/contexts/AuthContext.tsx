@@ -56,6 +56,8 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [isInitialized, setIsInitialized] = useState(false);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
 
   // Verificar sessão ativa ao inicializar
   useEffect(() => {
@@ -89,6 +91,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         console.error('💥 Erro ao verificar sessão:', error);
       } finally {
         setIsLoading(false);
+        setIsInitialized(true);
       }
     };
 
@@ -105,12 +108,27 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         async (event, session) => {
           console.log('🔄 Mudança de autenticação:', event, session?.user?.email);
           
+          // Evitar processamento duplo - só processar após inicialização
+          if (!isInitialized && event === 'INITIAL_SESSION') {
+            console.log('ℹ️ Sessão inicial - aguardando inicialização');
+            return;
+          }
+          
           if (event === 'SIGNED_IN' && session?.user) {
-            console.log('✅ Usuário logado, carregando perfil...');
-            await fetchUserProfile(session.user);
+            // Verificar se é o mesmo usuário para evitar reprocessamento
+            if (currentUserId !== session.user.id) {
+              console.log('✅ Novo usuário logado, carregando perfil...');
+              await fetchUserProfile(session.user);
+            } else {
+              console.log('ℹ️ Mesmo usuário já processado');
+            }
           } else if (event === 'SIGNED_OUT') {
             console.log('👋 Usuário deslogado');
             setUser(null);
+            setCurrentUserId(null);
+            setIsLoading(false);
+          } else if (event === 'INITIAL_SESSION') {
+            console.log('ℹ️ Sessão inicial já processada');
           }
         }
       );
@@ -121,7 +139,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     setupAuthListener();
-  }, []);
+  }, [isInitialized, currentUserId]);
 
   const fetchUserProfile = async (supabaseUser: any) => {
     try {
@@ -145,6 +163,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (data) {
         console.log('✅ Perfil encontrado:', data.name);
         setUser(data);
+        setCurrentUserId(data.id);
       } else {
         // Usuário não existe na tabela, criar perfil
         console.log('📝 Criando novo perfil...');
@@ -175,6 +194,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         } else {
           console.log('✅ Perfil criado com sucesso:', insertedData);
           setUser(insertedData);
+          setCurrentUserId(insertedData.id);
         }
       }
     } catch (error) {
@@ -228,8 +248,61 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   };
 
   const logout = async () => {
-    console.log('🚪 LOGOUT SIMPLIFICADO');
-    setUser(null);
+    console.log('🚪 LOGOUT - Iniciando...');
+    setIsLoading(true);
+    
+    try {
+      const supabaseClient = await initializeSupabase();
+      if (supabaseClient) {
+        console.log('🗑️ Tentando remover sessão do Supabase...');
+        
+        try {
+          // Tentar fazer logout direto, sem verificar sessão primeiro
+          const { error } = await supabaseClient.auth.signOut();
+          
+          if (error) {
+            // Tratar erros específicos que não são realmente problemas
+            if (error.message.includes('Auth session missing') || 
+                error.message.includes('session_not_found') ||
+                error.message.includes('Forbidden') ||
+                error.message.includes('Invalid session')) {
+              console.log('ℹ️ Sessão já estava inválida ou expirada - isso é normal');
+            } else {
+              console.warn('⚠️ Erro durante logout:', error.message);
+            }
+          } else {
+            console.log('✅ Logout realizado com sucesso');
+          }
+        } catch (signOutError: any) {
+          // Capturar qualquer erro e tratar como não-crítico
+          console.log('ℹ️ Erro capturado durante logout (ignorando):', signOutError.message);
+        }
+      }
+    } catch (error) {
+      console.log('ℹ️ Erro geral no logout (ignorando):', error);
+    } finally {
+      // Sempre limpar o estado local - esta é a parte mais importante
+      console.log('🧹 Limpando estado local...');
+      setUser(null);
+      setCurrentUserId(null);
+      setIsLoading(false);
+      
+      // Limpar também dados de sessão do localStorage como precaução extra
+      try {
+        // Remover chaves relacionadas ao Supabase Auth
+        const keysToRemove = Object.keys(localStorage).filter(key => 
+          key.startsWith('supabase.auth.') || 
+          key.includes('supabase-auth-token') ||
+          key.includes('sb-') // Prefixo comum do Supabase
+        );
+        keysToRemove.forEach(key => {
+          localStorage.removeItem(key);
+          console.log(`🗑️ Removida chave do localStorage: ${key}`);
+        });
+      } catch (storageError) {
+        console.log('ℹ️ Erro ao limpar localStorage (ignorando):', storageError);
+      }
+    }
   };
 
   const value: AuthContextType = {

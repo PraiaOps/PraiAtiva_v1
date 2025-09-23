@@ -6,9 +6,9 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ActivityCard from "@/components/ActivityCard";
 import { Search, Filter } from "lucide-react";
-import { useState, useEffect, useMemo } from "react";
+import { useState, useMemo, useEffect } from "react";
 import { useLocation } from "react-router-dom";
-import { supabase, Activity } from "@/lib/supabase";
+import { usePublicActivities } from "@/hooks/usePublicActivities";
 import beachvolleyImage from "@/assets/beachvolley.jpg";
 import beachtennisImage from "@/assets/beachtennis.jpg";
 import futebolImage from "@/assets/futebol.jpg";
@@ -30,9 +30,7 @@ const Atividades = () => {
     category: "", // Filtro por categoria (sea/sand)
   });
   
-  const [activities, setActivities] = useState<Activity[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [instructorNames, setInstructorNames] = useState<{ [key: string]: string }>({});
+  const { activities, isLoading, instructorNames } = usePublicActivities();
 
   // Determinar categoria baseada no tipo de atividade
   const getActivityCategory = (title: string) => {
@@ -64,51 +62,6 @@ const Atividades = () => {
     }
   };
 
-  // Buscar atividades ativas do Supabase
-  const fetchActivities = async () => {
-    try {
-      setIsLoading(true);
-      
-      // Buscar atividades ativas
-      const { data: activitiesData, error: activitiesError } = await supabase
-        .from('activities')
-        .select('*')
-        .eq('status', 'active')
-        .order('date', { ascending: true });
-
-      if (activitiesError) {
-        console.error('Erro ao buscar atividades:', activitiesError);
-        return;
-      }
-
-      // Buscar nomes dos instrutores com preferência de visibilidade
-      const instructorIds = [...new Set(activitiesData?.map(activity => activity.instructor_id))];
-      
-      if (instructorIds.length > 0) {
-        const { data: usersData, error: usersError } = await supabase
-          .from('users')
-          .select('id, name, show_name')
-          .in('id', instructorIds);
-
-        if (usersError) {
-          console.error('Erro ao buscar instrutores:', usersError);
-        } else {
-        const namesMap = usersData?.reduce((acc, user) => {
-          // Mostrar nome apenas se show_name for true, senão não mostrar nada
-          acc[user.id] = user.show_name ? user.name : '';
-          return acc;
-        }, {} as { [key: string]: string }) || {};
-          setInstructorNames(namesMap);
-        }
-      }
-
-      setActivities(activitiesData || []);
-    } catch (error) {
-      console.error('Erro ao buscar atividades:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
 
   // Scroll para o topo quando a página carregar e buscar atividades
   // Gerar faixas de preço dinâmicas baseadas nas atividades
@@ -305,7 +258,6 @@ const Atividades = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    fetchActivities();
   }, []);
 
   // Filtrar atividades baseado nos filtros selecionados

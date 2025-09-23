@@ -5,8 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ActivityCard from "@/components/ActivityCard";
 import { ArrowRight, Star, Users, Activity, MapPin } from "lucide-react";
-import { useState, useEffect } from "react";
-import { supabase, Activity as SupabaseActivity } from "@/lib/supabase";
+import { usePublicActivities } from "@/hooks/usePublicActivities";
 import heroImage from "@/assets/hero-beach.jpg";
 import beachvolleyImage from "@/assets/beachvolley.jpg";
 import beachtennisImage from "@/assets/beachtennis.jpg";
@@ -19,9 +18,7 @@ import beachTennisEventImg from "@/assets/beachtennis.jpg";
 import canoaHavaianaEventImg from "@/assets/canoa-havaiana.jpg";
 
 const Home = () => {
-  const [activities, setActivities] = useState<SupabaseActivity[]>([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [instructorNames, setInstructorNames] = useState<{ [key: string]: string }>({});
+  const { activities, isLoading, instructorNames } = usePublicActivities();
 
   // Função para obter a imagem baseada no tipo de atividade
   const getActivityImage = (title: string) => {
@@ -52,57 +49,6 @@ const Home = () => {
     return 'sand' as const;
   };
 
-  // Buscar atividades em destaque do Supabase
-  const fetchFeaturedActivities = async () => {
-    try {
-      setIsLoading(true);
-      
-      // Buscar as 6 primeiras atividades ativas
-      const { data: activitiesData, error: activitiesError } = await supabase
-        .from('activities')
-        .select('*')
-        .eq('status', 'active')
-        .order('created_at', { ascending: false })
-        .limit(6);
-
-      if (activitiesError) {
-        console.error('Erro ao buscar atividades:', activitiesError);
-        return;
-      }
-
-      // Buscar nomes dos instrutores com preferência de visibilidade
-      const instructorIds = [...new Set(activitiesData?.map(activity => activity.instructor_id))];
-      
-      if (instructorIds.length > 0) {
-        const { data: usersData, error: usersError } = await supabase
-          .from('users')
-          .select('id, name, show_name')
-          .in('id', instructorIds);
-
-        if (usersError) {
-          console.error('Erro ao buscar instrutores:', usersError);
-        } else {
-          const namesMap = usersData?.reduce((acc, user) => {
-            // Mostrar nome apenas se show_name for true, senão não mostrar nada
-            acc[user.id] = user.show_name ? user.name : '';
-            return acc;
-          }, {} as { [key: string]: string }) || {};
-          setInstructorNames(namesMap);
-        }
-      }
-
-      setActivities(activitiesData || []);
-    } catch (error) {
-      console.error('Erro ao buscar atividades:', error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  // Buscar atividades quando o componente montar
-  useEffect(() => {
-    fetchFeaturedActivities();
-  }, []);
 
   // Converter atividades do Supabase para formato do ActivityCard
   const convertedActivities = activities.map(activity => ({
@@ -119,6 +65,18 @@ const Home = () => {
     dayOfWeek: activity.date,
     description: activity.description || '',
   }));
+
+  // Selecionar 6 atividades aleatórias para destaque
+  const shuffleArray = (array: any[]) => {
+    const shuffled = [...array];
+    for (let i = shuffled.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+    }
+    return shuffled;
+  };
+
+  const featuredActivities = shuffleArray(convertedActivities).slice(0, 6);
 
   return (
     <div className="min-h-screen bg-background">
@@ -420,7 +378,7 @@ const Home = () => {
                 </Card>
               ))}
             </div>
-          ) : convertedActivities.length === 0 ? (
+          ) : featuredActivities.length === 0 ? (
             <div className="text-center py-12">
               <p className="text-muted-foreground text-lg mb-4">
                 Nenhuma atividade cadastrada ainda.
@@ -437,13 +395,13 @@ const Home = () => {
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {convertedActivities.map((activity, index) => (
+              {featuredActivities.map((activity, index) => (
                 <ActivityCard key={index} {...activity} />
               ))}
             </div>
           )}
 
-          {!isLoading && convertedActivities.length > 0 && (
+          {!isLoading && featuredActivities.length > 0 && (
             <div className="text-center mt-8">
               <Link to="/atividades">
                 <Button variant="outline">

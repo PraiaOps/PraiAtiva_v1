@@ -39,6 +39,7 @@ export interface Activity {
   description?: string
   status: 'active' | 'inactive'
   enrollments: number
+  is_featured: boolean // Campo para controlar atividades em destaque
   created_at: string
   updated_at: string
 }

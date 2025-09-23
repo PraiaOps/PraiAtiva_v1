@@ -2,12 +2,25 @@ import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { LogOut, User } from "lucide-react";
+import { useState } from "react";
 
 const Header = () => {
   const location = useLocation();
   const { user, logout, isAuthenticated } = useAuth();
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const isActive = (path: string) => location.pathname === path;
+
+  const handleLogout = async () => {
+    setIsLoggingOut(true);
+    try {
+      await logout();
+    } catch (error) {
+      console.error('Erro no logout:', error);
+    } finally {
+      setIsLoggingOut(false);
+    }
+  };
 
   return (
     <header className="bg-primary text-primary-foreground shadow-lg relative z-50">
@@ -69,9 +82,11 @@ const Header = () => {
               <Button 
                 variant="ghost" 
                 className="text-primary-foreground hover:text-cta hover:bg-primary-hover"
-                onClick={logout}
+                onClick={handleLogout}
+                disabled={isLoggingOut}
               >
-                <LogOut className="h-4 w-4" />
+                <LogOut className={`h-4 w-4 ${isLoggingOut ? 'animate-spin' : ''}`} />
+                {isLoggingOut && <span className="ml-1 text-xs">Saindo...</span>}
               </Button>
             </>
           ) : (

@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Edit, Trash2, Users, Calendar, MapPin, Clock, CircleDollarSign, Waves, Trophy, Zap, Dumbbell, Target } from "lucide-react";
+import { Plus, Edit, Trash2, Users, Calendar, MapPin, Clock, CircleDollarSign, Waves, Trophy, Zap, Dumbbell, Target, Star } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -24,7 +24,7 @@ import circuitoFuncionalImage from "@/assets/circuito-funcional.jpg";
 
 const Dashboard = () => {
   const { user, isLoading: authLoading } = useAuth();
-  const { activities, isLoading, createActivity, updateActivity, deleteActivity } = useActivities();
+  const { activities, isLoading, createActivity, updateActivity, deleteActivity, toggleFeatured } = useActivities();
   const { toast } = useToast();
   const [isNewActivityOpen, setIsNewActivityOpen] = useState(false);
   const [isEditActivityOpen, setIsEditActivityOpen] = useState(false);
@@ -202,6 +202,7 @@ const Dashboard = () => {
         price: parseFloat(newActivity.price),
         description: newActivity.description || null,
         status: "active" as const,
+        is_featured: false, // Novas atividades não são destaque por padrão
       };
 
       const result = await createActivity(activityData);
@@ -288,6 +289,7 @@ const Dashboard = () => {
         capacity: parseInt(newActivity.capacity),
         price: parseFloat(newActivity.price),
         description: newActivity.description || null,
+        // Não alteramos is_featured ao editar - deve ser alterado pelo botão específico
       };
 
       const result = await updateActivity(editingActivity.id, activityData);
@@ -356,6 +358,34 @@ const Dashboard = () => {
           variant: "destructive",
         });
       }
+    }
+  };
+
+  const handleToggleFeatured = async (activityId: string, currentStatus: boolean) => {
+    try {
+      const success = await toggleFeatured(activityId, currentStatus);
+      
+      if (success) {
+        toast({
+          title: "Sucesso",
+          description: currentStatus 
+            ? "Atividade removida dos destaques!" 
+            : "Atividade adicionada aos destaques!",
+        });
+      } else {
+        toast({
+          title: "Erro",
+          description: "Erro ao alterar destaque. Tente novamente.",
+          variant: "destructive",
+        });
+      }
+    } catch (error) {
+      console.error('Erro ao alterar destaque:', error);
+      toast({
+        title: "Erro",
+        description: "Erro inesperado ao alterar destaque.",
+        variant: "destructive",
+      });
     }
   };
 
@@ -869,25 +899,39 @@ const Dashboard = () => {
                         </div>
                       </div>
                       
-                      <div className="flex space-x-2">
+                      <div className="space-y-2">
+                        {/* Primeira linha - Destaque */}
                         <Button 
-                          variant="outline" 
+                          variant={activity.is_featured ? "default" : "outline"}
                           size="sm" 
-                          className="flex-1"
-                          onClick={() => handleEditActivity(activity)}
+                          className="w-full"
+                          onClick={() => handleToggleFeatured(activity.id, activity.is_featured)}
                         >
-                          <Edit className="mr-2 h-4 w-4" />
-                          Editar
+                          <Star className={`mr-2 h-4 w-4 ${activity.is_featured ? 'fill-current' : ''}`} />
+                          {activity.is_featured ? 'Em Destaque' : 'Marcar como Destaque'}
                         </Button>
-                        <Button 
-                          variant="destructive" 
-                          size="sm" 
-                          className="flex-1"
-                          onClick={() => handleDeleteActivity(activity.id)}
-                        >
-                          <Trash2 className="mr-2 h-4 w-4" />
-                          Excluir
-                        </Button>
+                        
+                        {/* Segunda linha - Editar e Excluir */}
+                        <div className="flex space-x-2">
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="flex-1"
+                            onClick={() => handleEditActivity(activity)}
+                          >
+                            <Edit className="mr-2 h-4 w-4" />
+                            Editar
+                          </Button>
+                          <Button 
+                            variant="destructive" 
+                            size="sm" 
+                            className="flex-1"
+                            onClick={() => handleDeleteActivity(activity.id)}
+                          >
+                            <Trash2 className="mr-2 h-4 w-4" />
+                            Excluir
+                          </Button>
+                        </div>
                       </div>
                     </div>
                   </CardContent>

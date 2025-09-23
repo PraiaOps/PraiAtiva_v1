@@ -110,8 +110,39 @@ export const useActivities = () => {
     }
   };
 
+  const toggleFeatured = async (id: string, currentFeaturedStatus: boolean) => {
+    try {
+      const { data, error } = await supabase
+        .from('activities')
+        .update({ is_featured: !currentFeaturedStatus })
+        .eq('id', id)
+        .select()
+        .single();
+
+      if (error) {
+        console.error('Erro ao alterar destaque:', error);
+        return false;
+      }
+
+      setActivities(prev => 
+        prev.map(activity => 
+          activity.id === id ? data : activity
+        )
+      );
+      return true;
+    } catch (error) {
+      console.error('Erro ao alterar destaque:', error);
+      return false;
+    }
+  };
+
   useEffect(() => {
-    fetchActivities();
+    // Debounce para evitar chamadas excessivas
+    const timeoutId = setTimeout(() => {
+      fetchActivities();
+    }, 100);
+
+    return () => clearTimeout(timeoutId);
   }, [user]);
 
   return {
@@ -120,6 +151,7 @@ export const useActivities = () => {
     createActivity,
     updateActivity,
     deleteActivity,
+    toggleFeatured,
     refetch: fetchActivities,
   };
 };

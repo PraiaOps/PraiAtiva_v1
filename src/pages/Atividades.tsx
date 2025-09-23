@@ -36,7 +36,7 @@ const Atividades = () => {
   const getActivityCategory = (title: string) => {
     const activityTitle = title.toLowerCase();
     if (activityTitle.includes('surf') || activityTitle.includes('paddle') || activityTitle.includes('natação') || 
-        activityTitle.includes('canoa') || activityTitle.includes('havaiana')) {
+        activityTitle.includes('canoa') || activityTitle.includes('havaiana') || activityTitle.includes('vela')) {
       return 'sea';
     }
     return 'sand';

@@ -43,7 +43,7 @@ const Home = () => {
   // Determinar categoria baseada no tipo de atividade
   const getActivityCategory = (title: string) => {
     const activityTitle = title.toLowerCase();
-    if (activityTitle.includes('canoa') || activityTitle.includes('havaiana') || activityTitle.includes('paddle')) {
+    if (activityTitle.includes('canoa') || activityTitle.includes('havaiana') || activityTitle.includes('paddle') || activityTitle.includes('vela')) {
       return 'sea' as const;
     }
     return 'sand' as const;
@@ -196,66 +196,68 @@ const Home = () => {
         <div className="container mx-auto px-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-4xl mx-auto">
             {/* Sea Activities */}
-            <Card className="card-hover overflow-hidden">
-              <div className="relative h-64">
-                <img src={canoaImage} alt="Atividades no mar" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-4 left-4 text-white">
-                  <h3 className="text-2xl font-bold mb-2">No mar</h3>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {activities
-                      .filter(activity => getActivityCategory(activity.title) === 'sea')
-                      .slice(0, 3)
-                      .map((activity, index) => (
-                        <span key={index} className="bg-accent px-3 py-1 rounded-full text-sm">
-                          {activity.title}
-                        </span>
-                      ))}
+            <Link to="/atividades?category=sea" className="block">
+              <Card className="card-hover overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200">
+                <div className="relative h-64">
+                  <img src={canoaImage} alt="Atividades no mar" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute bottom-4 left-4 text-white">
+                    <h3 className="text-2xl font-bold mb-2">No mar</h3>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {activities
+                        .filter(activity => getActivityCategory(activity.title) === 'sea')
+                        .slice(0, 3)
+                        .map((activity, index) => (
+                          <span key={index} className="bg-accent px-3 py-1 rounded-full text-sm">
+                            {activity.title}
+                          </span>
+                        ))}
+                    </div>
+                    <p className="text-sm opacity-90 mb-3">
+                      {activities.filter(activity => getActivityCategory(activity.title) === 'sea').length > 0 
+                        ? `${activities.filter(activity => getActivityCategory(activity.title) === 'sea').length} atividade${activities.filter(activity => getActivityCategory(activity.title) === 'sea').length > 1 ? 's' : ''} disponível${activities.filter(activity => getActivityCategory(activity.title) === 'sea').length > 1 ? 'eis' : ''}`
+                        : 'Nenhuma atividade disponível'}
+                    </p>
+                    <div className="flex items-center text-sm font-medium">
+                      <span>Ver atividades</span>
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </div>
                   </div>
-                  <p className="text-sm opacity-90 mb-3">
-                    {activities.filter(activity => getActivityCategory(activity.title) === 'sea').length > 0 
-                      ? `${activities.filter(activity => getActivityCategory(activity.title) === 'sea').length} atividade${activities.filter(activity => getActivityCategory(activity.title) === 'sea').length > 1 ? 's' : ''} disponível${activities.filter(activity => getActivityCategory(activity.title) === 'sea').length > 1 ? 'eis' : ''}`
-                      : 'Nenhuma atividade disponível'}
-                  </p>
-                  <Link to="/atividades?category=sea">
-                    <Button variant="outline" size="sm" className="bg-white text-primary border-white hover:bg-white/90 hover:text-primary">
-                      Ver atividades <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            </Link>
 
             {/* Sand Activities */}
-            <Card className="card-hover overflow-hidden">
-              <div className="relative h-64">
-                <img src={beachvolleyImage} alt="Atividades na areia" className="w-full h-full object-cover" />
-                <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-                <div className="absolute bottom-4 left-4 text-white">
-                  <h3 className="text-2xl font-bold mb-2">Na areia e calçadão</h3>
-                  <div className="flex flex-wrap gap-2 mb-4">
-                    {activities
-                      .filter(activity => getActivityCategory(activity.title) === 'sand')
-                      .slice(0, 3)
-                      .map((activity, index) => (
-                        <span key={index} className="bg-cta px-3 py-1 rounded-full text-sm">
-                          {activity.title}
-                        </span>
-                      ))}
+            <Link to="/atividades?category=sand" className="block">
+              <Card className="card-hover overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200">
+                <div className="relative h-64">
+                  <img src={beachvolleyImage} alt="Atividades na areia" className="w-full h-full object-cover" />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+                  <div className="absolute bottom-4 left-4 text-white">
+                    <h3 className="text-2xl font-bold mb-2">Na areia e calçadão</h3>
+                    <div className="flex flex-wrap gap-2 mb-4">
+                      {activities
+                        .filter(activity => getActivityCategory(activity.title) === 'sand')
+                        .slice(0, 3)
+                        .map((activity, index) => (
+                          <span key={index} className="bg-cta px-3 py-1 rounded-full text-sm">
+                            {activity.title}
+                          </span>
+                        ))}
+                    </div>
+                    <p className="text-sm opacity-90 mb-3">
+                      {activities.filter(activity => getActivityCategory(activity.title) === 'sand').length > 0 
+                        ? `${activities.filter(activity => getActivityCategory(activity.title) === 'sand').length} atividade${activities.filter(activity => getActivityCategory(activity.title) === 'sand').length > 1 ? 's' : ''} disponível${activities.filter(activity => getActivityCategory(activity.title) === 'sand').length > 1 ? 'eis' : ''}`
+                        : 'Nenhuma atividade disponível'}
+                    </p>
+                    <div className="flex items-center text-sm font-medium">
+                      <span>Ver atividades</span>
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </div>
                   </div>
-                  <p className="text-sm opacity-90 mb-3">
-                    {activities.filter(activity => getActivityCategory(activity.title) === 'sand').length > 0 
-                      ? `${activities.filter(activity => getActivityCategory(activity.title) === 'sand').length} atividade${activities.filter(activity => getActivityCategory(activity.title) === 'sand').length > 1 ? 's' : ''} disponível${activities.filter(activity => getActivityCategory(activity.title) === 'sand').length > 1 ? 'eis' : ''}`
-                      : 'Nenhuma atividade disponível'}
-                  </p>
-                  <Link to="/atividades?category=sand">
-                    <Button variant="outline" size="sm" className="bg-white text-primary border-white hover:bg-white/90 hover:text-primary">
-                      Ver atividades <ArrowRight className="ml-2 h-4 w-4" />
-                    </Button>
-                  </Link>
                 </div>
-              </div>
-            </Card>
+              </Card>
+            </Link>
           </div>
 
           <div className="text-center mt-12">

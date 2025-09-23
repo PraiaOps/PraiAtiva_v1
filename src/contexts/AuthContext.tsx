@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState, useEffect } from 'react';
+import React, { createContext, useContext, useState, useEffect, useRef } from 'react';
 
 // Importação dinâmica para evitar problemas de inicialização
 let supabase: any = null;
@@ -57,7 +57,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [isInitialized, setIsInitialized] = useState(false);
-  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
+  const currentUserIdRef = useRef<string | null>(null);
 
   // Verificar sessão ativa ao inicializar
   useEffect(() => {
@@ -116,7 +116,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           
           if (event === 'SIGNED_IN' && session?.user) {
             // Verificar se é o mesmo usuário para evitar reprocessamento
-            if (currentUserId !== session.user.id) {
+            if (currentUserIdRef.current !== session.user.id) {
               console.log('✅ Novo usuário logado, carregando perfil...');
               await fetchUserProfile(session.user);
             } else {
@@ -125,7 +125,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           } else if (event === 'SIGNED_OUT') {
             console.log('👋 Usuário deslogado');
             setUser(null);
-            setCurrentUserId(null);
+            currentUserIdRef.current = null;
             setIsLoading(false);
           } else if (event === 'INITIAL_SESSION') {
             console.log('ℹ️ Sessão inicial já processada');
@@ -139,7 +139,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
     };
 
     setupAuthListener();
-  }, [isInitialized, currentUserId]);
+  }, [isInitialized]); // Removida dependência de currentUserId para evitar loop
 
   const fetchUserProfile = async (supabaseUser: any) => {
     try {
@@ -163,7 +163,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       if (data) {
         console.log('✅ Perfil encontrado:', data.name);
         setUser(data);
-        setCurrentUserId(data.id);
+        currentUserIdRef.current = data.id;
       } else {
         // Usuário não existe na tabela, criar perfil
         console.log('📝 Criando novo perfil...');
@@ -194,7 +194,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         } else {
           console.log('✅ Perfil criado com sucesso:', insertedData);
           setUser(insertedData);
-          setCurrentUserId(insertedData.id);
+          currentUserIdRef.current = insertedData.id;
         }
       }
     } catch (error) {
@@ -284,7 +284,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       // Sempre limpar o estado local - esta é a parte mais importante
       console.log('🧹 Limpando estado local...');
       setUser(null);
-      setCurrentUserId(null);
+      currentUserIdRef.current = null;
       setIsLoading(false);
       
       // Limpar também dados de sessão do localStorage como precaução extra

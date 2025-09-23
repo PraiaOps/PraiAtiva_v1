@@ -1,7 +1,11 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
 import { Instagram, Facebook, Youtube } from "lucide-react";
+import panMarcaLogo from "@/assets/pan-marca-vert-cor-vetor.png";
+import smictLogo from "@/assets/smict-hor-branco.png";
+import fecLogo from "@/assets/logo-fec-simplificada-fundoclaro.png";
+import uffLogo from "@/assets/logo-uff-azul.png";
+import odsSeal from "@/assets/ods-seal.png";
 
 const Footer = () => {
   return (
@@ -95,22 +99,78 @@ const Footer = () => {
             </div>
           </div>
 
-          {/* Newsletter Section */}
+          {/* Apoios, Parcerias e Certificações Section */}
           <div className="space-y-4">
-            <h3 className="font-semibold text-cta">Newsletter</h3>
-            <p className="text-sm text-primary-light opacity-90">
-              Fique por dentro das novidades e promoções.
-            </p>
-            <div className="flex space-x-2">
-              <Input 
-                placeholder="Seu e-mail" 
-                className="bg-primary-hover border-primary-light text-primary-foreground placeholder:text-primary-light"
-              />
-              <Button variant="cta" size="sm">
-                Assinar
-              </Button>
+            <h3 className="font-semibold text-cta">APOIOS, PARCERIAS E CERTIFICAÇÕES</h3>
+            
+            {/* Layout simplificado em duas colunas */}
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 items-start">
+              
+              {/* Coluna da esquerda - Logos */}
+              <div className="space-y-4">
+                {/* Logo Programa Acelera no topo */}
+                <div>
+                  <img 
+                    src={panMarcaLogo} 
+                    alt="Programa Acelera Niterói"
+                    className="block h-auto w-auto max-h-14"
+                  />
+                </div>
+
+                {/* Apoio financeiro - Prefeitura */}
+                <div className="space-y-2">
+                  <h4 className="text-sm font-medium text-primary-light">Apoio financeiro</h4>
+                  <div>
+                    <img 
+                      src={smictLogo} 
+                      alt="Prefeitura de Niterói - SMICT"
+                      className="block h-auto w-auto max-h-14"
+                    />
+                  </div>
+                </div>
+
+                {/* Organização e gestão - FEC e UFF MUITO próximas */}
+                <div>
+                  <h4 className="text-sm font-medium text-primary-light mb-1">Organização e gestão</h4>
+                  <div className="flex items-center">
+                    <img 
+                      src={fecLogo} 
+                      alt="FEC"
+                      className="block h-auto w-auto max-h-10"
+                    />
+                    <img 
+                      src={uffLogo} 
+                      alt="Universidade Federal Fluminense"
+                      className="block h-auto w-auto max-h-32 -ml-6"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Coluna da direita - Texto no topo, ODS alinhado com "Organização e gestão" */}
+              <div className="space-y-4">
+                <div className="text-xs text-primary-light opacity-90">
+                  <ul className="space-y-1 break-words">
+                    <li>• <strong>APP</strong> idealizado em 2015</li>
+                    <li>• <strong>Selecionado</strong> para INCUBAÇÃO em 2024</li>
+                    <li>• <strong>Empresa</strong> criada em 2025, com 5 pessoas</li>
+                    <li>• <strong>INCUBAÇÃO</strong>: abr a out/25, hoje na fase de validação</li>
+                  </ul>
+                </div>
+                
+                {/* Espaçamento para alinhar com "Organização e gestão" */}
+                <div className="mt-8">
+                  <img 
+                    src={odsSeal} 
+                    alt="Selo ODS"
+                    className="block h-auto w-auto max-h-20"
+                  />
+                </div>
+              </div>
+              
             </div>
           </div>
+
         </div>
 
         {/* Bottom Section */}

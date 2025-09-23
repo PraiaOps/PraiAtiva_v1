@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { LogOut, User } from "lucide-react";
 import { useState } from "react";
+import logoImage from "@/assets/logo-praiativa.png";
 
 const Header = () => {
   const location = useLocation();
@@ -27,10 +28,11 @@ const Header = () => {
       <div className="container mx-auto px-4 py-4 flex items-center justify-between">
         {/* Logo */}
         <Link to="/" className="flex items-center space-x-2">
-          <div className="text-2xl font-bold">
-            <span className="text-cta">prai</span>
-            <span>ativa</span>
-          </div>
+          <img 
+            src={logoImage} 
+            alt="PraiAtiva" 
+            className="h-8 w-auto"
+          />
         </Link>
 
         {/* Navigation */}

@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Instagram, Facebook, Youtube } from "lucide-react";
+import logoImage from "@/assets/logo-praiativa.png";
 import panMarcaLogo from "@/assets/pan-marca-vert-cor-vetor.png";
 import smictLogo from "@/assets/smict-hor-branco.png";
 import fecLogo from "@/assets/logo-fec-simplificada-fundoclaro.png";
@@ -14,9 +15,11 @@ const Footer = () => {
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           {/* Brand Section */}
           <div className="space-y-4">
-            <div className="text-2xl font-bold">
-              <span className="text-cta">Prai</span>Ativa
-            </div>
+            <img 
+              src={logoImage} 
+              alt="PraiAtiva" 
+              className="h-10 w-auto"
+            />
             <p className="text-sm text-primary-light opacity-90">
               Conectando pessoas a atividades ao ar livre nas mais belas praias do Brasil.
             </p>

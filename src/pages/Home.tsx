@@ -206,6 +206,13 @@ const Home = () => {
                     <div className="flex flex-wrap gap-2 mb-4">
                       {activities
                         .filter(activity => getActivityCategory(activity.title) === 'sea')
+                        .reduce((unique: any[], activity) => {
+                          // Mostrar apenas tipos únicos de atividades
+                          if (!unique.find(item => item.title === activity.title)) {
+                            unique.push(activity);
+                          }
+                          return unique;
+                        }, [])
                         .slice(0, 3)
                         .map((activity, index) => (
                           <span key={index} className="bg-accent px-3 py-1 rounded-full text-sm">
@@ -238,6 +245,13 @@ const Home = () => {
                     <div className="flex flex-wrap gap-2 mb-4">
                       {activities
                         .filter(activity => getActivityCategory(activity.title) === 'sand')
+                        .reduce((unique: any[], activity) => {
+                          // Mostrar apenas tipos únicos de atividades
+                          if (!unique.find(item => item.title === activity.title)) {
+                            unique.push(activity);
+                          }
+                          return unique;
+                        }, [])
                         .slice(0, 3)
                         .map((activity, index) => (
                           <span key={index} className="bg-cta px-3 py-1 rounded-full text-sm">

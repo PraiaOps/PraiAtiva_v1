@@ -100,11 +100,14 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Listener para mudanças de autenticação
   useEffect(() => {
+    let subscription: any = null;
+    
     const setupAuthListener = async () => {
+      console.log('🔧 Configurando listener de autenticação...');
       const supabaseClient = await initializeSupabase();
       if (!supabaseClient) return;
 
-      const { data: { subscription } } = supabaseClient.auth.onAuthStateChange(
+      const { data } = supabaseClient.auth.onAuthStateChange(
         async (event, session) => {
           console.log('🔄 Mudança de autenticação:', event, session?.user?.email);
           
@@ -133,13 +136,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         }
       );
 
-      return () => {
-        subscription.unsubscribe();
-      };
+      subscription = data.subscription;
     };
 
-    setupAuthListener();
-  }, [isInitialized]); // Removida dependência de currentUserId para evitar loop
+    // Só configurar se não estiver configurado
+    if (isInitialized && !subscription) {
+      setupAuthListener();
+    }
+
+    return () => {
+      if (subscription) {
+        console.log('🗑️ Removendo listener de autenticação');
+        subscription.unsubscribe();
+      }
+    };
+  }, [isInitialized]); // Só depende da inicialização
 
   const fetchUserProfile = async (supabaseUser: any) => {
     try {

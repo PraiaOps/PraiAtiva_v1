@@ -232,12 +232,30 @@ const Atividades = () => {
 
   const availableTimes = useMemo(() => {
     const data = getFilteredActivities('time');
-    return Array.from(new Set(data.map(a => a.time)));
+    const times = Array.from(new Set(data.map(a => a.time)));
+    // Ordenar: manhã, tarde, noite
+    const timeOrder = ['manhã', 'tarde', 'noite'];
+    return times.sort((a, b) => {
+      const indexA = timeOrder.indexOf(a);
+      const indexB = timeOrder.indexOf(b);
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
+      return indexA - indexB;
+    });
   }, [filters.city, filters.beach, filters.search, filters.activity, filters.dayOfWeek, filters.priceRange, filters.category, activities]);
 
   const availableDaysOfWeek = useMemo(() => {
     const data = getFilteredActivities('dayOfWeek');
-    return Array.from(new Set(data.map(a => a.date)));
+    const days = Array.from(new Set(data.map(a => a.date)));
+    // Ordenar: Domingo, Segunda, Terça, Quarta, Quinta, Sexta, Sábado
+    const dayOrder = ['Domingo', 'Segunda-feira', 'Terça-feira', 'Quarta-feira', 'Quinta-feira', 'Sexta-feira', 'Sábado'];
+    return days.sort((a, b) => {
+      const indexA = dayOrder.indexOf(a);
+      const indexB = dayOrder.indexOf(b);
+      if (indexA === -1) return 1;
+      if (indexB === -1) return -1;
+      return indexA - indexB;
+    });
   }, [filters.city, filters.beach, filters.search, filters.activity, filters.time, filters.priceRange, filters.category, activities]);
 
   const availableCategories = useMemo(() => {

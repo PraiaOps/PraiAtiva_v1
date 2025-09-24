@@ -1,0 +1,17 @@
+Para criar o favicon PNG com coqueiro:
+
+1. Use o arquivo favicon.svg como base
+2. Converta para PNG 32x32 pixels
+3. Salve como public/favicon.png
+4. Converta para ICO 16x16 e 32x32 pixels
+5. Salve como public/favicon.ico
+
+O SVG já está criado em public/favicon.svg com:
+- Fundo azul (#0ea5e9) - cor do tema
+- Tronco marrom (#8B4513)
+- Folhas verdes (#228B22, #32CD32)
+- Coco marrom (#8B4513)
+
+Para conversão online, use:
+- SVG para PNG: https://convertio.co/svg-png/
+- PNG para ICO: https://convertio.co/png-ico/

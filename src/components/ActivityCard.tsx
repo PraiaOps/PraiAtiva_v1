@@ -1,8 +1,9 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, Clock, Users, CircleDollarSign, Waves, Trophy, Zap, Dumbbell, Target } from "lucide-react";
+import { Calendar, Clock, Users, CircleDollarSign, Waves, Trophy, Zap, Dumbbell, Target, Wrench } from "lucide-react";
 import { useState } from "react";
 import ActivityDetailsModal from "./ActivityDetailsModal";
+import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 
 interface ActivityCardProps {
   title: string;
@@ -59,6 +60,7 @@ const ActivityCard = ({
   const handleCloseModal = () => {
     setIsDetailsModalOpen(false);
   };
+
   return (
     <Card className="card-hover overflow-hidden h-full flex flex-col">
       <div className="relative h-48">
@@ -106,9 +108,20 @@ const ActivityCard = ({
           <Button variant="outline" size="sm" className="flex-1" onClick={handleViewDetails}>
             Ver detalhes
           </Button>
-          <Button variant="default" size="sm" className="flex-1">
-            Inscrever-se
-          </Button>
+          <Popover>
+            <PopoverTrigger asChild>
+              <Button variant="default" size="sm" className="flex-1">
+                Inscrever-se
+              </Button>
+            </PopoverTrigger>
+            <PopoverContent align="center" sideOffset={8} className="w-64 text-center">
+              <div className="flex flex-col items-center">
+                <Wrench className="h-5 w-5 text-muted-foreground mb-2" />
+                <div className="text-sm font-medium">Funcionalidade em desenvolvimento</div>
+                <div className="text-xs text-muted-foreground mt-1">Disponível em breve</div>
+              </div>
+            </PopoverContent>
+          </Popover>
         </div>
       </CardContent>
       
@@ -130,6 +143,7 @@ const ActivityCard = ({
           description
         }}
       />
+      
     </Card>
   );
 };

@@ -8,11 +8,12 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Edit, Trash2, Users, Calendar, MapPin, Clock, CircleDollarSign, Waves, Trophy, Zap, Dumbbell, Target, Star } from "lucide-react";
+import { Plus, Edit, Trash2, Users, Calendar, MapPin, Clock, CircleDollarSign, Waves, Trophy, Zap, Dumbbell, Target, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { useActivities } from "@/hooks/useActivities";
+import { useIsMobile } from "@/hooks/use-mobile";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import beachvolleyImage from "@/assets/beachvolley.jpg";
@@ -24,11 +25,13 @@ import circuitoFuncionalImage from "@/assets/circuito-funcional.jpg";
 
 const Dashboard = () => {
   const { user, isLoading: authLoading } = useAuth();
-  const { activities, isLoading, createActivity, updateActivity, deleteActivity, toggleFeatured } = useActivities();
+  const { activities, isLoading, createActivity, updateActivity, deleteActivity } = useActivities();
   const { toast } = useToast();
+  const isMobile = useIsMobile();
   const [isNewActivityOpen, setIsNewActivityOpen] = useState(false);
   const [isEditActivityOpen, setIsEditActivityOpen] = useState(false);
   const [editingActivity, setEditingActivity] = useState<any>(null);
+  const [currentPage, setCurrentPage] = useState(1);
   const [newActivity, setNewActivity] = useState({
     locationName: "",
     title: "",
@@ -362,39 +365,13 @@ const Dashboard = () => {
     }
   };
 
-  const handleToggleFeatured = async (activityId: string, currentStatus: boolean) => {
-    try {
-      const success = await toggleFeatured(activityId, currentStatus);
-      
-      if (success) {
-        toast({
-          title: "Sucesso",
-          description: currentStatus 
-            ? "Atividade removida dos destaques!" 
-            : "Atividade adicionada aos destaques!",
-        });
-      } else {
-        toast({
-          title: "Erro",
-          description: "Erro ao alterar destaque. Tente novamente.",
-          variant: "destructive",
-        });
-      }
-    } catch (error) {
-      console.error('Erro ao alterar destaque:', error);
-      toast({
-        title: "Erro",
-        description: "Erro inesperado ao alterar destaque.",
-        variant: "destructive",
-      });
-    }
-  };
+  // destaque removido
 
   return (
     <div className="min-h-screen bg-background">
       {/* Header */}
       <header className="bg-primary text-primary-foreground p-4">
-        <div className="container mx-auto flex justify-between items-center">
+        <div className="container mx-auto flex flex-wrap items-center justify-between gap-3">
           <div className="flex items-center space-x-4">
             <div className="w-10 h-10 bg-cta rounded-full flex items-center justify-center">
               <span className="font-bold">P</span>
@@ -404,15 +381,13 @@ const Dashboard = () => {
               <p className="text-sm opacity-90">{user?.name || 'Usuário'} - {user?.role === 'instrutor' ? 'Instrutor' : user?.role === 'admin' ? 'Administrador' : 'Aluno'}</p>
             </div>
           </div>
-          <Button variant="cta" size="sm">
-            🔔 Notificações
-          </Button>
+          {/* Botão de notificações removido */}
         </div>
       </header>
 
-      <div className="flex">
+      <div className="flex flex-col md:flex-row">
         {/* Sidebar */}
-        <aside className="w-64 bg-cta text-cta-foreground min-h-screen p-4">
+        <aside className="w-full md:w-64 bg-cta text-cta-foreground md:min-h-screen p-4">
           <nav className="space-y-2">
             <Button variant="ghost" className="w-full justify-start text-cta-foreground hover:bg-cta-hover bg-cta-hover">
               <Users className="mr-3 h-4 w-4" />
@@ -435,10 +410,10 @@ const Dashboard = () => {
         </aside>
 
         {/* Main Content */}
-        <main className="flex-1 p-8">
+        <main className="flex-1 p-4 md:p-8">
           <div className="max-w-6xl mx-auto">
             {/* Header Section */}
-            <div className="flex justify-between items-center mb-8">
+            <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 mb-6 md:mb-8">
               <div>
                 <h1 className="text-3xl font-bold text-primary">Minhas Atividades</h1>
                 <p className="text-muted-foreground">Gerencie suas aulas e atividades</p>
@@ -446,12 +421,12 @@ const Dashboard = () => {
               
               <Dialog open={isNewActivityOpen} onOpenChange={setIsNewActivityOpen}>
                 <DialogTrigger asChild>
-                  <Button variant="cta" size="lg">
+                  <Button variant="cta" size="sm">
                     <Plus className="mr-2 h-5 w-5" />
                     Nova Atividade
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-2xl w-[95vw] sm:w-auto max-h-[85vh] overflow-y-auto p-4 md:p-6">
                   <DialogHeader>
                     <DialogTitle>Criar Nova Atividade</DialogTitle>
                   </DialogHeader>
@@ -468,14 +443,14 @@ const Dashboard = () => {
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="city">Cidade *</Label>
                         <Select 
                           value={newActivity.city} 
                           onValueChange={(value) => setNewActivity(prev => ({ ...prev, city: value, beach: "" }))}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Selecione a cidade" />
                           </SelectTrigger>
                           <SelectContent>
@@ -492,7 +467,7 @@ const Dashboard = () => {
                           value={newActivity.title} 
                           onValueChange={(value) => setNewActivity(prev => ({ ...prev, title: value }))}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Selecione" />
                           </SelectTrigger>
                           <SelectContent>
@@ -504,7 +479,7 @@ const Dashboard = () => {
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="beach">Praia *</Label>
                         <Select 
@@ -512,7 +487,7 @@ const Dashboard = () => {
                           onValueChange={(value) => setNewActivity(prev => ({ ...prev, beach: value }))}
                           disabled={!newActivity.city}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder={newActivity.city ? "Selecione a praia" : "Primeiro selecione a cidade"} />
                           </SelectTrigger>
                           <SelectContent>
@@ -536,14 +511,14 @@ const Dashboard = () => {
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="day">Dia da Semana *</Label>
                         <Select 
                           value={newActivity.day} 
                           onValueChange={(value) => setNewActivity(prev => ({ ...prev, day: value }))}
                         >
-                          <SelectTrigger id="day">
+                          <SelectTrigger id="day" className="w-full">
                             <SelectValue placeholder="Selecione o dia" />
                           </SelectTrigger>
                           <SelectContent>
@@ -560,7 +535,7 @@ const Dashboard = () => {
                           value={newActivity.time} 
                           onValueChange={(value) => setNewActivity(prev => ({ ...prev, time: value }))}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Selecione" />
                           </SelectTrigger>
                           <SelectContent>
@@ -572,7 +547,7 @@ const Dashboard = () => {
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="capacity">Vagas *</Label>
                         <Input
@@ -611,11 +586,11 @@ const Dashboard = () => {
                       />
                     </div>
                     
-                    <div className="flex justify-end space-x-3">
-                      <Button type="button" variant="outline" onClick={() => setIsNewActivityOpen(false)}>
+                    <div className="flex flex-col-reverse md:flex-row gap-2 md:justify-end">
+                      <Button type="button" variant="outline" onClick={() => setIsNewActivityOpen(false)} className="w-full md:w-auto">
                         Cancelar
                       </Button>
-                      <Button type="submit" variant="cta">
+                      <Button type="submit" variant="cta" className="w-full md:w-auto">
                         Criar Atividade
                       </Button>
                     </div>
@@ -625,7 +600,7 @@ const Dashboard = () => {
 
               {/* Edit Activity Dialog */}
               <Dialog open={isEditActivityOpen} onOpenChange={setIsEditActivityOpen}>
-                <DialogContent className="max-w-2xl">
+                <DialogContent className="max-w-2xl w-[95vw] sm:w-auto max-h-[85vh] overflow-y-auto p-4 md:p-6">
                   <DialogHeader>
                     <DialogTitle>Editar Atividade</DialogTitle>
                   </DialogHeader>
@@ -649,7 +624,7 @@ const Dashboard = () => {
                           value={newActivity.city} 
                           onValueChange={(value) => setNewActivity(prev => ({ ...prev, city: value, beach: "" }))}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Selecione a cidade" />
                           </SelectTrigger>
                           <SelectContent>
@@ -666,7 +641,7 @@ const Dashboard = () => {
                           value={newActivity.title} 
                           onValueChange={(value) => setNewActivity(prev => ({ ...prev, title: value }))}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Selecione" />
                           </SelectTrigger>
                           <SelectContent>
@@ -686,7 +661,7 @@ const Dashboard = () => {
                           onValueChange={(value) => setNewActivity(prev => ({ ...prev, beach: value }))}
                           disabled={!newActivity.city}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder={newActivity.city ? "Selecione a praia" : "Primeiro selecione a cidade"} />
                           </SelectTrigger>
                           <SelectContent>
@@ -717,7 +692,7 @@ const Dashboard = () => {
                           value={newActivity.day} 
                           onValueChange={(value) => setNewActivity(prev => ({ ...prev, day: value }))}
                         >
-                          <SelectTrigger id="edit-day">
+                          <SelectTrigger id="edit-day" className="w-full">
                             <SelectValue placeholder="Selecione o dia" />
                           </SelectTrigger>
                           <SelectContent>
@@ -734,7 +709,7 @@ const Dashboard = () => {
                           value={newActivity.time} 
                           onValueChange={(value) => setNewActivity(prev => ({ ...prev, time: value }))}
                         >
-                          <SelectTrigger>
+                          <SelectTrigger className="w-full">
                             <SelectValue placeholder="Selecione" />
                           </SelectTrigger>
                           <SelectContent>
@@ -785,15 +760,16 @@ const Dashboard = () => {
                       />
                     </div>
                     
-                    <div className="flex justify-end space-x-2">
+                    <div className="flex flex-col-reverse md:flex-row gap-2 md:justify-end">
                       <Button 
                         type="button" 
                         variant="outline" 
                         onClick={() => setIsEditActivityOpen(false)}
+                        className="w-full md:w-auto"
                       >
                         Cancelar
                       </Button>
-                      <Button type="submit" variant="cta">
+                      <Button type="submit" variant="cta" className="w-full md:w-auto">
                         Salvar Alterações
                       </Button>
                     </div>
@@ -803,7 +779,7 @@ const Dashboard = () => {
             </div>
 
             {/* Stats Cards */}
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6 mb-6 md:mb-8">
               <Card>
                 <CardContent className="p-6">
                   <div className="flex items-center justify-between">
@@ -833,7 +809,7 @@ const Dashboard = () => {
             </div>
 
             {/* Activities List */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
               {isLoading ? (
                 <div className="col-span-2">
                   <Card className="text-center p-12">
@@ -865,7 +841,15 @@ const Dashboard = () => {
                   </Card>
                 </div>
               ) : (
-                activities.map((activity) => (
+                (() => {
+                  const itemsPerPage = isMobile ? 4 : 6;
+                  const totalPages = Math.ceil(activities.length / itemsPerPage) || 1;
+                  const safeCurrent = Math.min(currentPage, totalPages);
+                  const startIndex = (safeCurrent - 1) * itemsPerPage;
+                  const endIndex = startIndex + itemsPerPage;
+                  const pageItems = activities.slice(startIndex, endIndex);
+
+                  return pageItems.map((activity) => (
                 <Card key={activity.id} className="overflow-hidden">
                   <div className="relative h-48">
                     <img 
@@ -910,18 +894,6 @@ const Dashboard = () => {
                       </div>
                       
                       <div className="space-y-2">
-                        {/* Primeira linha - Destaque */}
-                        <Button 
-                          variant={activity.is_featured ? "default" : "outline"}
-                          size="sm" 
-                          className="w-full"
-                          onClick={() => handleToggleFeatured(activity.id, activity.is_featured)}
-                        >
-                          <Star className={`mr-2 h-4 w-4 ${activity.is_featured ? 'fill-current' : ''}`} />
-                          {activity.is_featured ? 'Em Destaque' : 'Marcar como Destaque'}
-                        </Button>
-                        
-                        {/* Segunda linha - Editar e Excluir */}
                         <div className="flex space-x-2">
                           <Button 
                             variant="outline" 
@@ -946,9 +918,80 @@ const Dashboard = () => {
                     </div>
                   </CardContent>
                 </Card>
-                ))
+                  ));
+                })()
               )}
             </div>
+
+            {/* Pagination Controls */}
+            {!isLoading && activities.length > 0 && (
+              (() => {
+                const itemsPerPage = isMobile ? 4 : 6;
+                const totalPages = Math.ceil(activities.length / itemsPerPage) || 1;
+                const safeCurrent = Math.min(currentPage, totalPages);
+                const startIndex = (safeCurrent - 1) * itemsPerPage;
+                const endIndex = Math.min(startIndex + itemsPerPage, activities.length);
+
+                if (currentPage !== safeCurrent) {
+                  setCurrentPage(safeCurrent);
+                }
+
+                return (
+                  <div className="flex flex-col items-center mt-6 md:mt-8 space-y-3">
+                    <p className="text-xs md:text-sm text-muted-foreground">
+                      Mostrando {startIndex + 1} a {endIndex} de {activities.length} atividades
+                    </p>
+                    <div className={`flex ${isMobile ? 'w-full justify-between' : 'items-center space-x-2'}`}>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className={isMobile ? 'flex-1 mr-2' : ''}
+                        onClick={() => setCurrentPage(prev => Math.max(prev - 1, 1))}
+                        disabled={safeCurrent === 1}
+                      >
+                        <ChevronLeft className="h-4 w-4" />
+                        <span className="ml-1 hidden md:inline">Anterior</span>
+                      </Button>
+
+                      {!isMobile && (
+                        <div className="flex space-x-1">
+                          {Array.from({ length: totalPages }, (_, i) => i + 1).map(page => {
+                            const shouldShow = page === 1 || page === totalPages || (page >= safeCurrent - 1 && page <= safeCurrent + 1);
+                            if (!shouldShow) {
+                              if (page === safeCurrent - 2 && safeCurrent > 3) return <span key={page} className="px-2 text-muted-foreground">...</span>;
+                              if (page === safeCurrent + 2 && safeCurrent < totalPages - 2) return <span key={page} className="px-2 text-muted-foreground">...</span>;
+                              return null;
+                            }
+                            return (
+                              <Button
+                                key={page}
+                                variant={safeCurrent === page ? 'default' : 'outline'}
+                                size="sm"
+                                onClick={() => setCurrentPage(page)}
+                                className="w-10 h-9"
+                              >
+                                {page}
+                              </Button>
+                            );
+                          })}
+                        </div>
+                      )}
+
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className={isMobile ? 'flex-1 ml-2' : ''}
+                        onClick={() => setCurrentPage(prev => Math.min(prev + 1, totalPages))}
+                        disabled={safeCurrent === totalPages}
+                      >
+                        <span className="mr-1 hidden md:inline">Próxima</span>
+                        <ChevronRight className="h-4 w-4" />
+                      </Button>
+                    </div>
+                  </div>
+                );
+              })()
+            )}
           </div>
         </main>
       </div>

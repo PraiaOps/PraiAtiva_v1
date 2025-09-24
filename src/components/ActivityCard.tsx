@@ -2,6 +2,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Calendar, Clock, Users, CircleDollarSign, Waves, Trophy, Zap, Dumbbell, Target, Wrench } from "lucide-react";
 import { useState } from "react";
+import { useIsMobile } from "@/hooks/use-mobile";
+import { useToast } from "@/hooks/use-toast";
 import ActivityDetailsModal from "./ActivityDetailsModal";
 import { Popover, PopoverTrigger, PopoverContent } from "@/components/ui/popover";
 
@@ -52,6 +54,9 @@ const ActivityCard = ({
   description
 }: ActivityCardProps) => {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
+  const [isEnrollPopoverOpen, setIsEnrollPopoverOpen] = useState(false);
+  const isMobile = useIsMobile();
+  const { toast } = useToast();
 
   const handleViewDetails = () => {
     setIsDetailsModalOpen(true);
@@ -108,20 +113,42 @@ const ActivityCard = ({
           <Button variant="outline" size="sm" className="flex-1" onClick={handleViewDetails}>
             Ver detalhes
           </Button>
-          <Popover>
-            <PopoverTrigger asChild>
-              <Button variant="default" size="sm" className="flex-1">
-                Inscrever-se
-              </Button>
-            </PopoverTrigger>
-            <PopoverContent align="center" sideOffset={8} className="w-64 text-center">
-              <div className="flex flex-col items-center">
-                <Wrench className="h-5 w-5 text-muted-foreground mb-2" />
-                <div className="text-sm font-medium">Funcionalidade em desenvolvimento</div>
-                <div className="text-xs text-muted-foreground mt-1">Disponível em breve</div>
-              </div>
-            </PopoverContent>
-          </Popover>
+          {isMobile ? (
+            <Button
+              variant="default"
+              size="sm"
+              className="flex-1"
+              onClick={() => {
+                toast({
+                  title: "Funcionalidade em desenvolvimento",
+                  description: "Disponível em breve",
+                });
+              }}
+            >
+              Inscrever-se
+            </Button>
+          ) : (
+            <Popover open={isEnrollPopoverOpen} onOpenChange={setIsEnrollPopoverOpen}>
+              <PopoverTrigger asChild>
+                <Button
+                  variant="default"
+                  size="sm"
+                  className="flex-1"
+                  onClick={() => setIsEnrollPopoverOpen(true)}
+                  onMouseLeave={() => setIsEnrollPopoverOpen(false)}
+                >
+                  Inscrever-se
+                </Button>
+              </PopoverTrigger>
+              <PopoverContent align="center" sideOffset={8} className="w-44 p-2 text-center rounded-sm">
+                <div className="flex flex-col items-center">
+                  <Wrench className="h-4 w-4 text-muted-foreground mb-1" />
+                  <div className="text-xs font-medium leading-tight">Funcionalidade em desenvolvimento</div>
+                  <div className="text-[10px] text-muted-foreground mt-0.5">Disponível em breve</div>
+                </div>
+              </PopoverContent>
+            </Popover>
+          )}
         </div>
       </CardContent>
       

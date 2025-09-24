@@ -13,10 +13,6 @@ export default {
       },
     },
     extend: {
-      fontFamily: {
-        'freedoka': ['Freedoka Expanded', 'cursive'],
-        'sans': ['Freedoka Expanded', 'cursive'],
-      },
       colors: {
         border: "hsl(var(--border))",
         input: "hsl(var(--input))",

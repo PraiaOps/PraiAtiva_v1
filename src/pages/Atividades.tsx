@@ -384,12 +384,12 @@ const Atividades = () => {
       </section>
 
       {/* Filters */}
-      <section className="py-8 bg-muted/50">
+      <section className="py-4 md:py-8 bg-muted/50">
         <div className="container mx-auto px-4">
           <Card>
-            <CardContent className="p-6">
+            <CardContent className="p-4 md:p-6">
               {/* Search Bar */}
-              <div className="flex flex-col md:flex-row gap-4 mb-6">
+              <div className="flex flex-col md:flex-row gap-4 mb-4 md:mb-6">
                 <div className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                   <Input 
@@ -424,10 +424,10 @@ const Atividades = () => {
               </div>
 
               {/* Filter Options */}
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-4">
+              <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 xl:grid-cols-8 gap-3">
                 {/* City Filter (opções dependem dos demais filtros) */}
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Cidade</label>
+                  <label className="text-xs md:text-sm font-medium mb-1 md:mb-2 block">Cidade</label>
                   <Select value={filters.city} onValueChange={(value) => setFilters(prev => ({ ...prev, city: value, beach: '', activity: '', time: '', dayOfWeek: '', priceRange: '', category: '' }))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Todas" />
@@ -443,7 +443,7 @@ const Atividades = () => {
 
                 {/* Category Filter */}
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Categoria</label>
+                  <label className="text-xs md:text-sm font-medium mb-1 md:mb-2 block">Categoria</label>
                   <Select value={filters.category} onValueChange={(value) => setFilters(prev => ({ ...prev, category: value, beach: '', activity: '', time: '', dayOfWeek: '', priceRange: '' }))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Todas" />
@@ -458,7 +458,7 @@ const Atividades = () => {
 
                 {/* Beach Filter (cascading com cidade e demais filtros) */}
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Praia</label>
+                  <label className="text-xs md:text-sm font-medium mb-1 md:mb-2 block">Praia</label>
                   <Select value={filters.beach} onValueChange={(value) => setFilters(prev => ({ ...prev, beach: value, activity: '', time: '', dayOfWeek: '', priceRange: '' }))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Todas" />
@@ -474,7 +474,7 @@ const Atividades = () => {
 
                 {/* Activity Filter (cascading com demais filtros) */}
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Atividade</label>
+                  <label className="text-xs md:text-sm font-medium mb-1 md:mb-2 block">Atividade</label>
                   <Select value={filters.activity} onValueChange={(value) => setFilters(prev => ({ ...prev, activity: value, time: '', dayOfWeek: '', priceRange: '' }))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Todas" />
@@ -492,7 +492,7 @@ const Atividades = () => {
 
                 {/* Time Filter (cascading com demais filtros) */}
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Horário</label>
+                  <label className="text-xs md:text-sm font-medium mb-1 md:mb-2 block">Horário</label>
                   <Select value={filters.time} onValueChange={(value) => setFilters(prev => ({ ...prev, time: value }))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Todos" />
@@ -508,7 +508,7 @@ const Atividades = () => {
 
                 {/* Day of Week Filter (cascading com demais filtros) */}
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Dia da Semana</label>
+                  <label className="text-xs md:text-sm font-medium mb-1 md:mb-2 block">Dia da Semana</label>
                   <Select value={filters.dayOfWeek} onValueChange={(value) => setFilters(prev => ({ ...prev, dayOfWeek: value }))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Todos" />
@@ -524,7 +524,7 @@ const Atividades = () => {
 
                 {/* Dynamic Price Range Filter (cascading com demais filtros) */}
                 <div>
-                  <label className="text-sm font-medium mb-2 block">Preço</label>
+                  <label className="text-xs md:text-sm font-medium mb-1 md:mb-2 block">Preço</label>
                   <Select value={filters.priceRange} onValueChange={(value) => setFilters(prev => ({ ...prev, priceRange: value }))}>
                     <SelectTrigger>
                       <SelectValue placeholder="Todos" />

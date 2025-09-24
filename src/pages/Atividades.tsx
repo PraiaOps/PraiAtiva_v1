@@ -389,7 +389,7 @@ const Atividades = () => {
           <Card>
             <CardContent className="p-6">
               {/* Search Bar */}
-              <div className="flex gap-4 mb-6">
+              <div className="flex flex-col md:flex-row gap-4 mb-6">
                 <div className="flex-1 relative">
                   <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 text-muted-foreground h-4 w-4" />
                   <Input 
@@ -399,26 +399,28 @@ const Atividades = () => {
                     onChange={(e) => setFilters(prev => ({ ...prev, search: e.target.value }))}
                   />
                 </div>
-                <Button variant="default">
-                  <Search className="h-4 w-4 mr-2" />
-                  Buscar
-                </Button>
-                <Button 
-                  variant="outline"
-                  onClick={() => setFilters({
-                    search: "",
-                    city: "",
-                    beach: "",
-                    activity: "",
-                    time: "",
-                    dayOfWeek: "",
-                    priceRange: "",
-                    category: "",
-                  })}
-                >
-                  <Filter className="h-4 w-4 mr-2" />
-                  Limpar
-                </Button>
+                <div className="flex gap-2">
+                  <Button variant="default">
+                    <Search className="h-4 w-4 mr-2" />
+                    Buscar
+                  </Button>
+                  <Button 
+                    variant="outline"
+                    onClick={() => setFilters({
+                      search: "",
+                      city: "",
+                      beach: "",
+                      activity: "",
+                      time: "",
+                      dayOfWeek: "",
+                      priceRange: "",
+                      category: "",
+                    })}
+                  >
+                    <Filter className="h-4 w-4 mr-2" />
+                    Limpar
+                  </Button>
+                </div>
               </div>
 
               {/* Filter Options */}

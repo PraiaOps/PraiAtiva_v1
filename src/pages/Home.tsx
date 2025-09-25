@@ -16,6 +16,7 @@ import circuitoFuncionalImage from "@/assets/circuito-funcional.jpg";
 // Imports para eventos
 import beachTennisEventImg from "@/assets/beachtennis.jpg";
 import canoaHavaianaEventImg from "@/assets/canoa-havaiana.jpg";
+import AnimatedWave from "@/components/AnimatedWave";
 
 const Home = () => {
   const { activities, isLoading, instructorNames } = usePublicActivities();
@@ -83,7 +84,7 @@ const Home = () => {
       <Header />
       
       {/* Hero Section */}
-      <section className="hero-ocean min-h-[600px] flex items-center justify-center text-center text-white relative">
+      <section className="hero-ocean min-h-[600px] flex items-center justify-center text-center text-white relative pb-20">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto space-y-6">
@@ -154,6 +155,7 @@ const Home = () => {
             </div>
           </div>
         </div>
+        <AnimatedWave />
       </section>
 
       {/* About Section */}

@@ -563,7 +563,7 @@ const Atividades = () => {
       {/* Results */}
       <section className="py-12">
         <div className="container mx-auto px-4">
-          <div className="flex justify-between items-center mb-8">
+          <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-8">
             <h2 className="text-2xl font-bold">
               {isLoading ? 'Carregando...' : `${convertedActivities.length} atividades encontradas`}
             </h2>
@@ -611,7 +611,7 @@ const Atividades = () => {
               </p>
               
               {/* Controles de paginação */}
-              <div className="flex items-center space-x-2">
+              <div className="flex flex-wrap justify-center items-center gap-2">
                 <Button
                   variant="outline"
                   size="sm"

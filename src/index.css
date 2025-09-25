@@ -185,6 +185,7 @@ strong, b,
 @layer components {
   .btn-responsive-text {
     @apply whitespace-normal sm:whitespace-nowrap;
+    overflow-wrap: break-word;
   }
   /* Ocean hero section */
   .hero-ocean {

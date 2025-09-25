@@ -233,8 +233,11 @@ const Home = () => {
           <div className="text-center mt-12">
             <Link to="/atividades">
               <Button variant="cta" size="lg" className="text-primary hover:text-primary btn-responsive-text">
-                CONHEÇA TODAS AS ATIVIDADES
+                CONHEÇA TODAS 
+                
+                AS ATIVIDADES
                 <ArrowRight className="ml-2 h-5 w-5" />
+
               </Button>
             </Link>
           </div>

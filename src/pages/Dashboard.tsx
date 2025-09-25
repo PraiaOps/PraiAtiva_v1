@@ -8,7 +8,7 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Plus, Edit, Trash2, Users, Calendar, MapPin, Clock, CircleDollarSign, Waves, Trophy, Zap, Dumbbell, Target, ChevronLeft, ChevronRight } from "lucide-react";
+import { Plus, Edit, Trash2, Users, Calendar, MapPin, Clock, Waves, Trophy, Zap, Dumbbell, Target, ChevronLeft, ChevronRight } from "lucide-react";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
@@ -870,7 +870,7 @@ const Dashboard = () => {
                         <p className="text-sm text-muted-foreground">{activity.beach}</p>
                       </div>
                       
-                      <div className="grid grid-cols-2 gap-4 text-sm">
+                      <div className="grid grid-cols-1 gap-4 text-sm">
                         <div className="flex items-center space-x-2">
                           {getActivityIcon(activity.title)}
                           <span>{activity.title}</span>
@@ -878,18 +878,6 @@ const Dashboard = () => {
                         <div className="flex items-center space-x-2">
                           <Calendar className="h-4 w-4 text-primary" />
                           <span>{activity.date}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Clock className="h-4 w-4 text-primary" />
-                          <span className="capitalize">{activity.time}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <Users className="h-4 w-4 text-primary" />
-                          <span>{activity.enrollments}/{activity.capacity}</span>
-                        </div>
-                        <div className="flex items-center space-x-2">
-                          <CircleDollarSign className="h-4 w-4 text-primary" />
-                          <span>R$ {activity.price.toFixed(2)}</span>
                         </div>
                       </div>
                       

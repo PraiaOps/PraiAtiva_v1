@@ -14,8 +14,9 @@ export default {
     },
     extend: {
       fontFamily: {
-        'freedoka': ['Freedoka Expanded', 'cursive'],
-        'sans': ['Freedoka Expanded', 'cursive'],
+        'freedoka': ['Fredoka Expanded', 'cursive'],
+        'freedoka-bold': ['Fredoka Expanded SemiBold', 'cursive'],
+        'sans': ['Fredoka Expanded', 'cursive'],
       },
       colors: {
         border: "hsl(var(--border))",

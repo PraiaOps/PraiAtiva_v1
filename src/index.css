@@ -2,6 +2,52 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Fredoka Expanded Local Font - Regular */
+@font-face {
+  font-family: 'Fredoka Expanded';
+  src: url('/fonts/fredoka-expanded-regular.ttf') format('truetype');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Fredoka Expanded SemiBold Local Font - Para títulos e negrito */
+@font-face {
+  font-family: 'Fredoka Expanded SemiBold';
+  src: url('/fonts/fredoka-expanded-semibold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Force Fredoka Expanded font application para textos regulares */
+html, body, *, 
+p, span, div, a, button, 
+input, textarea, select {
+  font-family: 'Fredoka Expanded', cursive !important;
+}
+
+/* Logo enhancement utilities */
+.logo-enhanced {
+  filter: brightness(110%) contrast(110%) drop-shadow(0 2px 4px rgba(0,0,0,0.3));
+  transition: filter 0.3s ease;
+}
+
+.logo-enhanced:hover {
+  filter: brightness(120%) contrast(115%) drop-shadow(0 4px 8px rgba(0,0,0,0.4));
+}
+
+
+/* Fredoka Expanded SemiBold para títulos e elementos em negrito */
+h1, h2, h3, h4, h5, h6,
+.font-bold, .font-semibold,
+.text-xl, .text-2xl, .text-3xl, .text-4xl, .text-5xl, .text-6xl,
+strong, b,
+.hero-highlight {
+  font-family: 'Fredoka Expanded SemiBold', cursive !important;
+  font-weight: 600 !important;
+}
+
 /* PraiAtiva Design System - Ocean-inspired colors and gradients */
 
 @layer base {
@@ -122,10 +168,16 @@
 @layer base {
   * {
     @apply border-border;
+    font-family: 'Fredoka Expanded', cursive !important;
   }
 
   body {
-    @apply bg-background text-foreground font-freedoka;
+    @apply bg-background text-foreground;
+    font-family: 'Fredoka Expanded', cursive !important;
+  }
+
+  html {
+    font-family: 'Fredoka Expanded', cursive !important;
   }
 }
 

@@ -3,7 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { LogOut, User, Menu, X } from "lucide-react";
 import { useState } from "react";
-import logoImage from "@/assets/logo-praiativa.png";
+import logoImage from "@/assets/logo-praiativa-new.jpeg";
 
 const Header = () => {
   const location = useLocation();
@@ -33,7 +33,7 @@ const Header = () => {
             <img 
               src={logoImage} 
               alt="PraiAtiva" 
-              className="h-6 md:h-8 w-auto"
+              className="h-6 md:h-8 w-auto rounded-sm"
             />
           </Link>
 
@@ -101,8 +101,8 @@ const Header = () => {
                   </Button>
                 </Link>
                 <Link to="/cadastro">
-                  <Button variant="cta">
-                    Cadastrar
+                  <Button variant="cta" className="text-primary hover:text-primary">
+                    Cadastre-se <br />gratuitamente!
                   </Button>
                 </Link>
               </>
@@ -197,8 +197,8 @@ const Header = () => {
                     </Button>
                   </Link>
                   <Link to="/cadastro" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button variant="cta" className="w-full">
-                      Cadastrar
+                    <Button variant="cta" className="w-full text-primary hover:text-primary">
+                      Cadastre-se <br />gratuitamente!
                     </Button>
                   </Link>
                 </>

@@ -225,7 +225,7 @@ const Cadastro = () => {
             <CardHeader className="text-center">
               <CardTitle className="text-2xl text-primary">Cadastro</CardTitle>
               <p className="text-muted-foreground">
-                Crie sua conta para acessar todas as funcionalidades da plataforma.
+                Crie sua conta para acessar funcionalidades exclusivas.
               </p>
             </CardHeader>
             
@@ -266,15 +266,15 @@ const Cadastro = () => {
                 <div className="space-y-3">
                   <div className="flex items-center space-x-3">
                     <Check className="h-5 w-5 text-primary" />
-                    <span className="text-sm">Criação de atividades</span>
+                    <span className="text-sm">Atividades</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Check className="h-5 w-5 text-primary" />
-                    <span className="text-sm">Gerenciamento de alunos</span>
+                    <span className="text-sm">Alunos</span>
                   </div>
                   <div className="flex items-center space-x-3">
                     <Check className="h-5 w-5 text-primary" />
-                    <span className="text-sm">Configuração de horários</span>
+                    <span className="text-sm">Horários</span>
                   </div>
                 </div>
               </div>
@@ -372,7 +372,7 @@ const Cadastro = () => {
                     name="bio"
                     value={formData.bio}
                     onChange={handleInputChange}
-                    placeholder="Conte sobre sua experiência como instrutor..."
+                    placeholder="Resuma suas qualificações profissionais"
                     rows={4}
                   />
                 </div>

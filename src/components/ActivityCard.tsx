@@ -89,22 +89,10 @@ const ActivityCard = ({
             {instructor && <p className="text-xs text-muted-foreground">{instructor}</p>}
           </div>
           
-          <div className="grid grid-cols-2 gap-3 text-sm">
+          <div className="grid grid-cols-1 gap-3 text-sm">
             <div className="flex items-center space-x-2">
               {getActivityIcon(title)}
               <span>{title}</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Clock className="h-4 w-4 text-primary" />
-              <span className="capitalize">{time}</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <Users className="h-4 w-4 text-primary" />
-              <span>{capacity}</span>
-            </div>
-            <div className="flex items-center space-x-2">
-              <CircleDollarSign className="h-4 w-4 text-primary" />
-              <span>{price}</span>
             </div>
           </div>
         </div>

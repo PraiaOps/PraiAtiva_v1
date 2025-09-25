@@ -4,7 +4,7 @@ import { Link } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ActivityCard from "@/components/ActivityCard";
-import { ArrowRight, Star, Users, Activity, MapPin } from "lucide-react";
+import { ArrowRight, Star, Users, Activity, MapPin, BookOpen, Tv, Info, Phone } from "lucide-react";
 import { usePublicActivities } from "@/hooks/usePublicActivities";
 import heroImage from "@/assets/hero-beach.jpg";
 import beachvolleyImage from "@/assets/beachvolley.jpg";
@@ -88,19 +88,14 @@ const Home = () => {
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto space-y-6">
             
-            <h1 className="text-4xl md:text-6xl font-bold leading-tight">
-              Chegou a hora dessa{" "}
-              <span className="text-cta">gente<br />bronzeada</span>{" "}
-              mostrar seu{" "}
-              <span className="text-accent">valor!</span>
+            <h1 className="text-3xl md:text-5xl font-bold leading-tight">
+              Chegou a hora dessa <br />
+              <span className="text-cta hero-highlight">gente<br />bronzeada</span> <br />mostrar seu valor!
             </h1>
             
             <div className="bg-black/30 backdrop-blur-sm rounded-2xl p-6 max-w-3xl mx-auto">
               <p className="text-lg md:text-xl">
-                Vem aí a <span className="text-cta font-semibold">1ª plataforma</span> do país que conecta você ao melhor do{" "}
-                <span className="text-accent font-semibold">esporte</span>,{" "}
-                <span className="text-cta font-semibold">turismo</span> e{" "}
-                <span className="text-accent font-semibold">lazer</span> exclusivamente nas praias!
+                <span className="text-cta hero-highlight">Chegou PRAIATIVA</span>, o 1º app que conecta você ao melhor do esporte, turismo e lazer exclusivamente nas praias!
               </p>
             </div>
 
@@ -111,7 +106,7 @@ const Home = () => {
                 className="text-white border border-white/30 hover:bg-white/10"
                 onClick={() => window.open('https://www.praiativa.com.br/blog', '_blank')}
               >
-                <ArrowRight className="mr-2 h-4 w-4" />
+                <BookOpen className="mr-2 h-4 w-4" />
                 Blog
               </Button>
               <Button 
@@ -119,12 +114,12 @@ const Home = () => {
                 className="text-white border border-white/30 hover:bg-white/10"
                 onClick={() => window.open('https://www.youtube.com/@praiativasuaatividadesuapr3965', '_blank')}
               >
-                <ArrowRight className="mr-2 h-4 w-4" />
-                TV PraiAtiva
+                <Tv className="mr-2 h-4 w-4" />
+                TV PRAIATIVA
               </Button>
               <Link to="/sobre">
                 <Button variant="ghost" className="text-white border border-white/30 hover:bg-white/10">
-                  <ArrowRight className="mr-2 h-4 w-4" />
+                  <Info className="mr-2 h-4 w-4" />
                   Sobre nós
                 </Button>
               </Link>
@@ -138,7 +133,7 @@ const Home = () => {
                   });
                 }}
               >
-                <ArrowRight className="mr-2 h-4 w-4" />
+                <Phone className="mr-2 h-4 w-4" />
                 Contato
               </Button>
             </div>
@@ -146,8 +141,8 @@ const Home = () => {
             {/* Main CTAs */}
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
               <Link to="/cadastro">
-                <Button variant="hero" size="lg" className="w-full sm:w-auto">
-                  Cadastre-se gratuitamente
+                <Button variant="cta" size="lg" className="w-full sm:w-auto text-primary hover:text-primary">
+                  Cadastre-se <br />gratuitamente!
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -169,23 +164,28 @@ const Home = () => {
             <h2 className="text-3xl md:text-4xl font-bold text-primary">
               Se essa é sua praia, se joga!
             </h2>
-            <p className="text-lg text-muted-foreground max-w-2xl mx-auto">
+            <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-bold">
               Crie uma rotina de vida mais ativa, saudável e integrada à natureza!
             </p>
             <div className="space-y-4 text-muted-foreground">
               <p>
-                PRAIATIVA conecta quem busca a quem oferece todas as atividades de esporte, lazer e
-                turismo exclusivamente nas praias. No seu tempo, do seu jeito, na palma de sua mão!
+                PRAIATIVA conecta quem busca a quem oferece todas as atividades de esporte, lazer e turismo nas praias. No seu tempo, do seu jeito, na palma de sua mão! Autoestima, bom humor, força mental e física e superação é também uma questão de treino: precisam ser praticadas sempre.
               </p>
-              <p>
-                Autoestima, força mental e física e uma vida mais saudável, tudo isso é também uma
-                questão de treino: precisam ser praticadas sempre.
-              </p>
-              <p className="font-medium text-primary">
-                <Link to="/sobre" className="hover:text-primary/80 hover:scale-105 transition-all duration-200 cursor-pointer inline-block">
-                  Vamos nessa? Descubra mais sobre nossa história
+              <div className="font-bold text-primary">
+                <Link 
+                  to="/sobre" 
+                  className="font-bold text-lg md:text-xl hover:text-primary/80 hover:scale-105 transition-all duration-200 cursor-pointer inline-flex items-center gap-2 bg-primary/10 hover:bg-primary/20 px-4 py-2 rounded-lg border border-primary/20 hover:border-primary/40"
+                  onClick={() => {
+                    // Força o scroll para o topo quando navegar para a página
+                    setTimeout(() => {
+                      window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }, 100);
+                  }}
+                >
+                  <span>Vamos nessa? Descubra mais sobre nossa história</span>
+                  <ArrowRight className="h-4 w-4 md:h-5 md:w-5" />
                 </Link>
-              </p>
+              </div>
             </div>
           </div>
         </div>
@@ -203,28 +203,6 @@ const Home = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="absolute bottom-4 left-4 text-white">
                     <h3 className="text-2xl font-bold mb-2">No mar</h3>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {activities
-                        .filter(activity => getActivityCategory(activity.title) === 'sea')
-                        .reduce((unique: any[], activity) => {
-                          // Mostrar apenas tipos únicos de atividades
-                          if (!unique.find(item => item.title === activity.title)) {
-                            unique.push(activity);
-                          }
-                          return unique;
-                        }, [])
-                        .slice(0, 3)
-                        .map((activity, index) => (
-                          <span key={index} className="bg-accent px-3 py-1 rounded-full text-sm">
-                            {activity.title}
-                          </span>
-                        ))}
-                    </div>
-                    <p className="text-sm opacity-90 mb-3">
-                      {activities.filter(activity => getActivityCategory(activity.title) === 'sea').length > 0 
-                        ? `${activities.filter(activity => getActivityCategory(activity.title) === 'sea').length} atividade${activities.filter(activity => getActivityCategory(activity.title) === 'sea').length > 1 ? 's' : ''} disponível${activities.filter(activity => getActivityCategory(activity.title) === 'sea').length > 1 ? 'eis' : ''}`
-                        : 'Nenhuma atividade disponível'}
-                    </p>
                     <div className="flex items-center text-sm font-medium">
                       <span>Ver atividades</span>
                       <ArrowRight className="ml-2 h-4 w-4" />
@@ -242,28 +220,6 @@ const Home = () => {
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="absolute bottom-4 left-4 text-white">
                     <h3 className="text-2xl font-bold mb-2">Na areia e calçadão</h3>
-                    <div className="flex flex-wrap gap-2 mb-4">
-                      {activities
-                        .filter(activity => getActivityCategory(activity.title) === 'sand')
-                        .reduce((unique: any[], activity) => {
-                          // Mostrar apenas tipos únicos de atividades
-                          if (!unique.find(item => item.title === activity.title)) {
-                            unique.push(activity);
-                          }
-                          return unique;
-                        }, [])
-                        .slice(0, 3)
-                        .map((activity, index) => (
-                          <span key={index} className="bg-cta px-3 py-1 rounded-full text-sm">
-                            {activity.title}
-                          </span>
-                        ))}
-                    </div>
-                    <p className="text-sm opacity-90 mb-3">
-                      {activities.filter(activity => getActivityCategory(activity.title) === 'sand').length > 0 
-                        ? `${activities.filter(activity => getActivityCategory(activity.title) === 'sand').length} atividade${activities.filter(activity => getActivityCategory(activity.title) === 'sand').length > 1 ? 's' : ''} disponível${activities.filter(activity => getActivityCategory(activity.title) === 'sand').length > 1 ? 'eis' : ''}`
-                        : 'Nenhuma atividade disponível'}
-                    </p>
                     <div className="flex items-center text-sm font-medium">
                       <span>Ver atividades</span>
                       <ArrowRight className="ml-2 h-4 w-4" />
@@ -276,7 +232,7 @@ const Home = () => {
 
           <div className="text-center mt-12">
             <Link to="/atividades">
-              <Button variant="cta" size="lg">
+              <Button variant="cta" size="lg" className="text-primary hover:text-primary">
                 CONHEÇA TODAS AS ATIVIDADES
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
@@ -310,7 +266,7 @@ const Home = () => {
                 <CardContent className="p-6">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm">Esporte</span>
-                    <span className="text-sm text-muted-foreground">Sáb 11 e Dom 12 de Outubro</span>
+                    <span className="text-sm text-muted-foreground">Sáb - 11 a Dom - 12/10/25</span>
                   </div>
                   <h3 className="text-xl font-bold text-primary mb-3">
                     4ª ETAPA DO CIRCUITO NITEROIENSE DE BEACH TENNIS
@@ -345,7 +301,7 @@ const Home = () => {
                 <CardContent className="p-6">
                   <div className="flex items-center gap-2 mb-3">
                     <span className="bg-accent text-accent-foreground px-3 py-1 rounded-full text-sm">Esporte</span>
-                    <span className="text-sm text-muted-foreground">Sáb 18 de Outubro</span>
+                    <span className="text-sm text-muted-foreground">Sáb - 18/10/25</span>
                   </div>
                   <h3 className="text-xl font-bold text-primary mb-3">
                     3ª ETAPA DO SUPER PADDLE (CANOA HAVAIANA)
@@ -438,21 +394,20 @@ const Home = () => {
               Por que escolher o PRAIATIVA?
             </h2>
             <p className="text-xl text-muted-foreground">
-              Transpire. Inspire. Praiative-se!
+              Supere. Se inspire. Praiative-se!
             </p>
             <p className="text-muted-foreground mt-4 max-w-3xl mx-auto">
-              Desbloqueie o melhor da sua praia com segurança, liberdade e muito movimento. Deixe a
-              rotina de lado e viva experiências ao ar livre — do seu jeito.
+              Descubra a praia que vai mudar sua vida: mais ativa, saudável, segura, inspiradora, acessível e inclusiva! Do seu jeito, na palma de sua mão!
             </p>
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
             <Card className="text-center p-6">
-              <div className="text-4xl mb-4">💰</div>
+              <div className="text-4xl mb-4">🐷</div>
               <div className="text-3xl font-bold text-primary mb-2">200%</div>
               <div className="text-sm font-semibold text-muted-foreground mb-2">ECONOMIA EM SAÚDE</div>
               <p className="text-xs text-muted-foreground">
-                Investir em atividade física pode gerar até 200% de economia em gastos com saúde a longo prazo.
+                Investir em atividade física pode gerar 200% de economia em gastos com saúde!
               </p>
             </Card>
 
@@ -461,7 +416,7 @@ const Home = () => {
               <div className="text-3xl font-bold text-primary mb-2">97%</div>
               <div className="text-sm font-semibold text-muted-foreground mb-2">SAÚDE E BOA FORMA</div>
               <p className="text-xs text-muted-foreground">
-                Dos brasileiros relacionam esportes diretamente à saúde física e mental, com benefícios comprovados.
+                Quase 100% dos brasileiros relacionam esportes à saúde física e mental, fato já comprovado.
               </p>
             </Card>
 
@@ -470,24 +425,24 @@ const Home = () => {
               <div className="text-3xl font-bold text-primary mb-2">60%</div>
               <div className="text-sm font-semibold text-muted-foreground mb-2">SEDENTARISMO</div>
               <p className="text-xs text-muted-foreground">
-                Dos brasileiros não praticam atividade física regularmente, aumentando em 30% o risco de desenvolver doenças.
+                Mais da metade dos brasileiros não pratica atividade física aumentando, em 30% o risco para doenças graves.
               </p>
             </Card>
 
             <Card className="text-center p-6">
               <div className="text-4xl mb-4">🏖️</div>
-              <div className="text-3xl font-bold text-primary mb-2">500+</div>
-              <div className="text-sm font-semibold text-muted-foreground mb-2">OPÇÕES EM 1KM</div>
+              <div className="text-3xl font-bold text-primary mb-2">400+</div>
+              <div className="text-sm font-semibold text-muted-foreground mb-2">ATIVIDADES EM 1 KM</div>
               <p className="text-xs text-muted-foreground">
-                Mais de 500 opções de atividades esportivas em apenas 1km de praia. São 7,3 mil km de litoral para explorar!
+                Números só da Praia de Icaraí (Niterói/RJ) e são 7,3 mil km de litoral no Brasil!
               </p>
             </Card>
           </div>
 
           <div className="text-center mt-12">
             <Link to="/cadastro">
-              <Button variant="cta" size="lg">
-                CADASTRE-SE AGORA
+              <Button variant="cta" size="lg" className="text-primary hover:text-primary">
+                CADASTRE-SE AGORA <br />É GRÁTIS!
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>

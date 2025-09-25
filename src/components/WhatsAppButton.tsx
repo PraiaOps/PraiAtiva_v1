@@ -6,7 +6,7 @@ import {
 
 const WhatsAppButton = () => {
   // TODO: Replace with the correct phone number
-  const phoneNumber = "5521995512227"; // Example: 55 (Brazil) + 21 (Rio) + 999999999 (Number)
+  const phoneNumber = "5521991732847"; // Example: 55 (Brazil) + 21 (Rio) + 999999999 (Number)
   const message = "Olá! Gostaria de mais informações sobre o PraiAtiva.";
   const whatsappUrl = `https://wa.me/${phoneNumber}?text=${encodeURIComponent(
     message

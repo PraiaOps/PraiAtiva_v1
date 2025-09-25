@@ -232,7 +232,7 @@ const Home = () => {
 
           <div className="text-center mt-12">
             <Link to="/atividades">
-              <Button variant="cta" size="lg" className="w-full sm:w-auto text-primary hover:text-primary">
+              <Button variant="cta" size="lg" className="w-full sm:w-auto text-primary hover:text-primary text-xs sm:text-base">
                 CONHEÇA TODAS AS ATIVIDADES
                 <ArrowRight className="ml-2 h-5 w-5" />
 

@@ -183,6 +183,9 @@ strong, b,
 }
 
 @layer components {
+  .btn-responsive-text {
+    @apply whitespace-normal sm:whitespace-nowrap;
+  }
   /* Ocean hero section */
   .hero-ocean {
     background: var(--gradient-ocean);

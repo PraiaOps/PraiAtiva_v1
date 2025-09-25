@@ -1,0 +1,37 @@
+/* AnimatedWave.css */
+.wave-svg {
+  width: 100%;
+  height: auto;
+}
+
+/* Velocidade intermediária da animação */
+.wave-1, .wave-2, .wave-3 {
+  animation: wave-animation 20s linear infinite;
+}
+
+.wave-2 {
+  animation-delay: -5s;
+  animation-duration: 25s;
+}
+
+.wave-3 {
+  animation-delay: -2s;
+  animation-duration: 30s;
+}
+
+@keyframes wave-animation {
+  0% {
+    transform: translateX(0);
+  }
+  100% {
+    transform: translateX(-352px); 
+  }
+}
+
+.wave-container {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 1;
+}

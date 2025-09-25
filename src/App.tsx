@@ -18,7 +18,6 @@ import TermosDeUso from "./pages/TermosDeUso";
 import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade";
 import NotFound from "./pages/NotFound";
 import WhatsAppButton from "@/components/WhatsAppButton";
-import WhatsAppButton from "@/components/WhatsAppButton";
 
 const queryClient = new QueryClient();
 

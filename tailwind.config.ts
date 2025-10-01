@@ -14,9 +14,10 @@ export default {
     },
     extend: {
       fontFamily: {
-        'freedoka': ['Fredoka Expanded', 'cursive'],
-        'freedoka-bold': ['Fredoka Expanded SemiBold', 'cursive'],
-        'sans': ['Fredoka Expanded', 'cursive'],
+        'fredoka-text': ['Fredoka SemiCondensed', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+        'fredoka-sub': ['Fredoka SemiCondensed SemiBold', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+        'fredoka-title': ['Fredoka SemiBold', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
+        'sans': ['Fredoka SemiCondensed', 'system-ui', '-apple-system', 'Segoe UI', 'Roboto', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",

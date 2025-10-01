@@ -17,6 +17,8 @@ import circuitoFuncionalImage from "@/assets/circuito-funcional.jpg";
 import beachTennisEventImg from "@/assets/beachtennis.jpg";
 import canoaHavaianaEventImg from "@/assets/canoa-havaiana.jpg";
 import AnimatedWave from "@/components/AnimatedWave";
+import marImage from "@/assets/mar.jpg";
+import areiaImage from "@/assets/areia.jpg";
 
 const Home = () => {
   const { activities, isLoading, instructorNames } = usePublicActivities();
@@ -56,15 +58,21 @@ const Home = () => {
     title: activity.title,
     locationName: activity.location_name || 'Local não especificado',
     location: activity.beach === 'Outra' ? activity.city : `${activity.beach}, ${activity.city}`,
+    city: activity.city,
+    state: (activity as any).state,
+    neighborhood: (activity as any).neighborhood,
+    beach: activity.beach,
     address: activity.address || '',
     instructor: instructorNames[activity.instructor_id] || '',
-    time: `${activity.time}`,
-    capacity: `${activity.enrollments}/${activity.capacity}`,
-    price: `R$ ${activity.price.toFixed(2)}`,
+    time: activity.time ? String(activity.time) : '',
+    capacity: activity.capacity != null ? `${activity.enrollments}/${activity.capacity}` : `${activity.enrollments}`,
+    price: activity.price != null ? `R$ ${Number(activity.price).toFixed(2)}` : '',
     image: getActivityImage(activity.title),
     category: getActivityCategory(activity.title),
-    dayOfWeek: activity.date,
+    dayOfWeek: activity.date ? String(activity.date) : '',
     description: activity.description || '',
+    socials: (activity as any).socials || '',
+    contact: (activity as any).contact || '',
   }));
 
   // Selecionar 6 atividades aleatórias para destaque
@@ -84,7 +92,7 @@ const Home = () => {
       <Header />
       
       {/* Hero Section */}
-      <section className="hero-ocean min-h-[600px] flex items-center justify-center text-center text-white relative pb-20">
+      <section className="hero-ocean min-h-[600px] flex items-center justify-center text-center text-white relative pb-20 pt-12 sm:pt-14 md:pt-[4.5rem]">
         <div className="absolute inset-0 bg-black/20"></div>
         <div className="container mx-auto px-4 relative z-10">
           <div className="max-w-4xl mx-auto space-y-6">
@@ -201,7 +209,7 @@ const Home = () => {
             <Link to="/atividades?category=sea" className="block">
               <Card className="card-hover overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200">
                 <div className="relative h-64">
-                  <img src={canoaImage} alt="Atividades no mar" className="w-full h-full object-cover" />
+                  <img src={marImage} alt="Atividades no mar" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="absolute bottom-4 left-4 text-white">
                     <h3 className="text-2xl font-bold mb-2">No mar</h3>
@@ -218,7 +226,7 @@ const Home = () => {
             <Link to="/atividades?category=sand" className="block">
               <Card className="card-hover overflow-hidden cursor-pointer hover:scale-105 transition-transform duration-200">
                 <div className="relative h-64">
-                  <img src={beachvolleyImage} alt="Atividades na areia" className="w-full h-full object-cover" />
+                  <img src={areiaImage} alt="Atividades na areia" className="w-full h-full object-cover" />
                   <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
                   <div className="absolute bottom-4 left-4 text-white">
                     <h3 className="text-2xl font-bold mb-2">Na areia e calçadão</h3>
@@ -280,7 +288,7 @@ const Home = () => {
                   <p className="text-muted-foreground mb-4">
                     <strong>Local:</strong> Praia de Icaraí - Avenida Jornalista Alberto Francisco Torres
                   </p>
-                  <Button variant="outline" className="text-primary border-primary hover:bg-primary hover:text-primary-foreground">
+                  <Button variant="outline" className="text-primary border-primary hover:bg-primary hover:text-primary-foreground" onClick={() => window.open('https://esporte.niteroi.rj.gov.br/eventos/', '_blank')}>
                     Ver detalhes <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </CardContent>
@@ -315,7 +323,7 @@ const Home = () => {
                   <p className="text-muted-foreground mb-4">
                     <strong>Local:</strong> Praia de Itaipu
                   </p>
-                  <Button variant="outline" className="text-primary border-primary hover:bg-primary hover:text-primary-foreground">
+                  <Button variant="outline" className="text-primary border-primary hover:bg-primary hover:text-primary-foreground" onClick={() => window.open('https://esporte.niteroi.rj.gov.br/eventos/', '_blank')}>
                     Ver detalhes <ArrowRight className="ml-2 h-4 w-4" />
                   </Button>
                 </CardContent>

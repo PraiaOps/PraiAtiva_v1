@@ -29,8 +29,12 @@ export interface Activity {
   location_name: string
   title: 'Beach Tennis' | 'Canoa Havaiana' | 'Futevôlei' | 'Vôlei de Praia' | 'Vela' | 'Circuito Funcional'
   city: 'Niterói' | 'Rio de Janeiro'
-  beach: 'Icaraí' | 'Charitas' | 'São Francisco' | 'Ponta D\'Areia' | 'Camboinhas' | 'Gragoatá' | 'Outra'
+  state: string
+  beach: 'Icaraí' | 'Charitas' | 'São Francisco' | 'Camboinhas' | 'Gragoatá' | 'Outra'
   address: string
+  neighborhood?: string
+  contact?: string
+  socials?: string
   date: 'Segunda-feira' | 'Terça-feira' | 'Quarta-feira' | 'Quinta-feira' | 'Sexta-feira' | 'Sábado' | 'Domingo' // Mantido para compatibilidade
   days_of_week: ('Segunda-feira' | 'Terça-feira' | 'Quarta-feira' | 'Quinta-feira' | 'Sexta-feira' | 'Sábado' | 'Domingo')[]
   time: 'manhã' | 'tarde' | 'noite'

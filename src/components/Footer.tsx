@@ -18,7 +18,7 @@ const Footer = () => {
             <img 
               src={logoImage} 
               alt="PraiAtiva" 
-              className="h-10 w-auto rounded-sm"
+              className="h-10 w-auto"
             />
             <p className="text-sm text-primary-foreground opacity-90">
               Conectando pessoas a uma vida mais ativa, saudável, inspiradora e integrada à natureza. Se essa é sua praia: PRAIATIVA é seu app!

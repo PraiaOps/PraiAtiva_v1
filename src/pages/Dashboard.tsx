@@ -36,8 +36,12 @@ const Dashboard = () => {
     locationName: "",
     title: "",
     city: "",
+    state: "RJ",
     beach: "",
     address: "",
+    neighborhood: "",
+    contact: "",
+    socials: "",
     day: "",
     daysOfWeek: [] as string[],
     time: "",
@@ -68,7 +72,6 @@ const Dashboard = () => {
       "Icaraí",
       "Charitas",
       "São Francisco", 
-      "Ponta D'Areia",
       "Camboinhas",
       "Gragoatá",
     ],
@@ -183,30 +186,39 @@ const Dashboard = () => {
     }
     
     // Validar campos obrigatórios
-    if (!newActivity.locationName || !newActivity.title || !newActivity.city || !newActivity.beach || !newActivity.address || newActivity.daysOfWeek.length === 0 || !newActivity.time || !newActivity.capacity || newActivity.price === "") {
+    if (!newActivity.locationName || !newActivity.title || !newActivity.city || !newActivity.state || !newActivity.beach) {
       toast({
         title: "Erro",
-        description: "Por favor, preencha todos os campos obrigatórios e selecione pelo menos um dia da semana",
+        description: "Por favor, preencha os campos obrigatórios: Nome do local, Cidade, Estado, Tipo de Atividade e Praia.",
         variant: "destructive",
       });
       return;
     }
 
     try {
-      const activityData = {
+      const normalizeTime = (t?: string) => {
+        if (!t) return null;
+        const map: Record<string, string> = { 'manha': 'manhã', 'manhã': 'manhã', 'tarde': 'tarde', 'noite': 'noite' };
+        return map[t] || null;
+      };
+
+      const activityData: any = {
         location_name: newActivity.locationName,
-        title: newActivity.title as "Beach Tennis" | "Canoa Havaiana" | "Futevôlei" | "Vôlei de Praia" | "Vela" | "Circuito Funcional",
-        city: newActivity.city as "Niterói" | "Rio de Janeiro",
-        beach: newActivity.beach as any, // Será validado pelo banco com a constraint
-        address: newActivity.address,
-        date: newActivity.daysOfWeek[0] as "Segunda-feira" | "Terça-feira" | "Quarta-feira" | "Quinta-feira" | "Sexta-feira" | "Sábado" | "Domingo", // Primeiro dia para compatibilidade
-        days_of_week: newActivity.daysOfWeek as ("Segunda-feira" | "Terça-feira" | "Quarta-feira" | "Quinta-feira" | "Sexta-feira" | "Sábado" | "Domingo")[],
-        time: newActivity.time as "manhã" | "tarde" | "noite",
-        capacity: parseInt(newActivity.capacity),
-        price: parseFloat(newActivity.price),
+        title: newActivity.title as any,
+        city: newActivity.city as any,
+        state: newActivity.state,
+        beach: newActivity.beach as any,
+        address: newActivity.address === '' ? null : (newActivity.address || null),
+        neighborhood: newActivity.neighborhood === '' ? null : (newActivity.neighborhood || null),
+        contact: newActivity.contact === '' ? null : (newActivity.contact || null),
+        socials: newActivity.socials === '' ? null : (newActivity.socials || null),
+        date: newActivity.day ? newActivity.day as any : null,
+        time: normalizeTime(newActivity.time),
+        capacity: newActivity.capacity === '' ? null : (Number(newActivity.capacity) > 0 ? parseInt(newActivity.capacity) : null),
+        price: newActivity.price === '' ? null : (newActivity.price ? parseFloat(newActivity.price) : null),
         description: newActivity.description || null,
         status: "active" as const,
-        is_featured: false, // Novas atividades não são destaque por padrão
+        is_featured: false,
       };
 
       const result = await createActivity(activityData);
@@ -223,8 +235,12 @@ const Dashboard = () => {
           locationName: "",
           title: "",
           city: "",
+          state: "RJ",
           beach: "",
           address: "",
+          neighborhood: "",
+          contact: "",
+          socials: "",
           day: "",
           daysOfWeek: [],
           time: "",
@@ -255,13 +271,17 @@ const Dashboard = () => {
       locationName: activity.location_name || "",
       title: activity.title,
       city: activity.city || "",
+      state: activity.state || "RJ",
       beach: activity.beach || "",
       address: activity.address || "",
-      day: activity.date,
-      daysOfWeek: activity.days_of_week || [activity.date || ""],
-      time: activity.time,
-      capacity: activity.capacity.toString(),
-      price: activity.price.toString(),
+      neighborhood: activity.neighborhood || "",
+      contact: activity.contact || "",
+      socials: activity.socials || "",
+      day: activity.date || "",
+      daysOfWeek: [],
+      time: activity.time || "",
+      capacity: activity.capacity != null ? String(activity.capacity) : "",
+      price: activity.price != null ? String(activity.price) : "",
       description: activity.description || "",
     });
     setIsEditActivityOpen(true);
@@ -271,30 +291,42 @@ const Dashboard = () => {
     e.preventDefault();
     
     // Validar campos obrigatórios
-    if (!newActivity.locationName || !newActivity.title || !newActivity.city || !newActivity.beach || !newActivity.address || newActivity.daysOfWeek.length === 0 || !newActivity.time || !newActivity.capacity || newActivity.price === "") {
+    if (!newActivity.locationName || !newActivity.title || !newActivity.city || !newActivity.state || !newActivity.beach) {
       toast({
         title: "Erro",
-        description: "Por favor, preencha todos os campos obrigatórios e selecione pelo menos um dia da semana",
+        description: "Por favor, preencha os campos obrigatórios: Nome do local, Cidade, Estado, Tipo de Atividade e Praia.",
         variant: "destructive",
       });
       return;
     }
 
     try {
-      const activityData = {
-        location_name: newActivity.locationName,
-        title: newActivity.title as "Beach Tennis" | "Canoa Havaiana" | "Futevôlei" | "Vôlei de Praia" | "Vela" | "Circuito Funcional",
-        city: newActivity.city as "Niterói" | "Rio de Janeiro",
-        beach: newActivity.beach as any, // Será validado pelo banco com a constraint
-        address: newActivity.address,
-        date: newActivity.daysOfWeek[0] as "Segunda-feira" | "Terça-feira" | "Quarta-feira" | "Quinta-feira" | "Sexta-feira" | "Sábado" | "Domingo", // Primeiro dia para compatibilidade
-        days_of_week: newActivity.daysOfWeek as ("Segunda-feira" | "Terça-feira" | "Quarta-feira" | "Quinta-feira" | "Sexta-feira" | "Sábado" | "Domingo")[],
-        time: newActivity.time as "manhã" | "tarde" | "noite",
-        capacity: parseInt(newActivity.capacity),
-        price: parseFloat(newActivity.price),
-        description: newActivity.description || null,
-        // Não alteramos is_featured ao editar - deve ser alterado pelo botão específico
+      const normalizeTime = (t?: string) => {
+        if (!t) return undefined;
+        const map: Record<string, string> = { 'manha': 'manhã', 'manhã': 'manhã', 'tarde': 'tarde', 'noite': 'noite' };
+        return map[t] || undefined;
       };
+
+      const rawData: any = {
+        location_name: newActivity.locationName,
+        title: newActivity.title as any,
+        city: newActivity.city as any,
+        state: newActivity.state,
+        beach: newActivity.beach as any,
+        address: newActivity.address === '' ? null : (newActivity.address || undefined),
+        neighborhood: newActivity.neighborhood === '' ? null : (newActivity.neighborhood || undefined),
+        contact: newActivity.contact === '' ? null : (newActivity.contact || undefined),
+        socials: newActivity.socials === '' ? null : (newActivity.socials || undefined),
+        // Opcionais: null apaga, undefined mantém
+        date: newActivity.day === '' ? null : (newActivity.day ? (newActivity.day as any) : undefined),
+        time: newActivity.time === '' ? null : normalizeTime(newActivity.time),
+        capacity: newActivity.capacity === '' ? null : (Number(newActivity.capacity) > 0 ? parseInt(newActivity.capacity) : null),
+        price: newActivity.price === '' ? null : (newActivity.price ? parseFloat(newActivity.price) : undefined),
+        description: newActivity.description || undefined,
+      };
+
+      // Remover chaves undefined para evitar 400 do PostgREST
+      const activityData = Object.fromEntries(Object.entries(rawData).filter(([_, v]) => v !== undefined));
 
       const result = await updateActivity(editingActivity.id, activityData);
       
@@ -311,8 +343,12 @@ const Dashboard = () => {
           locationName: "",
           title: "",
           city: "",
+          state: "RJ",
           beach: "",
           address: "",
+          neighborhood: "",
+          contact: "",
+          socials: "",
           day: "",
           daysOfWeek: [],
           time: "",
@@ -426,11 +462,12 @@ const Dashboard = () => {
                     Nova Atividade
                   </Button>
                 </DialogTrigger>
-                <DialogContent className="max-w-2xl w-[95vw] sm:w-auto max-h-[85vh] overflow-y-auto p-4 md:p-6">
+                <DialogContent className="w-[95vw] sm:w-full max-w-3xl max-h-[85vh] overflow-y-auto p-4 md:p-6">
                   <DialogHeader>
                     <DialogTitle>Criar Nova Atividade</DialogTitle>
                   </DialogHeader>
-                  <form onSubmit={handleCreateActivity} className="space-y-4">
+                  <form onSubmit={handleCreateActivity} className="space-y-6">
+                    <div className="text-xs text-muted-foreground">Campos obrigatórios estão marcados com *</div>
                     <div className="space-y-2">
                       <Label htmlFor="location-name">Nome do local de atuação *</Label>
                       <Input
@@ -443,7 +480,9 @@ const Dashboard = () => {
                       />
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="pt-4 border-t">
+                      <h4 className="text-sm font-semibold mb-3">Localização</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="city">Cidade *</Label>
                         <Select 
@@ -460,8 +499,22 @@ const Dashboard = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      
                       <div className="space-y-2">
+                        <Label htmlFor="state">Estado *</Label>
+                        <Select 
+                          value={newActivity.state}
+                          onValueChange={(value) => setNewActivity(prev => ({ ...prev, state: value }))}
+                        >
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Selecione o estado" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="RJ">RJ</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      
+                      <div className="space-y-2 md:col-span-1">
                         <Label htmlFor="activity-type">Tipo de Atividade *</Label>
                         <Select 
                           value={newActivity.title} 
@@ -477,9 +530,12 @@ const Dashboard = () => {
                           </SelectContent>
                         </Select>
                       </div>
+                      </div>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="pt-4 border-t">
+                      <h4 className="text-sm font-semibold mb-3">Endereço</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="beach">Praia *</Label>
                         <Select 
@@ -499,29 +555,58 @@ const Dashboard = () => {
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="address">Endereço *</Label>
+                        <Label htmlFor="address">Endereço</Label>
                         <Input
                           id="address"
                           type="text"
                           value={newActivity.address}
                           onChange={(e) => setNewActivity(prev => ({ ...prev, address: e.target.value }))}
                           placeholder="Ex: Avenida Roberto Silveira, 123"
-                          required
                         />
+                      </div>
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="pt-4 border-t">
+                      <h4 className="text-sm font-semibold mb-3">Informações adicionais</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="day">Dia da Semana *</Label>
+                        <Label htmlFor="neighborhood">Bairro</Label>
+                        <Input
+                          id="neighborhood"
+                          type="text"
+                          value={newActivity.neighborhood}
+                          onChange={(e) => setNewActivity(prev => ({ ...prev, neighborhood: e.target.value }))}
+                          placeholder="Ex: Icaraí"
+                        />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="contact">Contato (WhatsApp, telefone ou link)</Label>
+                        <Input
+                          id="contact"
+                          type="text"
+                          value={newActivity.contact}
+                          onChange={(e) => setNewActivity(prev => ({ ...prev, contact: e.target.value }))}
+                          placeholder="Ex: (21) 99999-9999 ou https://..."
+                        />
+                      </div>
+                      </div>
+                    </div>
+                    
+                    <div className="pt-4 border-t">
+                      <h4 className="text-sm font-semibold mb-3">Horários</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="day">Dia da Semana</Label>
                         <Select 
-                          value={newActivity.day} 
-                          onValueChange={(value) => setNewActivity(prev => ({ ...prev, day: value }))}
+                          value={newActivity.day}
+                          onValueChange={(value) => setNewActivity(prev => ({ ...prev, day: value === '__none__' ? '' : value }))}
                         >
                           <SelectTrigger id="day" className="w-full">
                             <SelectValue placeholder="Selecione o dia" />
                           </SelectTrigger>
                           <SelectContent>
+                            <SelectItem value="__none__">Limpar seleção</SelectItem>
                             {daysOfWeek.map((day) => (
                               <SelectItem key={day} value={day}>{day}</SelectItem>
                             ))}
@@ -530,26 +615,30 @@ const Dashboard = () => {
                       </div>
                       
                       <div className="space-y-2">
-                        <Label htmlFor="time">Horário *</Label>
+                        <Label htmlFor="time">Horário</Label>
                         <Select 
-                          value={newActivity.time} 
-                          onValueChange={(value) => setNewActivity(prev => ({ ...prev, time: value }))}
+                          value={newActivity.time}
+                          onValueChange={(value) => setNewActivity(prev => ({ ...prev, time: value === '__none__' ? '' : value }))}
                         >
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Selecione" />
                           </SelectTrigger>
                           <SelectContent>
+                            <SelectItem value="__none__">Limpar seleção</SelectItem>
                             <SelectItem value="manha">Manhã</SelectItem>
                             <SelectItem value="tarde">Tarde</SelectItem>
                             <SelectItem value="noite">Noite</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
+                      </div>
                     </div>
                     
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="pt-4 border-t">
+                      <h4 className="text-sm font-semibold mb-3">Capacidade e Preço</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="capacity">Vagas *</Label>
+                        <Label htmlFor="capacity">Vagas</Label>
                         <Input
                           id="capacity"
                           type="number"
@@ -557,7 +646,6 @@ const Dashboard = () => {
                           onChange={(e) => setNewActivity(prev => ({ ...prev, capacity: e.target.value }))}
                           placeholder="Número máximo de participantes"
                           min="1"
-                          required
                         />
                       </div>
                       
@@ -573,9 +661,11 @@ const Dashboard = () => {
                           step="0.01"
                         />
                       </div>
+                      </div>
                     </div>
                     
-                    <div className="space-y-2">
+                    <div className="pt-4 border-t space-y-2">
+                      <h4 className="text-sm font-semibold mb-1">Descrição</h4>
                       <Label htmlFor="description">Descrição</Label>
                       <Textarea
                         id="description"
@@ -583,6 +673,17 @@ const Dashboard = () => {
                         onChange={(e) => setNewActivity(prev => ({ ...prev, description: e.target.value }))}
                         placeholder="Detalhes sobre a atividade..."
                         rows={3}
+                      />
+                    </div>
+
+                    <div className="space-y-2">
+                      <Label htmlFor="socials">Redes sociais (links ou @handles)</Label>
+                      <Input
+                        id="socials"
+                        type="text"
+                        value={newActivity.socials}
+                        onChange={(e) => setNewActivity(prev => ({ ...prev, socials: e.target.value }))}
+                        placeholder="Ex: https://instagram.com/suaacademia; @seuperfil"
                       />
                     </div>
                     
@@ -600,11 +701,12 @@ const Dashboard = () => {
 
               {/* Edit Activity Dialog */}
               <Dialog open={isEditActivityOpen} onOpenChange={setIsEditActivityOpen}>
-                <DialogContent className="max-w-2xl w-[95vw] sm:w-auto max-h-[85vh] overflow-y-auto p-4 md:p-6">
+                <DialogContent className="w-[95vw] sm:w-full max-w-3xl max-h-[85vh] overflow-y-auto p-4 md:p-6">
                   <DialogHeader>
                     <DialogTitle>Editar Atividade</DialogTitle>
                   </DialogHeader>
-                  <form onSubmit={handleUpdateActivity} className="space-y-4">
+                  <form onSubmit={handleUpdateActivity} className="space-y-6">
+                    <div className="text-xs text-muted-foreground">Campos obrigatórios estão marcados com *</div>
                     <div className="space-y-2">
                       <Label htmlFor="edit-location-name">Nome do local de atuação *</Label>
                       <Input
@@ -617,13 +719,12 @@ const Dashboard = () => {
                       />
                     </div>
 
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="pt-4 border-t">
+                      <h4 className="text-sm font-semibold mb-3">Localização</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="edit-city">Cidade *</Label>
-                        <Select 
-                          value={newActivity.city} 
-                          onValueChange={(value) => setNewActivity(prev => ({ ...prev, city: value, beach: "" }))}
-                        >
+                        <Select value={newActivity.city} onValueChange={(value) => setNewActivity(prev => ({ ...prev, city: value, beach: "" }))}>
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Selecione a cidade" />
                           </SelectTrigger>
@@ -634,13 +735,20 @@ const Dashboard = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      
                       <div className="space-y-2">
+                        <Label htmlFor="edit-state">Estado *</Label>
+                        <Select value={newActivity.state} onValueChange={(value) => setNewActivity(prev => ({ ...prev, state: value }))}>
+                          <SelectTrigger className="w-full">
+                            <SelectValue placeholder="Selecione o estado" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="RJ">RJ</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div className="space-y-2 md:col-span-1">
                         <Label htmlFor="edit-activity-type">Tipo de Atividade *</Label>
-                        <Select 
-                          value={newActivity.title} 
-                          onValueChange={(value) => setNewActivity(prev => ({ ...prev, title: value }))}
-                        >
+                        <Select value={newActivity.title} onValueChange={(value) => setNewActivity(prev => ({ ...prev, title: value }))}>
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Selecione" />
                           </SelectTrigger>
@@ -651,16 +759,15 @@ const Dashboard = () => {
                           </SelectContent>
                         </Select>
                       </div>
+                      </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="pt-4 border-t">
+                      <h4 className="text-sm font-semibold mb-3">Endereço</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
                         <Label htmlFor="edit-beach">Praia *</Label>
-                        <Select 
-                          value={newActivity.beach} 
-                          onValueChange={(value) => setNewActivity(prev => ({ ...prev, beach: value }))}
-                          disabled={!newActivity.city}
-                        >
+                        <Select value={newActivity.beach} onValueChange={(value) => setNewActivity(prev => ({ ...prev, beach: value }))} disabled={!newActivity.city}>
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder={newActivity.city ? "Selecione a praia" : "Primeiro selecione a cidade"} />
                           </SelectTrigger>
@@ -671,93 +778,84 @@ const Dashboard = () => {
                           </SelectContent>
                         </Select>
                       </div>
-                      
                       <div className="space-y-2">
-                        <Label htmlFor="edit-address">Endereço *</Label>
-                        <Input
-                          id="edit-address"
-                          type="text"
-                          value={newActivity.address}
-                          onChange={(e) => setNewActivity(prev => ({ ...prev, address: e.target.value }))}
-                          placeholder="Ex: Avenida Roberto Silveira, 123"
-                          required
-                        />
+                        <Label htmlFor="edit-address">Endereço</Label>
+                        <Input id="edit-address" type="text" value={newActivity.address} onChange={(e) => setNewActivity(prev => ({ ...prev, address: e.target.value }))} placeholder="Ex: Avenida Roberto Silveira, 123" />
+                      </div>
                       </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="pt-4 border-t">
+                      <h4 className="text-sm font-semibold mb-3">Informações adicionais</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="edit-day">Dia da Semana *</Label>
-                        <Select 
-                          value={newActivity.day} 
-                          onValueChange={(value) => setNewActivity(prev => ({ ...prev, day: value }))}
-                        >
+                        <Label htmlFor="edit-neighborhood">Bairro</Label>
+                        <Input id="edit-neighborhood" type="text" value={newActivity.neighborhood} onChange={(e) => setNewActivity(prev => ({ ...prev, neighborhood: e.target.value }))} placeholder="Ex: Icaraí" />
+                      </div>
+                      <div className="space-y-2">
+                        <Label htmlFor="edit-contact">Contato (WhatsApp, telefone ou link)</Label>
+                        <Input id="edit-contact" type="text" value={newActivity.contact} onChange={(e) => setNewActivity(prev => ({ ...prev, contact: e.target.value }))} placeholder="Ex: (21) 99999-9999 ou https://..." />
+                      </div>
+                      </div>
+                    </div>
+                    
+                    <div className="pt-4 border-t">
+                      <h4 className="text-sm font-semibold mb-3">Horários</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                      <div className="space-y-2">
+                        <Label htmlFor="edit-day">Dia da Semana</Label>
+                        <Select value={newActivity.day} onValueChange={(value) => setNewActivity(prev => ({ ...prev, day: value === '__none__' ? '' : value }))}>
                           <SelectTrigger id="edit-day" className="w-full">
                             <SelectValue placeholder="Selecione o dia" />
                           </SelectTrigger>
                           <SelectContent>
-                            {daysOfWeek.map((day) => (
-                              <SelectItem key={day} value={day}>{day}</SelectItem>
+                            <SelectItem value="__none__">Limpar seleção</SelectItem>
+                            {daysOfWeek.map((d) => (
+                              <SelectItem key={d} value={d}>{d}</SelectItem>
                             ))}
                           </SelectContent>
                         </Select>
                       </div>
-                      
                       <div className="space-y-2">
-                        <Label htmlFor="edit-time">Horário *</Label>
-                        <Select 
-                          value={newActivity.time} 
-                          onValueChange={(value) => setNewActivity(prev => ({ ...prev, time: value }))}
-                        >
+                        <Label htmlFor="edit-time">Horário</Label>
+                        <Select value={newActivity.time} onValueChange={(value) => setNewActivity(prev => ({ ...prev, time: value === '__none__' ? '' : value }))}>
                           <SelectTrigger className="w-full">
                             <SelectValue placeholder="Selecione" />
                           </SelectTrigger>
                           <SelectContent>
+                            <SelectItem value="__none__">Limpar seleção</SelectItem>
                             <SelectItem value="manhã">Manhã (6h-12h)</SelectItem>
                             <SelectItem value="tarde">Tarde (12h-18h)</SelectItem>
                             <SelectItem value="noite">Noite (18h-22h)</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
+                      </div>
                     </div>
                     
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="pt-4 border-t">
+                      <h4 className="text-sm font-semibold mb-3">Capacidade e Preço</h4>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div className="space-y-2">
-                        <Label htmlFor="edit-capacity">Capacidade Máxima *</Label>
-                        <Input
-                          id="edit-capacity"
-                          type="number"
-                          value={newActivity.capacity}
-                          onChange={(e) => setNewActivity(prev => ({ ...prev, capacity: e.target.value }))}
-                          placeholder="Ex: 10"
-                          required
-                        />
+                        <Label htmlFor="edit-capacity">Capacidade Máxima</Label>
+                        <Input id="edit-capacity" type="number" value={newActivity.capacity} onChange={(e) => setNewActivity(prev => ({ ...prev, capacity: e.target.value }))} placeholder="Ex: 10" />
                       </div>
-                      
                       <div className="space-y-2">
-                        <Label htmlFor="edit-price">Preço (R$) *</Label>
-                        <Input
-                          id="edit-price"
-                          type="number"
-                          step="0.01"
-                          min="0"
-                          value={newActivity.price}
-                          onChange={(e) => setNewActivity(prev => ({ ...prev, price: e.target.value }))}
-                          placeholder="Ex: 25.00 (0 para gratuito)"
-                          required
-                        />
+                        <Label htmlFor="edit-price">Preço (R$)</Label>
+                        <Input id="edit-price" type="number" step="0.01" min="0" value={newActivity.price} onChange={(e) => setNewActivity(prev => ({ ...prev, price: e.target.value }))} placeholder="Ex: 25.00 (0 para gratuito)" />
                       </div>
+                      </div>
+                    </div>
+                    
+                    <div className="pt-4 border-t space-y-2">
+                      <h4 className="text-sm font-semibold mb-1">Descrição</h4>
+                      <Label htmlFor="edit-description">Descrição</Label>
+                      <Textarea id="edit-description" value={newActivity.description} onChange={(e) => setNewActivity(prev => ({ ...prev, description: e.target.value }))} placeholder="Descreva a atividade..." rows={3} />
                     </div>
                     
                     <div className="space-y-2">
-                      <Label htmlFor="edit-description">Descrição</Label>
-                      <Textarea
-                        id="edit-description"
-                        value={newActivity.description}
-                        onChange={(e) => setNewActivity(prev => ({ ...prev, description: e.target.value }))}
-                        placeholder="Descreva a atividade..."
-                        rows={3}
-                      />
+                      <Label htmlFor="edit-socials">Redes sociais (links ou @handles)</Label>
+                      <Input id="edit-socials" type="text" value={newActivity.socials} onChange={(e) => setNewActivity(prev => ({ ...prev, socials: e.target.value }))} placeholder="Ex: https://instagram.com/suaacademia; @seuperfil" />
                     </div>
                     
                     <div className="flex flex-col-reverse md:flex-row gap-2 md:justify-end">

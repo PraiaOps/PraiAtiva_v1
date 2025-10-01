@@ -28,6 +28,10 @@ interface ActivityDetailsModalProps {
     locationName: string;
     location: string;
     address?: string;
+    city?: string;
+    state?: string;
+    neighborhood?: string;
+    beach?: string;
     instructor: string;
     time: string;
     capacity: string;
@@ -36,6 +40,8 @@ interface ActivityDetailsModalProps {
     category: 'sea' | 'sand';
     dayOfWeek?: string;
     description?: string;
+    socials?: string;
+    contact?: string;
   };
 }
 
@@ -64,6 +70,18 @@ const ActivityDetailsModal = ({ isOpen, onClose, activity }: ActivityDetailsModa
   
   if (!activity) return null;
 
+  const socials = activity.socials?.trim() || '';
+  const contact = activity.contact?.trim() || '';
+
+  const formatCityState = (city?: string, state?: string) => {
+    const c = city?.trim();
+    const s = state?.trim();
+    if (c && s) return `${c}/${s}`;
+    if (c) return c;
+    if (s) return s;
+    return '';
+  };
+
   const handleEnroll = () => {
     if (isMobile) {
       toast({
@@ -81,7 +99,7 @@ const ActivityDetailsModal = ({ isOpen, onClose, activity }: ActivityDetailsModa
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="max-w-2xl w-[95vw] sm:w-auto max-h-[90vh] overflow-y-auto p-4 md:p-6">
+      <DialogContent className="w-[95vw] sm:w-full max-w-3xl max-h-[90vh] overflow-y-auto p-4 md:p-6">
         <DialogHeader>
           <DialogTitle className="text-xl md:text-2xl font-bold text-primary">
             {activity.title}
@@ -103,112 +121,82 @@ const ActivityDetailsModal = ({ isOpen, onClose, activity }: ActivityDetailsModa
             </div>
           </div>
 
-          {/* Informações principais */}
+          {/* Informações principais seguindo o roteiro */}
           <div className="space-y-4">
-            <div>
-              <h3 className="text-lg md:text-xl font-semibold text-primary mb-2">
-                {activity.locationName}
-              </h3>
+            {/* Nome do local de atuação */}
+            <h3 className="text-lg md:text-xl font-semibold text-primary">
+              {activity.locationName}
+            </h3>
+
+            {/* Cidade/Estado + Bairro + Praia */}
+            {(activity.city || activity.state || activity.neighborhood || activity.beach) && (
               <div className="flex items-center space-x-2 text-muted-foreground">
                 <MapPin className="h-4 w-4" />
-                <span className="text-sm md:text-base">{activity.location}</span>
+                <span className="text-sm md:text-base">
+                  {formatCityState(activity.city, activity.state)}
+                  {activity.neighborhood ? `, ${activity.neighborhood}` : ''}
+                  {activity.beach ? `, Praia ${activity.beach}` : ''}
+                </span>
               </div>
-              {activity.address && (
-                <div className="mt-2 p-2 md:p-3 bg-muted rounded-lg">
-                  <div className="flex items-start space-x-2">
-                    <MapPin className="h-4 w-4 text-primary mt-0.5" />
-                    <div>
-                      <p className="text-xs md:text-sm font-medium text-foreground">Endereço:</p>
-                      <p className="text-xs md:text-sm text-muted-foreground">{activity.address}</p>
-                    </div>
+            )}
+
+            {/* Endereço/referência */}
+            {activity.address && activity.address.trim().length > 0 && (
+              <div className="p-2 md:p-3 bg-muted rounded-lg">
+                <div className="flex items-start space-x-2">
+                  <MapPin className="h-4 w-4 text-primary mt-0.5" />
+                  <div>
+                    <p className="text-xs md:text-sm font-medium text-foreground">Endereço/referência</p>
+                    <p className="text-xs md:text-sm text-muted-foreground">{activity.address}</p>
                   </div>
                 </div>
-              )}
-            </div>
+              </div>
+            )}
 
             {/* Detalhes da atividade */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
-              <div className="space-y-2 md:space-y-3">
-                <div className="flex items-center space-x-2 md:space-x-3">
-                  {getActivityIcon(activity.title)}
-                  <div>
-                    <p className="text-sm md:text-base font-medium">Tipo de Atividade</p>
-                    <p className="text-xs md:text-sm text-muted-foreground">{activity.title}</p>
-                  </div>
+            {/* Horários */}
+            {(
+              (activity.time && activity.time.trim() !== '' && activity.time.trim().toLowerCase() !== 'null') ||
+              (activity.dayOfWeek && activity.dayOfWeek.trim() !== '' && activity.dayOfWeek.trim().toLowerCase() !== 'null')
+            ) ? (
+              <div className="space-y-1">
+                <h4 className="text-sm md:text-base font-medium text-foreground">Horários</h4>
+                <div className="flex items-center space-x-2 md:space-x-3 text-muted-foreground text-xs md:text-sm">
+                  {activity.dayOfWeek && activity.dayOfWeek.trim() !== '' && activity.dayOfWeek.trim().toLowerCase() !== 'null' && (
+                    <span className="flex items-center"><Calendar className="h-4 w-4 mr-1 text-primary" />{activity.dayOfWeek}</span>
+                  )}
+                  {activity.time && activity.time.trim() !== '' && activity.time.trim().toLowerCase() !== 'null' && (
+                    <span className="flex items-center"><Clock className="h-4 w-4 mr-1 text-primary" />{activity.time}</span>
+                  )}
                 </div>
-
-                <div className="flex items-center space-x-2 md:space-x-3">
-                  <Clock className="h-4 w-4 md:h-5 md:w-5 text-primary" />
-                  <div>
-                    <p className="text-sm md:text-base font-medium">Horário</p>
-                    <p className="text-xs md:text-sm text-muted-foreground capitalize">{activity.time}</p>
-                  </div>
-                </div>
-
-                {activity.dayOfWeek && (
-                  <div className="flex items-center space-x-2 md:space-x-3">
-                    <Calendar className="h-4 w-4 md:h-5 md:w-5 text-primary" />
-                    <div>
-                      <p className="text-sm md:text-base font-medium">Dia da Semana</p>
-                      <p className="text-xs md:text-sm text-muted-foreground">{activity.dayOfWeek}</p>
-                    </div>
-                  </div>
-                )}
               </div>
+            ) : null}
 
-              <div className="space-y-2 md:space-y-3">
-                <div className="flex items-center space-x-2 md:space-x-3">
-                  <Users className="h-4 w-4 md:h-5 md:w-5 text-primary" />
-                  <div>
-                    <p className="text-sm md:text-base font-medium">Capacidade</p>
-                    <p className="text-xs md:text-sm text-muted-foreground">{activity.capacity}</p>
-                  </div>
-                </div>
-
-                <div className="flex items-center space-x-2 md:space-x-3">
-                  <CircleDollarSign className="h-4 w-4 md:h-5 md:w-5 text-primary" />
-                  <div>
-                    <p className="text-sm md:text-base font-medium">Preço</p>
-                    <p className="text-xs md:text-sm text-muted-foreground">{activity.price}</p>
-                  </div>
-                </div>
-
-                {activity.instructor && (
-                  <div className="flex items-center space-x-2 md:space-x-3">
-                    <User className="h-4 w-4 md:h-5 md:w-5 text-primary" />
-                    <div>
-                      <p className="text-sm md:text-base font-medium">Instrutor</p>
-                      <p className="text-xs md:text-sm text-muted-foreground">{activity.instructor}</p>
-                    </div>
-                  </div>
-                )}
+            {/* Descrição/observação */}
+            {activity.description && activity.description.trim().length > 0 && (
+              <div className="space-y-1">
+                <h4 className="text-sm md:text-base font-medium text-foreground">Descrição/observação</h4>
+                <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">{activity.description}</p>
               </div>
-            </div>
+            )}
 
-            {/* Descrição */}
-            {activity.description && (
-              <div className="space-y-2">
-                <h4 className="text-sm md:text-base font-medium text-foreground">Descrição</h4>
-                <p className="text-xs md:text-sm text-muted-foreground leading-relaxed">
-                  {activity.description}
-                </p>
+            {/* Redes sociais */}
+            {socials && socials.trim().length > 0 && (
+              <div className="space-y-1">
+                <h4 className="text-sm md:text-base font-medium text-foreground">Redes sociais</h4>
+                <p className="text-xs md:text-sm text-muted-foreground break-words">{socials}</p>
               </div>
             )}
 
             {/* Informações de contato */}
-            <div className="border-t pt-3 md:pt-4">
-              <h4 className="text-sm md:text-base font-medium text-foreground mb-2 md:mb-3">Informações de Contato</h4>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 md:gap-3">
-                <div className="flex items-center space-x-2 text-xs md:text-sm text-muted-foreground">
-                  <Phone className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>Entre em contato para mais informações</span>
-                </div>
-                <div className="flex items-center space-x-2 text-xs md:text-sm text-muted-foreground">
-                  <Mail className="h-3 w-3 md:h-4 md:w-4" />
-                  <span>Email disponível no perfil do instrutor</span>
-                </div>
+            {contact && contact.trim().length > 0 && (
+              <div className="space-y-1">
+                <h4 className="text-sm md:text-base font-medium text-foreground">Informações de contato</h4>
+                <p className="text-xs md:text-sm text-muted-foreground break-words">{contact}</p>
               </div>
-            </div>
+            )}
+
+          
           </div>
 
           {/* Botões de ação */}

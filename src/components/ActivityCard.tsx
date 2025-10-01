@@ -12,6 +12,10 @@ interface ActivityCardProps {
   locationName: string;
   location: string;
   address?: string;
+  city?: string;
+  state?: string;
+  neighborhood?: string;
+  beach?: string;
   instructor: string;
   time: string;
   capacity: string;
@@ -20,6 +24,8 @@ interface ActivityCardProps {
   category: 'sea' | 'sand';
   dayOfWeek?: string;
   description?: string;
+  socials?: string;
+  contact?: string;
 }
 
 const getActivityIcon = (title: string) => {
@@ -44,6 +50,10 @@ const ActivityCard = ({
   locationName,
   location, 
   address,
+  city,
+  state,
+  neighborhood,
+  beach,
   instructor, 
   time, 
   capacity, 
@@ -51,7 +61,9 @@ const ActivityCard = ({
   image,
   category,
   dayOfWeek,
-  description
+  description,
+  socials,
+  contact
 }: ActivityCardProps) => {
   const [isDetailsModalOpen, setIsDetailsModalOpen] = useState(false);
   const [isEnrollPopoverOpen, setIsEnrollPopoverOpen] = useState(false);
@@ -72,7 +84,7 @@ const ActivityCard = ({
         <img 
           src={image} 
           alt={title}
-          className="w-full h-full object-cover"
+          className={`w-full h-full object-cover ${title === 'Vela' ? 'object-[50%_10%]' : ''}`}
         />
         <div className={`absolute top-2 left-2 px-3 py-1 rounded-full text-xs font-medium ${
           category === 'sea' ? 'activity-card-sea' : 'activity-card-sand'
@@ -148,6 +160,10 @@ const ActivityCard = ({
           locationName,
           location,
           address,
+          city,
+          state,
+          neighborhood,
+          beach,
           instructor,
           time,
           capacity,
@@ -155,7 +171,9 @@ const ActivityCard = ({
           image,
           category,
           dayOfWeek,
-          description
+          description,
+          socials,
+          contact
         }}
       />
       

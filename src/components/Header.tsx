@@ -27,7 +27,7 @@ const Header = () => {
   return (
     <header className="bg-primary text-primary-foreground shadow-lg relative z-50">
       <div className="container mx-auto px-4 py-3 md:py-4">
-        <div className="flex items-center justify-between">
+        <div className="relative flex items-center justify-between">
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <img 
@@ -38,7 +38,7 @@ const Header = () => {
           </Link>
 
           {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-8">
+          <nav className="hidden md:flex items-center space-x-8 md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2">
             <Link 
               to="/" 
               className={`hover:text-cta transition-colors ${isActive('/') ? 'text-cta' : ''}`}
@@ -76,7 +76,7 @@ const Header = () => {
               <>
                 <div className="flex items-center space-x-2 text-sm">
                   <User className="h-4 w-4" />
-                  <span>Olá, {user?.name}</span>
+                  <span className="max-w-[180px] truncate whitespace-nowrap" title={user?.name ?? ''}>Olá, {user?.name}</span>
                 </div>
                 <Link to="/dashboard">
                   <Button variant="ghost" className="text-primary-foreground hover:text-cta hover:bg-primary-hover">

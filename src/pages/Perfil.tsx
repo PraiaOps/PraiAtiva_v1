@@ -8,7 +8,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
 import { useEffect, useState } from "react";
-import { User, Mail, Phone, MapPin, Calendar, Eye, EyeOff } from "lucide-react";
+import { User, Mail, Phone, MapPin, Calendar, Eye, EyeOff, Trash2, Lock, AtSign } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
@@ -283,6 +283,22 @@ const Perfil = () => {
                         Cancelar
                       </Button>
                     </div>
+                    {/* Account Actions */}
+                    <div className="space-y-6 pt-6 border-t">
+                      <div>
+                        <h3 className="text-lg font-semibold">Conta</h3>
+                        <p className="text-sm text-muted-foreground">Gerencie email e senha da sua conta</p>
+                      </div>
+
+                      {/* Change Email */}
+                      <ChangeEmailSection currentEmail={user?.email || ''} onSuccess={(newEmail) => setFormData(prev => ({...prev, email: newEmail}))} />
+
+                      {/* Change Password */}
+                      <ChangePasswordSection />
+
+                      {/* Delete Account */}
+                      <DeleteAccountSection userId={user?.id || ''} onDeleted={() => { /* handled inside */ }} />
+                    </div>
                   </CardContent>
                 </Card>
               </div>
@@ -309,3 +325,154 @@ const Perfil = () => {
 };
 
 export default Perfil;
+
+// Seções auxiliares
+import { useState as useLocalState } from "react";
+
+const ChangeEmailSection: React.FC<{ currentEmail: string; onSuccess: (newEmail: string) => void }>=({ currentEmail, onSuccess })=>{
+  const [email, setEmail] = useLocalState(currentEmail);
+  const [loading, setLoading] = useLocalState(false);
+  const { toast } = useToast();
+
+  const handleChangeEmail = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!email) {
+      toast({ title: "Erro", description: "Informe um email válido.", variant: "destructive" });
+      return;
+    }
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ email });
+      if (error) throw error;
+      onSuccess(email);
+      toast({ title: "Confirmação enviada", description: "Verifique seu novo email para confirmar a alteração." });
+    } catch (error: any) {
+      toast({ title: "Erro", description: error?.message || "Não foi possível atualizar o email.", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="p-4 border rounded-lg">
+      <div className="flex items-center gap-2 mb-2">
+        <AtSign className="h-4 w-4" />
+        <h4 className="font-medium">Alterar email</h4>
+      </div>
+      <form onSubmit={handleChangeEmail} className="grid gap-3 md:grid-cols-[1fr_auto] items-end">
+        <div>
+          <Label htmlFor="new-email">Novo email</Label>
+          <Input id="new-email" type="email" value={email} onChange={(e)=>setEmail(e.target.value)} placeholder="novo@email.com" />
+          <p className="text-xs text-muted-foreground mt-1">Você precisará confirmar o novo email.</p>
+        </div>
+        <Button type="submit" variant="secondary" disabled={loading}>{loading?"Enviando...":"Atualizar email"}</Button>
+      </form>
+    </div>
+  );
+};
+
+const ChangePasswordSection: React.FC = () => {
+  const [password, setPassword] = useLocalState("");
+  const [confirm, setConfirm] = useLocalState("");
+  const [loading, setLoading] = useLocalState(false);
+  const { toast } = useToast();
+
+  const handleChangePassword = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!password || !confirm) {
+      toast({ title: "Erro", description: "Preencha ambos os campos.", variant: "destructive" });
+      return;
+    }
+    if (password !== confirm) {
+      toast({ title: "Erro", description: "As senhas não coincidem.", variant: "destructive" });
+      return;
+    }
+    if (password.length < 6) {
+      toast({ title: "Erro", description: "A senha deve ter ao menos 6 caracteres.", variant: "destructive" });
+      return;
+    }
+    setLoading(true);
+    try {
+      const { error } = await supabase.auth.updateUser({ password });
+      if (error) throw error;
+      setPassword("");
+      setConfirm("");
+      toast({ title: "Sucesso", description: "Senha atualizada com sucesso." });
+    } catch (error: any) {
+      toast({ title: "Erro", description: error?.message || "Não foi possível atualizar a senha.", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="p-4 border rounded-lg">
+      <div className="flex items-center gap-2 mb-2">
+        <Lock className="h-4 w-4" />
+        <h4 className="font-medium">Alterar senha</h4>
+      </div>
+      <form onSubmit={handleChangePassword} className="grid gap-3 md:grid-cols-2">
+        <div>
+          <Label htmlFor="new-pass">Nova senha</Label>
+          <Input id="new-pass" type="password" value={password} onChange={(e)=>setPassword(e.target.value)} placeholder="••••••" />
+        </div>
+        <div>
+          <Label htmlFor="confirm-pass">Confirmar nova senha</Label>
+          <Input id="confirm-pass" type="password" value={confirm} onChange={(e)=>setConfirm(e.target.value)} placeholder="••••••" />
+        </div>
+        <div className="md:col-span-2">
+          <Button type="submit" variant="secondary" disabled={loading}>{loading?"Salvando...":"Atualizar senha"}</Button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+const DeleteAccountSection: React.FC<{ userId: string; onDeleted: ()=>void }> = ({ userId, onDeleted }) => {
+  const [loading, setLoading] = useLocalState(false);
+  const { toast } = useToast();
+  const { logout } = useAuth();
+
+  const handleDelete = async () => {
+    if (!userId) return;
+    const confirmed = window.confirm("Tem certeza que deseja excluir sua conta? Essa ação é irreversível.");
+    if (!confirmed) return;
+    setLoading(true);
+    try {
+      // Estratégia: anonimizar dados do usuário e desativar conta
+      const { error: updErr } = await supabase
+        .from('users')
+        .update({
+          name: 'Usuário removido',
+          email: `deleted_${userId}@example.com`,
+          phone: null,
+          city: null,
+          bio: null,
+          show_name: false,
+          updated_at: new Date().toISOString(),
+        })
+        .eq('id', userId);
+      if (updErr) throw updErr;
+
+      // Opcional: remover sessões ativas
+      await logout();
+      toast({ title: "Conta removida", description: "Sua conta foi excluída com sucesso." });
+      onDeleted();
+    } catch (error: any) {
+      toast({ title: "Erro", description: error?.message || "Não foi possível excluir a conta.", variant: "destructive" });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="p-4 border rounded-lg bg-destructive/5">
+      <div className="flex items-center gap-2 mb-2">
+        <Trash2 className="h-4 w-4 text-destructive" />
+        <h4 className="font-medium text-destructive">Excluir conta</h4>
+      </div>
+      <p className="text-sm text-muted-foreground mb-3">Esta ação é permanente e não pode ser desfeita.</p>
+      <Button variant="destructive" onClick={handleDelete} disabled={loading}>{loading?"Excluindo...":"Excluir minha conta"}</Button>
+    </div>
+  );
+};

@@ -7,7 +7,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Check, CheckCircle, Clock } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
@@ -15,6 +15,11 @@ import { Toaster } from "@/components/ui/toaster";
 import { useEmailVerification } from "@/hooks/useEmailVerification";
 
 const Cadastro = () => {
+  // Garantir que a página inicie no topo, sem animação
+  useEffect(() => {
+    window.scrollTo({ top: 0, left: 0, behavior: 'auto' });
+  }, []);
+
   const [formData, setFormData] = useState({
     name: "",
     email: "",

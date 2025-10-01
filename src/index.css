@@ -2,19 +2,28 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Fredoka Expanded Local Font - Regular */
+/* Fredoka SemiCondensed Regular - textos */
 @font-face {
-  font-family: 'Fredoka Expanded';
-  src: url('/fonts/fredoka-expanded-regular.ttf') format('truetype');
+  font-family: 'Fredoka SemiCondensed';
+  src: url('/fonts/Fredoka_SemiCondensed-Regular.ttf') format('truetype');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
 }
 
-/* Fredoka Expanded SemiBold Local Font - Para títulos e negrito */
+/* Fredoka SemiCondensed SemiBold - subtítulos e botões */
 @font-face {
-  font-family: 'Fredoka Expanded SemiBold';
-  src: url('/fonts/fredoka-expanded-semibold.ttf') format('truetype');
+  font-family: 'Fredoka SemiCondensed SemiBold';
+  src: url('/fonts/Fredoka_SemiCondensed-SemiBold.ttf') format('truetype');
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+/* Fredoka SemiBold - títulos principais */
+@font-face {
+  font-family: 'Fredoka SemiBold';
+  src: url('/fonts/Fredoka-SemiBold.ttf') format('truetype');
   font-weight: 600;
   font-style: normal;
   font-display: swap;
@@ -24,7 +33,7 @@
 html, body, *, 
 p, span, div, a, button, 
 input, textarea, select {
-  font-family: 'Fredoka Expanded', cursive !important;
+  font-family: 'Fredoka SemiCondensed', system-ui, -apple-system, Segoe UI, Roboto, sans-serif !important;
 }
 
 /* Logo enhancement utilities */
@@ -44,7 +53,7 @@ h1, h2, h3, h4, h5, h6,
 .text-xl, .text-2xl, .text-3xl, .text-4xl, .text-5xl, .text-6xl,
 strong, b,
 .hero-highlight {
-  font-family: 'Fredoka Expanded SemiBold', cursive !important;
+  font-family: 'Fredoka SemiBold', system-ui, -apple-system, Segoe UI, Roboto, sans-serif !important;
   font-weight: 600 !important;
 }
 
@@ -168,17 +177,17 @@ strong, b,
 @layer base {
   * {
     @apply border-border;
-    font-family: 'Fredoka Expanded', cursive !important;
+    font-family: 'Fredoka SemiCondensed', system-ui, -apple-system, Segoe UI, Roboto, sans-serif !important;
   }
 
     body {
     @apply bg-background text-foreground;
-    font-family: 'Fredoka Expanded', cursive !important;
+    font-family: 'Fredoka SemiCondensed', system-ui, -apple-system, Segoe UI, Roboto, sans-serif !important;
     overflow-x: hidden;
   }
 
   html {
-    font-family: 'Fredoka Expanded', cursive !important;
+    font-family: 'Fredoka SemiCondensed', system-ui, -apple-system, Segoe UI, Roboto, sans-serif !important;
   }
 }
 

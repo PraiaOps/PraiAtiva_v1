@@ -9,7 +9,7 @@ import { useEffect } from "react";
 // Import das imagens
 import beachTennisImg from "@/assets/beachtennis.jpg";
 import canoaHavaianaImg from "@/assets/canoa-havaiana.jpg";
-import surfImg from "@/assets/hero-beach.jpg"; // Usando hero-beach como placeholder para surf
+import surfImg from "@/assets/surf.jpg";
 import festivalPraiaImg from "@/assets/beachvolley.jpg"; // Usando beachvolley como placeholder para festival
 
 const Eventos = () => {
@@ -130,7 +130,7 @@ const Eventos = () => {
                       {evento.description}
                     </p>
                     
-                    <Button variant="outline" className="w-full text-primary border-primary hover:bg-primary hover:text-primary-foreground">
+                    <Button variant="outline" className="w-full text-primary border-primary hover:bg-primary hover:text-primary-foreground" onClick={() => window.open('https://esporte.niteroi.rj.gov.br/eventos/', '_blank')}>
                       Ver detalhes <ArrowRight className="ml-2 h-4 w-4" />
                     </Button>
                   </CardContent>

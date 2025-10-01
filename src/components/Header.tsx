@@ -33,7 +33,7 @@ const Header = () => {
             <img 
               src={logoImage} 
               alt="PraiAtiva" 
-              className="h-6 md:h-8 w-auto rounded-sm"
+              className="h-6 md:h-8 w-auto"
             />
           </Link>
 

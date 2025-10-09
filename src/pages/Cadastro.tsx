@@ -75,6 +75,9 @@ const Cadastro = () => {
         options: {
           data: {
             full_name: formData.name,
+            role: formData.role,
+            phone: formData.phone || null,
+            bio: formData.bio || null,
           }
         }
       });
@@ -327,7 +330,8 @@ const Cadastro = () => {
                       <SelectValue placeholder="Selecione seu tipo de usuário" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="instrutor">Instrutor - Quero oferecer atividades</SelectItem>
+                      <SelectItem value="instrutor">Ofereço atividades na praia</SelectItem>
+                      <SelectItem value="aluno">Busco atividades na praia</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -372,17 +376,19 @@ const Cadastro = () => {
                   />
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="bio">Apresentação profissional</Label>
-                  <Textarea
-                    id="bio"
-                    name="bio"
-                    value={formData.bio}
-                    onChange={handleInputChange}
-                    placeholder="Resuma suas qualificações profissionais"
-                    rows={4}
-                  />
-                </div>
+                {formData.role === 'instrutor' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="bio">Apresentação profissional</Label>
+                    <Textarea
+                      id="bio"
+                      name="bio"
+                      value={formData.bio}
+                      onChange={handleInputChange}
+                      placeholder="Resuma suas qualificações profissionais"
+                      rows={4}
+                    />
+                  </div>
+                )}
                 
                 <Button 
                   type="submit" 

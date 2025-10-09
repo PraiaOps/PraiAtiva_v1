@@ -74,7 +74,8 @@ const Eventos = () => {
         <div className="container mx-auto px-4">
           <h1 className="text-4xl md:text-5xl font-bold mb-4">Eventos</h1>
           <p className="text-xl max-w-2xl mx-auto opacity-90">
-            Confira todos os eventos que acontecem nas praias de Niterói
+            Confira todos os eventos na praia<br className="block sm:hidden" />
+            <span className="hidden sm:inline"> </span>identificados pelo PRAIATIVA
           </p>
         </div>
       </section>

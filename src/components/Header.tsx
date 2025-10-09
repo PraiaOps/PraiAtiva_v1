@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { LogOut, User, Menu, X } from "lucide-react";
 import { useState } from "react";
+import ScrollToTopLink from "@/components/ScrollToTopLink";
 import logoImage from "@/assets/logo-praiativa-new.jpeg";
 
 const Header = () => {
@@ -29,34 +30,34 @@ const Header = () => {
       <div className="container mx-auto px-4 py-3 md:py-4">
         <div className="relative flex items-center justify-between">
           {/* Logo */}
-          <Link to="/" className="flex items-center space-x-2">
+          <ScrollToTopLink to="/" className="flex items-center space-x-2">
             <img 
               src={logoImage} 
               alt="PraiAtiva" 
               className="h-6 md:h-8 w-auto"
             />
-          </Link>
+          </ScrollToTopLink>
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8 md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2">
-            <Link 
+            <ScrollToTopLink 
               to="/" 
               className={`hover:text-cta transition-colors ${isActive('/') ? 'text-cta' : ''}`}
             >
               HOME
-            </Link>
-            <Link 
+            </ScrollToTopLink>
+            <ScrollToTopLink 
               to="/atividades" 
               className={`hover:text-cta transition-colors ${isActive('/atividades') ? 'text-cta' : ''}`}
             >
               ATIVIDADES
-            </Link>
-            <Link 
+            </ScrollToTopLink>
+            <ScrollToTopLink 
               to="/sobre" 
               className={`hover:text-cta transition-colors ${isActive('/sobre') ? 'text-cta' : ''}`}
             >
               SOBRE
-            </Link>
+            </ScrollToTopLink>
             <button 
               onClick={() => {
                 document.getElementById('contato')?.scrollIntoView({
@@ -95,16 +96,16 @@ const Header = () => {
               </>
             ) : (
               <>
-                <Link to="/login">
+                <ScrollToTopLink to="/login">
                   <Button variant="ghost" className="text-primary-foreground hover:text-cta hover:bg-primary-hover">
                     Entrar
                   </Button>
-                </Link>
-                <Link to="/cadastro">
+                </ScrollToTopLink>
+                <ScrollToTopLink to="/cadastro">
                   <Button variant="cta" className="text-primary hover:text-primary">
-                    Cadastre-se <br />gratuitamente!
+                    Cadastre-se gratuitamente!
                   </Button>
-                </Link>
+                </ScrollToTopLink>
               </>
             )}
           </div>
@@ -132,27 +133,27 @@ const Header = () => {
         {isMobileMenuOpen && (
           <div className="md:hidden border-t border-primary-hover mt-3 pt-4 pb-2">
             <nav className="flex flex-col space-y-3">
-              <Link 
+              <ScrollToTopLink 
                 to="/" 
                 className={`py-2 px-1 hover:text-cta transition-colors ${isActive('/') ? 'text-cta' : ''}`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 HOME
-              </Link>
-              <Link 
+              </ScrollToTopLink>
+              <ScrollToTopLink 
                 to="/atividades" 
                 className={`py-2 px-1 hover:text-cta transition-colors ${isActive('/atividades') ? 'text-cta' : ''}`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 ATIVIDADES
-              </Link>
-              <Link 
+              </ScrollToTopLink>
+              <ScrollToTopLink 
                 to="/sobre" 
                 className={`py-2 px-1 hover:text-cta transition-colors ${isActive('/sobre') ? 'text-cta' : ''}`}
                 onClick={() => setIsMobileMenuOpen(false)}
               >
                 SOBRE
-              </Link>
+              </ScrollToTopLink>
               <button 
                 onClick={() => {
                   document.getElementById('contato')?.scrollIntoView({
@@ -191,16 +192,16 @@ const Header = () => {
                 </>
               ) : (
                 <>
-                  <Link to="/login" onClick={() => setIsMobileMenuOpen(false)}>
+                  <ScrollToTopLink to="/login" onClick={() => setIsMobileMenuOpen(false)}>
                     <Button variant="ghost" className="w-full text-primary-foreground hover:text-cta hover:bg-primary-hover">
                       Entrar
                     </Button>
-                  </Link>
-                  <Link to="/cadastro" onClick={() => setIsMobileMenuOpen(false)}>
+                  </ScrollToTopLink>
+                  <ScrollToTopLink to="/cadastro" onClick={() => setIsMobileMenuOpen(false)}>
                     <Button variant="cta" className="w-full text-primary hover:text-primary">
-                      Cadastre-se <br />gratuitamente!
+                      Cadastre-se gratuitamente!
                     </Button>
-                  </Link>
+                  </ScrollToTopLink>
                 </>
               )}
             </div>

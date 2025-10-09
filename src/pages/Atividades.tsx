@@ -398,11 +398,11 @@ const Atividades = () => {
       {/* Hero Section */}
       <section className="py-20 bg-gradient-to-br from-primary to-primary/80 text-white">
         <div className="container mx-auto px-4 text-center">
-          <h1 className="text-4xl md:text-6xl font-bold mb-6">
-            Encontre sua Atividade
+          <h1 className="text-4xl md:text-6xl font-bold mb-4">
+            Encontre sua atividade na praia
           </h1>
           <p className="text-xl mb-8 max-w-2xl mx-auto">
-            Descubra atividades incríveis nas praias de Niterói e Rio de Janeiro
+            Descubra o esporte, lazer e turismo na praia que combina com você
           </p>
         </div>
       </section>
@@ -572,7 +572,7 @@ const Atividades = () => {
         <div className="container mx-auto px-4">
           <div className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-center mb-8">
             <h2 className="text-2xl font-bold">
-              {isLoading ? 'Carregando...' : `${convertedActivities.length} atividades encontradas`}
+              {isLoading ? 'Carregando...' : `${activities.length} atividades cadastradas`}
             </h2>
             <Button variant="outline">
               Ordenar por preço

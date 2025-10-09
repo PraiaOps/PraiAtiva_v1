@@ -151,7 +151,7 @@ const Home = () => {
             <div className="flex flex-col sm:flex-row gap-4 justify-center pt-6">
               <Link to="/cadastro">
                 <Button variant="cta" size="lg" className="w-full sm:w-auto text-primary hover:text-primary">
-                  Cadastre-se <br />gratuitamente!
+                  Cadastre-se gratuitamente!
                   <ArrowRight className="ml-2 h-5 w-5" />
                 </Button>
               </Link>
@@ -172,10 +172,12 @@ const Home = () => {
           <div className="max-w-4xl mx-auto space-y-8">
             <div className="text-4xl">☀️</div>
             <h2 className="text-3xl md:text-4xl font-bold text-primary">
-              Se essa é sua praia, se joga!
+              Se essa é sua praia,<br className="block sm:hidden" />
+              <span className="hidden sm:inline"> </span>se joga
             </h2>
             <p className="text-lg text-muted-foreground max-w-2xl mx-auto font-bold">
-              Crie uma rotina de vida mais ativa, saudável e integrada à natureza!
+              Crie uma rotina de vida mais ativa,<br className="block sm:hidden" />
+              <span className="hidden sm:inline"> </span>saudável e integrada à natureza!
             </p>
             <div className="space-y-4 text-muted-foreground">
               <p>
@@ -186,13 +188,15 @@ const Home = () => {
                   to="/sobre" 
                   className="font-bold text-lg md:text-xl hover:text-primary/80 hover:scale-105 transition-all duration-200 cursor-pointer inline-flex items-center gap-2 bg-primary/10 hover:bg-primary/20 px-4 py-2 rounded-lg border border-primary/20 hover:border-primary/40"
                   onClick={() => {
-                    // Força o scroll para o topo quando navegar para a página
                     setTimeout(() => {
                       window.scrollTo({ top: 0, behavior: 'smooth' });
                     }, 100);
                   }}
                 >
-                  <span>Vamos nessa? Descubra mais sobre nossa história</span>
+                  <span>
+                    Vamos nessa? Descubra mais<br className="block sm:hidden" />
+                    <span className="hidden sm:inline"> </span>sobre nossa história
+                  </span>
                   <ArrowRight className="h-4 w-4 md:h-5 md:w-5" />
                 </Link>
               </div>
@@ -402,7 +406,8 @@ const Home = () => {
         <div className="container mx-auto px-4">
           <div className="text-center mb-12">
             <h2 className="text-3xl md:text-4xl font-bold text-primary mb-4">
-              Por que escolher o PRAIATIVA?
+              Por que escolher<br className="block sm:hidden" />
+              <span className="hidden sm:inline"> </span>o PRAIATIVA?
             </h2>
             <p className="text-xl text-muted-foreground">
               Supere. Se inspire. Praiative-se!
@@ -453,7 +458,7 @@ const Home = () => {
           <div className="text-center mt-12">
             <Link to="/cadastro">
               <Button variant="cta" size="lg" className="w-full sm:w-auto text-primary hover:text-primary">
-                CADASTRE-SE AGORA <br />É GRÁTIS!
+                CADASTRE-SE AGORA É GRÁTIS!
                 <ArrowRight className="ml-2 h-5 w-5" />
               </Button>
             </Link>

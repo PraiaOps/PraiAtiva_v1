@@ -13,6 +13,8 @@ import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { useEmailVerification } from "@/hooks/useEmailVerification";
+import ScrollToTopLink from "@/components/ScrollToTopLink";
+import SmoothScrollLink from "@/components/SmoothScrollLink";
 
 const Cadastro = () => {
   // Garantir que a página inicie no topo, sem animação
@@ -396,9 +398,12 @@ const Cadastro = () => {
               <div className="mt-6 text-center">
                 <p className="text-sm text-muted-foreground">
                   Já possui uma conta?{" "}
-                  <Link to="/login" className="text-primary hover:underline font-medium">
+                  <SmoothScrollLink 
+                    to="/login" 
+                    className="text-primary hover:underline font-medium"
+                  >
                     Faça login aqui
-                  </Link>
+                  </SmoothScrollLink>
                 </p>
               </div>
             </CardContent>

@@ -136,7 +136,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (isMounted && session?.user) {
           console.log('✅ Sessão ativa inicial encontrada.');
-          await fetchUserProfile(session.user);
+          await fetchUserProfile(session.user); // <-- AWAIT ADICIONADO AQUI
         }
 
         // Configura o listener para futuras mudanças

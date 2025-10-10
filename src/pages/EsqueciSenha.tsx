@@ -28,7 +28,9 @@ const EsqueciSenha = () => {
 
     setIsLoading(true);
     try {
-      const redirectTo = `${window.location.origin}/redefinir-senha`;
+      const redirectTo = import.meta.env.VITE_APP_SITE_URL
+        ? `${import.meta.env.VITE_APP_SITE_URL}/redefinir-senha`
+        : `${window.location.origin}/redefinir-senha`;
       const { error } = await supabase.auth.resetPasswordForEmail(email, { redirectTo });
       if (error) throw error;
 

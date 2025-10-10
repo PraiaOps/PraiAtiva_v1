@@ -76,12 +76,14 @@ export const useEmailVerification = ({ userId, email, onVerified }: UseEmailVeri
           return;
         }
 
-        // Criar perfil
+        // Criar perfil usando metadados enviados no signUp (role/phone/bio)
         const profileData = {
           id: authUser.id,
           email: authUser.email,
           name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'Usuário',
-          role: 'instrutor' as const,
+          role: (authUser.user_metadata?.role as 'aluno' | 'instrutor' | undefined) || 'aluno',
+          phone: authUser.user_metadata?.phone || null,
+          bio: authUser.user_metadata?.bio || null,
           show_name: true,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),

@@ -13,6 +13,8 @@ import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 import { useEmailVerification } from "@/hooks/useEmailVerification";
+import ScrollToTopLink from "@/components/ScrollToTopLink";
+import SmoothScrollLink from "@/components/SmoothScrollLink";
 
 const Cadastro = () => {
   // Garantir que a página inicie no topo, sem animação
@@ -67,12 +69,19 @@ const Cadastro = () => {
 
       console.log('🚀 Criando usuário no Supabase Auth...');
       // Criar usuário no Supabase Auth
+      // Prefer explicit redirect URL for email confirmation. Use env var if provided, otherwise current origin.
+      const emailRedirectTo = import.meta.env.VITE_APP_SITE_URL || window.location.origin;
+
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
+          emailRedirectTo,
           data: {
             full_name: formData.name,
+            role: formData.role,
+            phone: formData.phone || null,
+            bio: formData.bio || null,
           }
         }
       });
@@ -263,6 +272,45 @@ const Cadastro = () => {
                       💡 Dica: Você pode confirmar o email no celular e detectaremos automaticamente aqui!
                     </div>
                   )}
+                  {!isVerified && (
+                    <div className="mt-3 flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={async () => {
+                          // Reenvio de verificação
+                          try {
+                            const endpoint = import.meta.env.VITE_RESEND_VERIFY_URL;
+                            if (endpoint) {
+                              const res = await fetch(endpoint, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ email: pendingVerification.email })
+                              });
+                              if (res.ok) {
+                                toast({ title: 'Email reenviado', description: 'Verifique sua caixa de entrada.' });
+                              } else {
+                                const text = await res.text();
+                                toast({ title: 'Erro ao reenviar', description: text || 'Verifique o dashboard.' , variant: 'destructive'});
+                              }
+                            } else {
+                              // Fallback: instruções
+                              toast({
+                                title: 'Reenvio não disponível',
+                                description: 'Nenhum endpoint configurado. Verifique SMTP/Site URL no Supabase ou peça que um admin confirme manualmente.',
+                                variant: 'destructive'
+                              });
+                            }
+                          } catch (err) {
+                            console.error('Erro ao reenviar verificação', err);
+                            toast({ title: 'Erro', description: 'Falha ao tentar reenviar. Veja o console.' , variant: 'destructive'});
+                          }
+                        }}
+                      >
+                        Reenviar email de confirmação
+                      </Button>
+                    </div>
+                  )}
                 </div>
               )}
 
@@ -325,7 +373,8 @@ const Cadastro = () => {
                       <SelectValue placeholder="Selecione seu tipo de usuário" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="instrutor">Instrutor - Quero oferecer atividades</SelectItem>
+                      <SelectItem value="instrutor">Ofereço atividades na praia</SelectItem>
+                      <SelectItem value="aluno">Busco atividades na praia</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>
@@ -370,17 +419,19 @@ const Cadastro = () => {
                   />
                 </div>
                 
-                <div className="space-y-2">
-                  <Label htmlFor="bio">Apresentação profissional</Label>
-                  <Textarea
-                    id="bio"
-                    name="bio"
-                    value={formData.bio}
-                    onChange={handleInputChange}
-                    placeholder="Resuma suas qualificações profissionais"
-                    rows={4}
-                  />
-                </div>
+                {formData.role === 'instrutor' && (
+                  <div className="space-y-2">
+                    <Label htmlFor="bio">Apresentação profissional</Label>
+                    <Textarea
+                      id="bio"
+                      name="bio"
+                      value={formData.bio}
+                      onChange={handleInputChange}
+                      placeholder="Resuma suas qualificações profissionais"
+                      rows={4}
+                    />
+                  </div>
+                )}
                 
                 <Button 
                   type="submit" 
@@ -396,9 +447,12 @@ const Cadastro = () => {
               <div className="mt-6 text-center">
                 <p className="text-sm text-muted-foreground">
                   Já possui uma conta?{" "}
-                  <Link to="/login" className="text-primary hover:underline font-medium">
+                  <SmoothScrollLink 
+                    to="/login" 
+                    className="text-primary hover:underline font-medium"
+                  >
                     Faça login aqui
-                  </Link>
+                  </SmoothScrollLink>
                 </p>
               </div>
             </CardContent>

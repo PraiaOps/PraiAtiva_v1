@@ -101,7 +101,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           id: supabaseUser.id,
           email: supabaseUser.email || '',
           name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'Usuário',
-          role: 'instrutor',
+          role: (supabaseUser.user_metadata?.role as 'aluno' | 'instrutor' | undefined) || 'aluno',
+          phone: supabaseUser.user_metadata?.phone || undefined,
+          bio: supabaseUser.user_metadata?.bio || undefined,
           show_name: true,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()

@@ -19,7 +19,7 @@ const WhatsAppButton = () => {
           href={whatsappUrl}
           target="_blank"
           rel="noopener noreferrer"
-          className="fixed bottom-6 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-cta text-cta-foreground shadow-lg transition-transform duration-300 ease-in-out hover:scale-110 hover:bg-cta-hover"
+          className="hidden fixed bottom-6 right-6 z-50 flex h-16 w-16 items-center justify-center rounded-full bg-cta text-cta-foreground shadow-lg transition-transform duration-300 ease-in-out hover:scale-110 hover:bg-cta-hover"
           aria-label="Fale conosco no WhatsApp"
         >
           <svg

@@ -83,18 +83,9 @@ const ActivityDetailsModal = ({ isOpen, onClose, activity }: ActivityDetailsModa
   };
 
   const handleEnroll = () => {
-    if (isMobile) {
-      toast({
-        title: "Funcionalidade em desenvolvimento",
-        description: "Disponível em breve",
-      });
-    } else {
-      // Para desktop, poderia mostrar um popover ou modal específico
-      toast({
-        title: "Funcionalidade em desenvolvimento",
-        description: "Disponível em breve",
-      });
-    }
+    toast({
+      title: "Funcionalidade disponível em breve",
+    });
   };
 
   return (
@@ -128,14 +119,14 @@ const ActivityDetailsModal = ({ isOpen, onClose, activity }: ActivityDetailsModa
               {activity.locationName}
             </h3>
 
-            {/* Cidade/Estado + Bairro + Praia */}
-            {(activity.city || activity.state || activity.neighborhood || activity.beach) && (
+            {/* Localização padronizada */}
+            {(activity.city || activity.state || activity.beach) && (
               <div className="flex items-center space-x-2 text-muted-foreground">
                 <MapPin className="h-4 w-4" />
                 <span className="text-sm md:text-base">
-                  {formatCityState(activity.city, activity.state)}
-                  {activity.neighborhood ? `, ${activity.neighborhood}` : ''}
-                  {activity.beach ? `, Praia ${activity.beach}` : ''}
+                  {activity.beach && activity.beach.toLowerCase() !== 'outra'
+                    ? `Praia de ${activity.beach}, ${activity.city}${activity.state ? `/${activity.state}` : ''}`
+                    : `${activity.city}${activity.state ? `/${activity.state}` : ''}`}
                 </span>
               </div>
             )}
@@ -209,7 +200,7 @@ const ActivityDetailsModal = ({ isOpen, onClose, activity }: ActivityDetailsModa
               onClick={handleEnroll}
             >
               <Wrench className="h-4 w-4 mr-2" />
-              Inscrever-se
+              Quero me inscrever
             </Button>
           </div>
         </div>

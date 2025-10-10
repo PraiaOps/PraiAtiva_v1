@@ -1,6 +1,8 @@
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Instagram, Facebook, Youtube } from "lucide-react";
+import ScrollToTopLink from "@/components/ScrollToTopLink";
+import SmoothScrollLink from "@/components/SmoothScrollLink";
 import logoImage from "@/assets/logo-praiativa-new.jpeg";
 import panMarcaLogo from "@/assets/pan-marca-vert-cor-vetor.png";
 import smictLogo from "@/assets/smict-hor-branco.png";
@@ -55,26 +57,16 @@ const Footer = () => {
           <div className="space-y-4">
             <h3 className="font-semibold text-cta">Links</h3>
             <div className="space-y-2">
-              <Link to="/" className="block text-sm hover:text-cta transition-colors">
+              <SmoothScrollLink to="/" className="block text-sm hover:text-cta transition-colors">
                 Home
-              </Link>
-              <Link to="/atividades" className="block text-sm hover:text-cta transition-colors">
+              </SmoothScrollLink>
+              <ScrollToTopLink to="/atividades" className="block text-sm hover:text-cta transition-colors">
                 Atividades
-              </Link>
-              <Link to="/sobre" className="block text-sm hover:text-cta transition-colors">
+              </ScrollToTopLink>
+              <ScrollToTopLink to="/sobre" className="block text-sm hover:text-cta transition-colors">
                 Sobre
-              </Link>
-              <button 
-                onClick={() => {
-                  document.getElementById('contato')?.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                  });
-                }}
-                className="block text-sm hover:text-cta transition-colors cursor-pointer text-left"
-              >
-                Contato
-              </button>
+              </ScrollToTopLink>
+              {/* Removido link "Contato" pela proximidade com a seção abaixo */}
             </div>
           </div>
 
@@ -186,9 +178,7 @@ const Footer = () => {
             <Link to="/politica-de-privacidade" className="hover:text-cta transition-colors">
               Política de Privacidade
             </Link>
-            <Link to="/contato" className="hover:text-cta transition-colors">
-              FAQ
-            </Link>
+            <span className="opacity-60 cursor-not-allowed">FAQ (em breve)</span>
           </div>
         </div>
       </div>

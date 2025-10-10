@@ -51,7 +51,11 @@ const Sobre = () => {
                 </p>
                 
                 <p>
-                  PRAIATIVA surgiu nesse ambiente, de falta de informação e necessidade de superação. E tem tudo para se fortalecer: Rio (capital) e Niterói estão juntas lutando para sediar os Panamericanos de 2031! Fomos selecionados e em abril/25 estamos iniciando o programa de incubação da Prefeitura de Niterói e Universidade Federal Fluminense (UFF). Agora, é avançar e se tornar realidade até o verão de 2025. Contamos com seu apoio! Obrigado.
+                  PRAIATIVA surgiu nesse ambiente, de falta de informação, necessidade de integração e superação.
+                </p>
+
+                <p>
+                  Fomos selecionados em abril/25 com uma das 22 startups inovadoras e com potencial de crescimento no Programa Acelera Niterói, da Prefeitura de Niterói e Universidade Federal Fluminense/UFF. Em outubro, estamos testando nosso protótipo para lançamento da primeira versão, em Niterói/RJ. No verão de 2026, planejamos lançar no Rio (capital) e até 2028 em todas as regiões do país. Com o apoio de vocês, certamente vamos chegar lá! Obrigado!
                 </p>
                 
                 <p className="font-semibold text-primary">

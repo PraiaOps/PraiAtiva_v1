@@ -97,7 +97,11 @@ const ActivityCard = ({
         <div className="space-y-4 flex-1">
           <div>
             <h3 className="font-semibold text-lg text-primary">{locationName}</h3>
-            <p className="text-sm text-muted-foreground">{location}</p>
+            <p className="text-sm text-muted-foreground">
+              {beach && beach.toLowerCase() !== 'outra'
+                ? `Praia de ${beach}, ${city}${state ? `/${state}` : ''}`
+                : `${city}${state ? `/${state}` : ''}`}
+            </p>
             {instructor && <p className="text-xs text-muted-foreground">{instructor}</p>}
           </div>
           
@@ -120,12 +124,11 @@ const ActivityCard = ({
               className="flex-1"
               onClick={() => {
                 toast({
-                  title: "Funcionalidade em desenvolvimento",
-                  description: "Disponível em breve",
+                  title: "Funcionalidade disponível em breve",
                 });
               }}
             >
-              Inscrever-se
+              Quero me inscrever
             </Button>
           ) : (
             <Popover open={isEnrollPopoverOpen} onOpenChange={setIsEnrollPopoverOpen}>
@@ -137,14 +140,13 @@ const ActivityCard = ({
                   onClick={() => setIsEnrollPopoverOpen(true)}
                   onMouseLeave={() => setIsEnrollPopoverOpen(false)}
                 >
-                  Inscrever-se
+                  Quero me inscrever
                 </Button>
               </PopoverTrigger>
               <PopoverContent align="center" sideOffset={8} className="w-44 p-2 text-center rounded-sm">
                 <div className="flex flex-col items-center">
                   <Wrench className="h-4 w-4 text-muted-foreground mb-1" />
-                  <div className="text-xs font-medium leading-tight">Funcionalidade em desenvolvimento</div>
-                  <div className="text-[10px] text-muted-foreground mt-0.5">Disponível em breve</div>
+                  <div className="text-xs font-medium leading-tight">Funcionalidade disponível em breve</div>
                 </div>
               </PopoverContent>
             </Popover>

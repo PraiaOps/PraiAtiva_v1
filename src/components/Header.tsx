@@ -2,6 +2,7 @@ import { Button } from "@/components/ui/button";
 import { Link, useLocation } from "react-router-dom";
 import { useAuth } from "@/contexts/AuthContext";
 import { LogOut, User, Menu, X } from "lucide-react";
+import PwaInstallButton from "@/components/PwaInstallButton";
 import { useState } from "react";
 import ScrollToTopLink from "@/components/ScrollToTopLink";
 import logoImage from "@/assets/logo-praiativa-new.jpeg";
@@ -84,6 +85,8 @@ const Header = () => {
                     Dashboard
                   </Button>
                 </Link>
+                {/* PWA Install CTA */}
+                <PwaInstallButton />
                 <Button 
                   variant="ghost" 
                   className="text-primary-foreground hover:text-cta hover:bg-primary-hover"

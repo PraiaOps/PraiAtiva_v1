@@ -69,10 +69,14 @@ const Cadastro = () => {
 
       console.log('🚀 Criando usuário no Supabase Auth...');
       // Criar usuário no Supabase Auth
+      // Prefer explicit redirect URL for email confirmation. Use env var if provided, otherwise current origin.
+      const emailRedirectTo = import.meta.env.VITE_APP_SITE_URL || window.location.origin;
+
       const { data: authData, error: authError } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
+          emailRedirectTo,
           data: {
             full_name: formData.name,
             role: formData.role,
@@ -266,6 +270,45 @@ const Cadastro = () => {
                   {!isVerified && (
                     <div className="text-xs text-blue-600">
                       💡 Dica: Você pode confirmar o email no celular e detectaremos automaticamente aqui!
+                    </div>
+                  )}
+                  {!isVerified && (
+                    <div className="mt-3 flex items-center space-x-2">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={async () => {
+                          // Reenvio de verificação
+                          try {
+                            const endpoint = import.meta.env.VITE_RESEND_VERIFY_URL;
+                            if (endpoint) {
+                              const res = await fetch(endpoint, {
+                                method: 'POST',
+                                headers: { 'Content-Type': 'application/json' },
+                                body: JSON.stringify({ email: pendingVerification.email })
+                              });
+                              if (res.ok) {
+                                toast({ title: 'Email reenviado', description: 'Verifique sua caixa de entrada.' });
+                              } else {
+                                const text = await res.text();
+                                toast({ title: 'Erro ao reenviar', description: text || 'Verifique o dashboard.' , variant: 'destructive'});
+                              }
+                            } else {
+                              // Fallback: instruções
+                              toast({
+                                title: 'Reenvio não disponível',
+                                description: 'Nenhum endpoint configurado. Verifique SMTP/Site URL no Supabase ou peça que um admin confirme manualmente.',
+                                variant: 'destructive'
+                              });
+                            }
+                          } catch (err) {
+                            console.error('Erro ao reenviar verificação', err);
+                            toast({ title: 'Erro', description: 'Falha ao tentar reenviar. Veja o console.' , variant: 'destructive'});
+                          }
+                        }}
+                      >
+                        Reenviar email de confirmação
+                      </Button>
                     </div>
                   )}
                 </div>

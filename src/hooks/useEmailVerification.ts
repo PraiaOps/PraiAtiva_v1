@@ -81,7 +81,7 @@ export const useEmailVerification = ({ userId, email, onVerified }: UseEmailVeri
           id: authUser.id,
           email: authUser.email,
           name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'Usuário',
-          role: (authUser.user_metadata?.role as 'aluno' | 'instrutor' | undefined) || 'instrutor',
+          role: (authUser.user_metadata?.role as 'aluno' | 'instrutor' | undefined) || 'aluno',
           phone: authUser.user_metadata?.phone || null,
           bio: authUser.user_metadata?.bio || null,
           show_name: true,

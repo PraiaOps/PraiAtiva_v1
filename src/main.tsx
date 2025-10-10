@@ -14,3 +14,22 @@ if ('serviceWorker' in navigator) {
 		});
 	});
 }
+
+// Listen for messages from the Service Worker (e.g., new SW activated)
+if (navigator.serviceWorker) {
+	navigator.serviceWorker.addEventListener('message', (event) => {
+		try {
+			const data = event.data || {};
+			if (data.type === 'SW_ACTIVATED') {
+				console.log('Service Worker activated, cache:', data.cacheName);
+				// Simple strategy: reload to pick up new assets
+				// In production, consider prompting the user instead of hard reload
+						if (confirm('Nova versão disponível. Deseja recarregar para atualizar?')) {
+							window.location.reload();
+						}
+			}
+		} catch (e) {
+			console.error('Erro no listener do SW message:', e);
+		}
+	});
+}

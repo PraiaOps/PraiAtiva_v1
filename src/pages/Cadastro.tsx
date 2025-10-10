@@ -26,7 +26,6 @@ const Cadastro = () => {
     confirmPassword: "",
     phone: "",
     bio: "",
-    // Default to 'aluno' (Busco atividades) to avoid accidentally creating many instrutor accounts
     role: "aluno" as "aluno" | "instrutor",
   });
   const [isLoading, setIsLoading] = useState(false);
@@ -46,23 +45,17 @@ const Cadastro = () => {
     try {
       const emailRedirectTo = import.meta.env.VITE_APP_SITE_URL || window.location.origin;
 
-      // DEBUG: Log dos dados que serão enviados (sanitizar role antes de enviar)
-      const allowedRoles = ['aluno', 'instrutor'];
-      const sentRole = allowedRoles.includes(formData.role) ? formData.role : 'aluno';
-      const payload = {
-        full_name: formData.name,
-        role: sentRole,
-        phone: formData.phone || null,
-        bio: formData.bio || null,
-      };
-      console.log("DEBUG: Dados enviados para o Supabase:", { ...formData, role: sentRole });
-
       const { data, error } = await supabase.auth.signUp({
         email: formData.email,
         password: formData.password,
         options: {
           emailRedirectTo,
-          data: payload
+          data: {
+            full_name: formData.name,
+            role: formData.role,
+            phone: formData.phone || null,
+            bio: formData.bio || null,
+          }
         }
       });
 

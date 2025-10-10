@@ -54,28 +54,14 @@ interface AuthProviderProps {
 export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
-  const [isInitialized, setIsInitialized] = useState(false);
   
-  // Refs para evitar loops e re-renders desnecessários
   const currentUserIdRef = useRef<string | null>(null);
   const authListenerRef = useRef<any>(null);
-  const processingRef = useRef<boolean>(false);
-  const initializationRef = useRef<boolean>(false);
-  const lastEventTimeRef = useRef<number>(0);
-  const eventDebounceTimeoutRef = useRef<NodeJS.Timeout | null>(null);
 
-  // Função memoizada para buscar perfil
   const fetchUserProfile = useCallback(async (supabaseUser: any) => {
-    // Evitar chamadas duplicadas
-    if (processingRef.current || currentUserIdRef.current === supabaseUser.id) {
-      console.log('ℹ️ Perfil já sendo processado ou usuário já carregado');
-      return;
-    }
+    if (currentUserIdRef.current === supabaseUser.id) return;
 
-    processingRef.current = true;
-    
     try {
-      console.log('🔍 Buscando perfil para usuário:', supabaseUser.id);
       const supabaseClient = await initializeSupabase();
       if (!supabaseClient) return;
 
@@ -85,35 +71,54 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         .eq('id', supabaseUser.id)
         .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') {
-        console.error('❌ Erro ao buscar perfil:', error);
-        return;
+      if (error && error.code !== 'PGRST116') { // PGRST116 is fine, it means no rows found
+        throw error;
       }
 
       if (data) {
-        console.log('✅ Perfil encontrado:', data.name);
+        console.log('✅ Perfil encontrado no DB:', data.name);
         setUser(data);
         currentUserIdRef.current = data.id;
       } else {
-        // Não criar perfil automaticamente aqui para evitar race conditions com o fluxo
-        // de verificação de e-mail (useEmailVerification). Deixar que o hook de verificação
-        // ou processos explícitos criem o registro. Apenas logamos para auditoria.
-        console.log('⚠️ Perfil não encontrado para', supabaseUser.id, '- aguardando criação via fluxo de verificação de email');
-        // Garantir que o estado local não fique com dados inconsistentes
-        setUser(null);
-        currentUserIdRef.current = null;
+        // Perfil não existe, vamos criar um.
+        console.log('📝 Perfil não encontrado. Criando novo perfil...');
+        const newUserProfile: User = {
+          id: supabaseUser.id,
+          email: supabaseUser.email!,
+          name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'Usuário',
+          role: (supabaseUser.user_metadata?.role as 'aluno' | 'instrutor' | undefined) || 'aluno', // Default to 'aluno'
+          phone: supabaseUser.user_metadata?.phone || undefined,
+          bio: supabaseUser.user_metadata?.bio || undefined,
+          show_name: true,
+          city: 'Niterói',
+          created_at: new Date().toISOString(),
+          updated_at: new Date().toISOString()
+        };
+
+        const { data: insertedData, error: insertError } = await supabaseClient
+          .from('users')
+          .insert([newUserProfile])
+          .select()
+          .single();
+
+        if (insertError) {
+          console.error('❌ Erro ao criar perfil de usuário:', insertError);
+          throw insertError;
+        }
+
+        console.log('✅ Perfil criado com sucesso:', insertedData);
+        setUser(insertedData);
+        currentUserIdRef.current = insertedData.id;
       }
     } catch (error) {
-      console.error('💥 Erro inesperado ao buscar perfil:', error);
-    } finally {
-      processingRef.current = false;
+      console.error('💥 Erro no processo de fetch/criação de perfil:', error);
+      setUser(null);
+      currentUserIdRef.current = null;
     }
   }, []);
 
-  // Inicialização única
   useEffect(() => {
-    if (initializationRef.current) return;
-    initializationRef.current = true;
+    let isMounted = true;
 
     const initializeAuth = async () => {
       console.log('🚀 Inicializando sistema de autenticação...');
@@ -123,137 +128,71 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         const supabaseClient = await initializeSupabase();
         if (!supabaseClient) {
           console.log('❌ Supabase não disponível');
+          setIsLoading(false);
           return;
         }
 
-        // 1. Verificar sessão ativa
-        const { data: { session }, error } = await supabaseClient.auth.getSession();
-        
-        if (error) {
-          console.error('❌ Erro ao verificar sessão:', error);
-          return;
-        }
-
-        if (session?.user) {
-          console.log('✅ Sessão ativa encontrada');
+        // Tenta pegar a sessão inicial
+        const { data: { session } } = await supabaseClient.auth.getSession();
+        if (isMounted && session?.user) {
+          console.log('✅ Sessão ativa inicial encontrada.');
           await fetchUserProfile(session.user);
-        } else {
-          console.log('ℹ️ Nenhuma sessão ativa');
         }
 
-        // 2. Configurar listener (apenas uma vez)
-        if (!authListenerRef.current) {
-          console.log('🔧 Configurando listener de autenticação...');
-          
-          const { data } = supabaseClient.auth.onAuthStateChange(
-            async (event, session) => {
-              const currentTime = Date.now();
-              
-              // Debounce para evitar eventos múltiplos muito próximos
-              if (event === 'SIGNED_IN' && currentTime - lastEventTimeRef.current < 1000) {
-                console.log('🔄 Evento SIGNED_IN ignorado (debounce)');
-                return;
-              }
-              
-              lastEventTimeRef.current = currentTime;
-              console.log('🔄 Evento de autenticação:', event);
-              
-              // Limpar timeout anterior se existir
-              if (eventDebounceTimeoutRef.current) {
-                clearTimeout(eventDebounceTimeoutRef.current);
-              }
-              
-              switch (event) {
-                case 'SIGNED_IN':
-                  if (session?.user && currentUserIdRef.current !== session.user.id) {
-                    console.log('✅ Novo login detectado');
-                    // Debounce para evitar múltiplas chamadas
-                    eventDebounceTimeoutRef.current = setTimeout(() => {
-                      fetchUserProfile(session.user);
-                    }, 200);
-                  } else if (session?.user && currentUserIdRef.current === session.user.id) {
-                    console.log('ℹ️ Mesmo usuário já processado');
-                  }
-                  break;
-                  
-                case 'SIGNED_OUT':
-                  console.log('👋 Logout detectado');
-                  setUser(null);
-                  currentUserIdRef.current = null;
-                  break;
-                  
-                case 'TOKEN_REFRESHED':
-                  console.log('🔄 Token renovado (ignorando)');
-                  break;
-                  
-                case 'INITIAL_SESSION':
-                  console.log('ℹ️ Sessão inicial ignorada (já processada)');
-                  break;
-                  
-                default:
-                  console.log('ℹ️ Evento ignorado:', event);
-              }
+        // Configura o listener para futuras mudanças
+        const { data: listener } = supabaseClient.auth.onAuthStateChange(
+          async (event, session) => {
+            if (!isMounted) return;
+
+            if (event === 'SIGNED_IN' && session?.user) {
+              console.log('🔄 Evento: SIGNED_IN');
+              await fetchUserProfile(session.user);
             }
-          );
+            if (event === 'SIGNED_OUT') {
+              console.log('🔄 Evento: SIGNED_OUT');
+              setUser(null);
+              currentUserIdRef.current = null;
+            }
+          }
+        );
 
-          authListenerRef.current = data.subscription;
+        if (authListenerRef.current) {
+          authListenerRef.current.unsubscribe();
         }
+        authListenerRef.current = listener.subscription;
 
       } catch (error) {
-        console.error('💥 Erro na inicialização:', error);
+        console.error('💥 Erro na inicialização da autenticação:', error);
       } finally {
-        setIsLoading(false);
-        setIsInitialized(true);
+        if (isMounted) {
+          setIsLoading(false);
+        }
       }
     };
 
     initializeAuth();
 
-    // Cleanup
     return () => {
+      isMounted = false;
       if (authListenerRef.current) {
         console.log('🗑️ Removendo listener de autenticação');
         authListenerRef.current.unsubscribe();
-        authListenerRef.current = null;
-      }
-      
-      if (eventDebounceTimeoutRef.current) {
-        clearTimeout(eventDebounceTimeoutRef.current);
-        eventDebounceTimeoutRef.current = null;
       }
     };
-  }, [fetchUserProfile]); // fetchUserProfile é memoizado via useCallback
+  }, [fetchUserProfile]);
 
   const login = useCallback(async (email: string, password: string): Promise<boolean> => {
-    console.log('🔑 LOGIN - Iniciando...', { email });
     setIsLoading(true);
-    
     try {
       const supabaseClient = await initializeSupabase();
-      
-      if (!supabaseClient) {
-        console.error('❌ Supabase não disponível');
-        return false;
-      }
+      if (!supabaseClient) return false;
 
-      const { data, error } = await supabaseClient.auth.signInWithPassword({
-        email,
-        password,
-      });
-
+      const { error } = await supabaseClient.auth.signInWithPassword({ email, password });
       if (error) {
         console.error('❌ Erro no login:', error.message);
         return false;
       }
-
-      if (data.user) {
-        console.log('✅ Login realizado com sucesso');
-        // Aguardar um pouco para o listener processar o SIGNED_IN
-        await new Promise(resolve => setTimeout(resolve, 100));
-        return true;
-      }
-
-      return false;
+      return true;
     } catch (error) {
       console.error('💥 Erro geral no login:', error);
       return false;
@@ -263,48 +202,21 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   }, []);
 
   const logout = useCallback(async () => {
-    console.log('🚪 LOGOUT - Iniciando...');
     setIsLoading(true);
-    
     try {
       const supabaseClient = await initializeSupabase();
       if (supabaseClient) {
-        // Verificar se há sessão antes de tentar logout
-        const { data: { session } } = await supabaseClient.auth.getSession();
-        
-        if (session) {
-          console.log('🗑️ Removendo sessão do Supabase...');
-          const { error } = await supabaseClient.auth.signOut();
-          
-          if (error && !error.message.includes('Auth session missing')) {
-            console.error('❌ Erro ao fazer logout:', error.message);
-          } else {
-            console.log('✅ Logout realizado com sucesso');
-          }
-        } else {
-          console.log('ℹ️ Nenhuma sessão ativa para remover');
+        const { error } = await supabaseClient.auth.signOut();
+        if (error) {
+          console.error('❌ Erro ao fazer logout:', error.message);
         }
       }
     } catch (error) {
       console.log('ℹ️ Erro durante logout (ignorando):', error);
     } finally {
-      // Sempre limpar estado local
-      console.log('🧹 Limpando estado local...');
       setUser(null);
       currentUserIdRef.current = null;
       setIsLoading(false);
-      
-      // Limpar localStorage
-      try {
-        const keysToRemove = Object.keys(localStorage).filter(key => 
-          key.startsWith('supabase.auth.') || 
-          key.includes('supabase-auth-token') ||
-          key.includes('sb-')
-        );
-        keysToRemove.forEach(key => localStorage.removeItem(key));
-      } catch (error) {
-        console.log('ℹ️ Erro ao limpar localStorage:', error);
-      }
     }
   }, []);
 

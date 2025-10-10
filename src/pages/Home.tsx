@@ -6,6 +6,7 @@ import Footer from "@/components/Footer";
 import ActivityCard from "@/components/ActivityCard";
 import { ArrowRight, Star, Users, Activity, MapPin, BookOpen, Tv, Info, Phone } from "lucide-react";
 import { usePublicActivities } from "@/hooks/usePublicActivities";
+import { useAuth } from "@/contexts/AuthContext"; // Import useAuth
 import heroImage from "@/assets/hero-beach.jpg";
 import beachvolleyImage from "@/assets/beachvolley.jpg";
 import beachtennisImage from "@/assets/beachtennis.jpg";
@@ -22,6 +23,7 @@ import areiaImage from "@/assets/areia.jpg";
 
 const Home = () => {
   const { activities, isLoading, instructorNames } = usePublicActivities();
+  const { user } = useAuth(); // Get user from auth context
 
   // Função para obter a imagem baseada no tipo de atividade
   const getActivityImage = (title: string) => {
@@ -370,15 +372,19 @@ const Home = () => {
               <p className="text-muted-foreground text-lg mb-4">
                 Nenhuma atividade cadastrada ainda.
               </p>
-              <p className="text-muted-foreground mb-6">
-                Seja o primeiro a criar uma atividade!
-              </p>
-              <Link to="/login">
-                <Button variant="default">
-                  Criar Atividade
-                  <ArrowRight className="ml-2 h-4 w-4" />
-                </Button>
-              </Link>
+              {user?.role !== 'aluno' && (
+                <>
+                  <p className="text-muted-foreground mb-6">
+                    Seja o primeiro a criar uma atividade!
+                  </p>
+                  <Link to={user?.role === 'instrutor' ? "/dashboard" : "/login"}>
+                    <Button variant="default">
+                      Criar Atividade
+                      <ArrowRight className="ml-2 h-4 w-4" />
+                    </Button>
+                  </Link>
+                </>
+              )}
             </div>
           ) : (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

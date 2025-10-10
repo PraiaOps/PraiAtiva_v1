@@ -40,11 +40,7 @@ const Header = () => {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:flex items-center space-x-8 md:absolute md:left-1/2 md:top-1/2 md:-translate-x-1/2 md:-translate-y-1/2">
-<<<<<<< HEAD
-            <Link 
-=======
             <ScrollToTopLink 
->>>>>>> 90d23bbfe0e8087389286943b77f763ac60864b5
               to="/" 
               className={`hover:text-cta transition-colors ${isActive('/') ? 'text-cta' : ''}`}
             >

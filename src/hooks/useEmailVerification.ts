@@ -14,7 +14,7 @@ export const useEmailVerification = ({ userId, email, onVerified }: UseEmailVeri
   useEffect(() => {
     if (!userId || !email) return;
 
-    let interval: NodeJS.Timeout;
+  let interval: any;
     let attempts = 0;
     const maxAttempts = 30; // 5 minutos (30 x 10 segundos)
 
@@ -60,9 +60,9 @@ export const useEmailVerification = ({ userId, email, onVerified }: UseEmailVeri
       }
     };
 
-    const createUserProfile = async (authUser: any) => {
+  const createUserProfile = async (authUser: Record<string, any>) => {
       try {
-        console.log('👤 Criando perfil do usuário...');
+  console.log('👤 Criando perfil do usuário...', { id: authUser.id, email: authUser.email });
         
         // Verificar se o perfil já existe
         const { data: existingUser } = await supabase
@@ -77,11 +77,20 @@ export const useEmailVerification = ({ userId, email, onVerified }: UseEmailVeri
         }
 
         // Criar perfil usando metadados enviados no signUp (role/phone/bio)
+  // Log completo dos metadados para auditoria (não escreva isso em produção sem filtrar dados sensíveis)
+  console.log('🔎 user_metadata recebidos:', authUser.user_metadata);
+  const rawRole = authUser.user_metadata?.role;
+        const allowedRoles = ['aluno', 'instrutor', 'admin'];
+        const sanitizedRole = allowedRoles.includes(rawRole) ? rawRole : 'aluno';
+        if (rawRole && rawRole !== sanitizedRole) {
+          console.warn('AVISO: role inválido nos user_metadata durante verificação de email:', rawRole, 'forçando para', sanitizedRole);
+        }
+
         const profileData = {
           id: authUser.id,
           email: authUser.email,
           name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'Usuário',
-          role: (authUser.user_metadata?.role as 'aluno' | 'instrutor' | undefined) || 'aluno',
+          role: sanitizedRole as 'aluno' | 'instrutor' | 'admin',
           phone: authUser.user_metadata?.phone || null,
           bio: authUser.user_metadata?.bio || null,
           show_name: true,
@@ -89,14 +98,16 @@ export const useEmailVerification = ({ userId, email, onVerified }: UseEmailVeri
           updated_at: new Date().toISOString(),
         };
 
-        const { error: profileError } = await supabase
+        const { data: inserted, error: profileError } = await supabase
           .from('users')
-          .insert([profileData]);
+          .insert([profileData])
+          .select()
+          .single();
 
         if (profileError) {
           console.error('❌ Erro ao criar perfil:', profileError);
         } else {
-          console.log('✅ Perfil criado com sucesso');
+          console.log('✅ Perfil criado com sucesso:', inserted);
         }
       } catch (error) {
         console.error('💥 Erro ao criar perfil:', error);

@@ -95,33 +95,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(data);
         currentUserIdRef.current = data.id;
       } else {
-        // Usuário não existe na tabela, criar perfil
-        console.log('📝 Criando novo perfil...');
-        const newUser: User = {
-          id: supabaseUser.id,
-          email: supabaseUser.email || '',
-          name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'Usuário',
-          role: (supabaseUser.user_metadata?.role as 'aluno' | 'instrutor' | undefined) || 'aluno',
-          phone: supabaseUser.user_metadata?.phone || undefined,
-          bio: supabaseUser.user_metadata?.bio || undefined,
-          show_name: true,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        };
-
-        const { data: insertedData, error: insertError } = await supabaseClient
-          .from('users')
-          .insert([newUser])
-          .select()
-          .single();
-
-        if (insertError) {
-          console.error('❌ Erro ao criar perfil:', insertError);
-        } else {
-          console.log('✅ Perfil criado com sucesso:', insertedData);
-          setUser(insertedData);
-          currentUserIdRef.current = insertedData.id;
-        }
+        // Não criar perfil automaticamente aqui para evitar race conditions com o fluxo
+        // de verificação de e-mail (useEmailVerification). Deixar que o hook de verificação
+        // ou processos explícitos criem o registro. Apenas logamos para auditoria.
+        console.log('⚠️ Perfil não encontrado para', supabaseUser.id, '- aguardando criação via fluxo de verificação de email');
+        // Garantir que o estado local não fique com dados inconsistentes
+        setUser(null);
+        currentUserIdRef.current = null;
       }
     } catch (error) {
       console.error('💥 Erro inesperado ao buscar perfil:', error);
@@ -242,7 +222,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         eventDebounceTimeoutRef.current = null;
       }
     };
-  }, []); // Sem dependências - executa apenas uma vez
+  }, [fetchUserProfile]); // fetchUserProfile é memoizado via useCallback
 
   const login = useCallback(async (email: string, password: string): Promise<boolean> => {
     console.log('🔑 LOGIN - Iniciando...', { email });

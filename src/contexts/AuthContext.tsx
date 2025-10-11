@@ -57,9 +57,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
   
   const currentUserIdRef = useRef<string | null>(null);
   const authListenerRef = useRef<any>(null);
+  const processingRef = useRef<boolean>(false); // Ref para controle de concorrência
 
   const fetchUserProfile = useCallback(async (supabaseUser: any) => {
-    if (currentUserIdRef.current === supabaseUser.id) return;
+    if (processingRef.current) return; // Se já estiver processando, ignora a chamada
+    if (currentUserIdRef.current === supabaseUser.id && user) return; // Se o usuário já está carregado, ignora
+
+    processingRef.current = true; // Ativa a trava
 
     try {
       const supabaseClient = await initializeSupabase();
@@ -71,7 +75,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         .eq('id', supabaseUser.id)
         .maybeSingle();
 
-      if (error && error.code !== 'PGRST116') { // PGRST116 is fine, it means no rows found
+      if (error && error.code !== 'PGRST116') { // PGRST116 (no rows found) é esperado
         throw error;
       }
 
@@ -80,13 +84,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(data);
         currentUserIdRef.current = data.id;
       } else {
-        // Perfil não existe, vamos criar um.
         console.log('📝 Perfil não encontrado. Criando novo perfil...');
         const newUserProfile: User = {
           id: supabaseUser.id,
           email: supabaseUser.email!,
           name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'Usuário',
-          role: (supabaseUser.user_metadata?.role as 'aluno' | 'instrutor' | undefined) || 'aluno', // Default to 'aluno'
+          role: (supabaseUser.user_metadata?.role as 'aluno' | 'instrutor' | undefined) || 'aluno',
           phone: supabaseUser.user_metadata?.phone || undefined,
           bio: supabaseUser.user_metadata?.bio || undefined,
           show_name: true,
@@ -114,8 +117,10 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
       console.error('💥 Erro no processo de fetch/criação de perfil:', error);
       setUser(null);
       currentUserIdRef.current = null;
+    } finally {
+      processingRef.current = false; // Libera a trava
     }
-  }, []);
+  }, [user]); // Adiciona user como dependência para reavaliar a guarda
 
   useEffect(() => {
     let isMounted = true;
@@ -132,14 +137,12 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           return;
         }
 
-        // Tenta pegar a sessão inicial
         const { data: { session } } = await supabaseClient.auth.getSession();
         if (isMounted && session?.user) {
           console.log('✅ Sessão ativa inicial encontrada.');
           await fetchUserProfile(session.user);
         }
 
-        // Configura o listener para futuras mudanças
         const { data: listener } = supabaseClient.auth.onAuthStateChange(
           async (event, session) => {
             if (!isMounted) return;

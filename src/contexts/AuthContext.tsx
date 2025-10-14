@@ -66,9 +66,9 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
   // Função memoizada para buscar perfil
   const fetchUserProfile = useCallback(async (supabaseUser: any) => {
-    // Evitar chamadas duplicadas
-    if (processingRef.current || currentUserIdRef.current === supabaseUser.id) {
-      console.log('ℹ️ Perfil já sendo processado ou usuário já carregado');
+    // Evitar chamadas duplicadas apenas se já estiver processando
+    if (processingRef.current) {
+      console.log('ℹ️ Perfil já sendo processado, aguarde...');
       return;
     }
 
@@ -183,14 +183,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
               
               switch (event) {
                 case 'SIGNED_IN':
-                  if (session?.user && currentUserIdRef.current !== session.user.id) {
-                    console.log('✅ Novo login detectado');
-                    // Debounce para evitar múltiplas chamadas
+                  if (session?.user) {
+                    console.log('✅ Login detectado');
+                    // Sempre buscar perfil no login, mesmo se for o mesmo usuário
+                    // Isso garante que perfis sejam criados após confirmação de email
                     eventDebounceTimeoutRef.current = setTimeout(() => {
                       fetchUserProfile(session.user);
                     }, 200);
-                  } else if (session?.user && currentUserIdRef.current === session.user.id) {
-                    console.log('ℹ️ Mesmo usuário já processado');
                   }
                   break;
                   
@@ -207,6 +206,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                 case 'USER_UPDATED':
                   console.log('🔄 Usuário atualizado (possivelmente email confirmado)');
                   if (session?.user) {
+                    // Forçar busca de perfil, pode ter sido criado
+                    currentUserIdRef.current = null; // Reset para forçar recarga
                     fetchUserProfile(session.user);
                   }
                   break;

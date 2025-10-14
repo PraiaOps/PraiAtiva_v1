@@ -140,7 +140,7 @@ const Sobre = () => {
               </Link>
               <Link to="/atividades">
                 <Button variant="outline" size="lg">
-                  Explorar Atividades
+                  Busque Atividades na Praia
                 </Button>
               </Link>
             </div>

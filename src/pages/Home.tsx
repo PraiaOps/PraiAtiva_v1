@@ -157,7 +157,7 @@ const Home = () => {
               </Link>
               <Link to="/atividades">
                 <Button variant="outline" size="lg" className="w-full sm:w-auto bg-white text-primary border-white hover:bg-white/90 hover:text-primary">
-                  Explorar atividades
+                  Busque Atividades na Praia
                 </Button>
               </Link>
             </div>

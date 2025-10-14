@@ -76,7 +76,8 @@ const Cadastro = () => {
           data: {
             full_name: formData.name,
             role: formData.role, // Passar a role selecionada no metadata
-          }
+          },
+          emailRedirectTo: `${window.location.origin}/` // Redirecionar para a home após confirmar email
         }
       });
 

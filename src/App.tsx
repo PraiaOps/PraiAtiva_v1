@@ -19,6 +19,7 @@ import PoliticaDePrivacidade from "./pages/PoliticaDePrivacidade";
 import NotFound from "./pages/NotFound";
 import EsqueciSenha from "./pages/EsqueciSenha";
 import RedefinirSenha from "./pages/RedefinirSenha";
+import AuthCallback from "./pages/AuthCallback";
 import WhatsAppButton from "@/components/WhatsAppButton";
 
 const queryClient = new QueryClient();
@@ -34,6 +35,7 @@ const App = () => (
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<Login />} />
             <Route path="/cadastro" element={<Cadastro />} />
+            <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/atividades" element={<Atividades />} />
             <Route path="/eventos" element={<Eventos />} />
             <Route path="/dashboard" element={<Dashboard />} />

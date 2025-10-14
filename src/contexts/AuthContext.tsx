@@ -95,8 +95,8 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         setUser(data);
         currentUserIdRef.current = data.id;
       } else {
-        // Usuário não existe na tabela, criar perfil
-        console.log('📝 Criando novo perfil...');
+        // Usuário não existe na tabela users, criar perfil agora
+        console.log('📝 Perfil não encontrado, criando automaticamente...');
         const newUser: User = {
           id: supabaseUser.id,
           email: supabaseUser.email || '',

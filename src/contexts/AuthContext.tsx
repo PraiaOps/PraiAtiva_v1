@@ -101,7 +101,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           id: supabaseUser.id,
           email: supabaseUser.email || '',
           name: supabaseUser.user_metadata?.full_name || supabaseUser.email?.split('@')[0] || 'Usuário',
-          role: 'instrutor',
+          role: supabaseUser.user_metadata?.role || 'aluno', // Usar role do metadata ou padrão 'aluno'
           show_name: true,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString()
@@ -202,6 +202,13 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
                   
                 case 'TOKEN_REFRESHED':
                   console.log('🔄 Token renovado (ignorando)');
+                  break;
+                  
+                case 'USER_UPDATED':
+                  console.log('🔄 Usuário atualizado (possivelmente email confirmado)');
+                  if (session?.user) {
+                    fetchUserProfile(session.user);
+                  }
                   break;
                   
                 case 'INITIAL_SESSION':

@@ -81,7 +81,7 @@ export const useEmailVerification = ({ userId, email, onVerified }: UseEmailVeri
           id: authUser.id,
           email: authUser.email,
           name: authUser.user_metadata?.full_name || authUser.email?.split('@')[0] || 'Usuário',
-          role: 'instrutor' as const,
+          role: authUser.user_metadata?.role || 'aluno', // Usar role do metadata ou padrão 'aluno'
           show_name: true,
           created_at: new Date().toISOString(),
           updated_at: new Date().toISOString(),

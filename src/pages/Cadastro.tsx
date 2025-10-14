@@ -75,6 +75,7 @@ const Cadastro = () => {
         options: {
           data: {
             full_name: formData.name,
+            role: formData.role, // Passar a role selecionada no metadata
           }
         }
       });
@@ -327,7 +328,8 @@ const Cadastro = () => {
                       <SelectValue placeholder="Selecione seu tipo de usuário" />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="instrutor">Instrutor - Quero oferecer atividades</SelectItem>
+                      <SelectItem value="instrutor">Ofereço atividades na praia</SelectItem>
+                      <SelectItem value="aluno">Busco atividades na praia</SelectItem>
                     </SelectContent>
                   </Select>
                 </div>

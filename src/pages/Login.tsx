@@ -5,7 +5,7 @@ import { Label } from "@/components/ui/label";
 import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
@@ -13,9 +13,23 @@ import { Toaster } from "@/components/ui/toaster";
 const Login = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const { login, isLoading } = useAuth();
+  const { login, isLoading, user } = useAuth();
   const navigate = useNavigate();
   const { toast } = useToast();
+  const [justLoggedIn, setJustLoggedIn] = useState(false);
+
+  // Redirecionar baseado na role após login bem-sucedido
+  useEffect(() => {
+    if (justLoggedIn && user && !isLoading) {
+      console.log('🔄 Redirecionando usuário baseado na role:', user.role);
+      if (user.role === 'instrutor' || user.role === 'admin') {
+        navigate('/dashboard');
+      } else {
+        navigate('/');
+      }
+      setJustLoggedIn(false);
+    }
+  }, [user, justLoggedIn, isLoading, navigate]);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -36,10 +50,7 @@ const Login = () => {
         title: "Sucesso",
         description: "Login realizado com sucesso!",
       });
-      // Aguardar um pouco para garantir que o contexto foi atualizado
-      setTimeout(() => {
-        navigate("/dashboard");
-      }, 500);
+      setJustLoggedIn(true);
     } else {
       toast({
         title: "Erro",

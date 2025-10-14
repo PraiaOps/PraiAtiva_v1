@@ -79,11 +79,20 @@ const Header = () => {
                   <User className="h-4 w-4" />
                   <span className="max-w-[180px] truncate whitespace-nowrap" title={user?.name ?? ''}>Olá, {user?.name}</span>
                 </div>
-                <Link to="/dashboard">
-                  <Button variant="ghost" className="text-primary-foreground hover:text-cta hover:bg-primary-hover">
-                    Dashboard
-                  </Button>
-                </Link>
+                {/* Mostrar Dashboard apenas para instrutores e admins */}
+                {user?.role === 'instrutor' || user?.role === 'admin' ? (
+                  <Link to="/dashboard">
+                    <Button variant="ghost" className="text-primary-foreground hover:text-cta hover:bg-primary-hover">
+                      Dashboard
+                    </Button>
+                  </Link>
+                ) : (
+                  <Link to="/perfil">
+                    <Button variant="ghost" className="text-primary-foreground hover:text-cta hover:bg-primary-hover">
+                      Perfil
+                    </Button>
+                  </Link>
+                )}
                 <Button 
                   variant="ghost" 
                   className="text-primary-foreground hover:text-cta hover:bg-primary-hover"
@@ -172,11 +181,20 @@ const Header = () => {
             <div className="flex flex-col space-y-2 mt-4 pt-4 border-t border-primary-hover">
               {isAuthenticated ? (
                 <>
-                  <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
-                    <Button variant="ghost" className="w-full text-primary-foreground hover:text-cta hover:bg-primary-hover justify-start">
-                      Dashboard
-                    </Button>
-                  </Link>
+                  {/* Mostrar Dashboard apenas para instrutores e admins */}
+                  {user?.role === 'instrutor' || user?.role === 'admin' ? (
+                    <Link to="/dashboard" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button variant="ghost" className="w-full text-primary-foreground hover:text-cta hover:bg-primary-hover justify-start">
+                        Dashboard
+                      </Button>
+                    </Link>
+                  ) : (
+                    <Link to="/perfil" onClick={() => setIsMobileMenuOpen(false)}>
+                      <Button variant="ghost" className="w-full text-primary-foreground hover:text-cta hover:bg-primary-hover justify-start">
+                        Perfil
+                      </Button>
+                    </Link>
+                  )}
                   <Button 
                     variant="ghost" 
                     className="w-full text-primary-foreground hover:text-cta hover:bg-primary-hover justify-start"

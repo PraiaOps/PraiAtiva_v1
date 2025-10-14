@@ -163,6 +163,28 @@ const Dashboard = () => {
     );
   }
 
+  // Verificar se o usuário tem permissão para acessar o dashboard (apenas instrutores e admins)
+  if (user.role !== 'instrutor' && user.role !== 'admin') {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-4">Acesso restrito</h2>
+          <p className="text-muted-foreground mb-6">
+            O dashboard é exclusivo para instrutores. Como aluno, você pode acessar suas atividades no perfil.
+          </p>
+          <div className="space-x-4">
+            <Link to="/perfil" className="bg-primary text-primary-foreground px-6 py-2 rounded-md hover:bg-primary/90">
+              Ver Meu Perfil
+            </Link>
+            <Link to="/atividades" className="bg-secondary text-secondary-foreground px-6 py-2 rounded-md hover:bg-secondary/90">
+              Ver Atividades
+            </Link>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const handleCreateActivity = async (e: React.FormEvent) => {
     e.preventDefault();
     

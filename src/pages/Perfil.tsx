@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { useAuth } from "@/contexts/AuthContext";
@@ -14,8 +14,9 @@ import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
 
 const Perfil = () => {
-  const { user, setUser } = useAuth();
+  const { user, setUser, isLoading: authLoading } = useAuth();
   const { toast } = useToast();
+  const navigate = useNavigate();
   const [showName, setShowName] = useState(user?.show_name ?? true);
   const [isLoading, setIsLoading] = useState(false);
   const [formData, setFormData] = useState({
@@ -30,6 +31,33 @@ const Perfil = () => {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
+
+  // Mostrar loading enquanto carrega
+  if (authLoading) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-4">Carregando...</h2>
+          <p className="text-muted-foreground">Verificando suas informações...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // Se não estiver logado, mostrar mensagem
+  if (!user) {
+    return (
+      <div className="min-h-screen flex items-center justify-center">
+        <div className="text-center">
+          <h2 className="text-xl font-semibold mb-4">Acesso não autorizado</h2>
+          <p className="text-muted-foreground mb-6">Você precisa estar logado para acessar seu perfil.</p>
+          <Link to="/login" className="bg-primary text-primary-foreground px-6 py-2 rounded-md hover:bg-primary/90">
+            Fazer Login
+          </Link>
+        </div>
+      </div>
+    );
+  }
 
   // Atualizar estado quando user mudar
   useEffect(() => {
@@ -307,14 +335,23 @@ const Perfil = () => {
         </div>
       </section>
 
-      {/* Back to Dashboard */}
+      {/* Navigation */}
       <section className="py-8 bg-muted">
         <div className="container mx-auto px-4 text-center">
-          <Link to="/dashboard">
-            <Button variant="outline" size="lg">
-              ← Voltar ao Dashboard
-            </Button>
-          </Link>
+          <div className="space-x-4">
+            <Link to="/atividades">
+              <Button variant="outline" size="lg">
+                Ver Atividades
+              </Button>
+            </Link>
+            {user?.role === 'instrutor' || user?.role === 'admin' ? (
+              <Link to="/dashboard">
+                <Button variant="cta" size="lg">
+                  Dashboard
+                </Button>
+              </Link>
+            ) : null}
+          </div>
         </div>
       </section>
 

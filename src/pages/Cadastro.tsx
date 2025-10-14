@@ -77,7 +77,7 @@ const Cadastro = () => {
             full_name: formData.name,
             role: formData.role, // Passar a role selecionada no metadata
           },
-          emailRedirectTo: `${window.location.origin}/auth/callback` // Redirecionar para página de callback com login automático
+          emailRedirectTo: `${window.location.origin}/` // Temporário: redirecionar para home até fazer deploy do callback
         }
       });
 

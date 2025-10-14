@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import ActivityCard from "@/components/ActivityCard";
 import { ArrowRight, Star, Users, Activity, MapPin, BookOpen, Tv, Info, Phone } from "lucide-react";
 import { usePublicActivities } from "@/hooks/usePublicActivities";
+import { useAuth } from "@/contexts/AuthContext";
+import { useEffect, useRef } from "react";
 import heroImage from "@/assets/hero-beach.jpg";
 import beachvolleyImage from "@/assets/beachvolley.jpg";
 import beachtennisImage from "@/assets/beachtennis.jpg";
@@ -22,6 +24,29 @@ import areiaImage from "@/assets/areia.jpg";
 
 const Home = () => {
   const { activities, isLoading, instructorNames } = usePublicActivities();
+  const { user, isLoading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const hasRedirected = useRef(false);
+
+  // Redirecionar instrutores para dashboard se chegaram via confirmação de email
+  useEffect(() => {
+    if (!authLoading && user && !hasRedirected.current) {
+      const urlParams = new URLSearchParams(window.location.search);
+      const hasConfirmationToken = urlParams.has('token') || urlParams.has('type');
+      
+      if (hasConfirmationToken && (user.role === 'instrutor' || user.role === 'admin')) {
+        console.log('🔀 Redirecionando instrutor para dashboard após confirmação de email');
+        hasRedirected.current = true;
+        // Limpar a URL dos parâmetros e redirecionar
+        window.history.replaceState({}, '', '/');
+        setTimeout(() => navigate('/dashboard'), 500);
+      } else if (hasConfirmationToken) {
+        // Aluno confirmou email, apenas limpar URL
+        console.log('✅ Aluno confirmou email, permanecendo na home');
+        window.history.replaceState({}, '', '/');
+      }
+    }
+  }, [user, authLoading, navigate]);
 
   // Função para obter a imagem baseada no tipo de atividade
   const getActivityImage = (title: string) => {

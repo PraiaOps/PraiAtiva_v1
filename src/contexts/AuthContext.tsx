@@ -154,6 +154,17 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
 
         if (session?.user) {
           console.log('✅ Sessão ativa encontrada');
+          
+          // Verificar se é uma confirmação de email recente (URL tem tokens)
+          const urlParams = new URLSearchParams(window.location.search);
+          const hasConfirmationToken = urlParams.has('token') || urlParams.has('type');
+          
+          if (hasConfirmationToken) {
+            console.log('🔐 Confirmação de email detectada, criando perfil...');
+            // Forçar criação de perfil após confirmação
+            currentUserIdRef.current = null;
+          }
+          
           await fetchUserProfile(session.user);
         } else {
           console.log('ℹ️ Nenhuma sessão ativa');

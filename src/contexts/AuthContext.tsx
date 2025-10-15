@@ -96,7 +96,7 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
         currentUserIdRef.current = data.id;
       } else {
         // Usuário não existe na tabela users, criar perfil agora
-        console.log('📝 Perfil não encontrado, criando automaticamente...');
+        console.log('📝 Perfil não encontrado. Criando novo perfil...');
         const newUser: User = {
           id: supabaseUser.id,
           email: supabaseUser.email || '',
@@ -114,7 +114,24 @@ export const AuthProvider: React.FC<AuthProviderProps> = ({ children }) => {
           .single();
 
         if (insertError) {
-          console.error('❌ Erro ao criar perfil:', insertError);
+          // Se o erro for de chave duplicada, significa que o perfil já existe
+          // Isso pode acontecer em race conditions, então vamos buscar novamente
+          if (insertError.code === '23505') {
+            console.log('ℹ️ Perfil já existe (criado em paralelo), buscando...');
+            const { data: existingData } = await supabaseClient
+              .from('users')
+              .select('*')
+              .eq('id', supabaseUser.id)
+              .maybeSingle();
+            
+            if (existingData) {
+              console.log('✅ Perfil encontrado após race condition:', existingData.name);
+              setUser(existingData);
+              currentUserIdRef.current = existingData.id;
+            }
+          } else {
+            console.error('❌ Erro ao criar perfil de usuário:', insertError);
+          }
         } else {
           console.log('✅ Perfil criado com sucesso:', insertedData);
           setUser(insertedData);

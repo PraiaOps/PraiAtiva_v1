@@ -12,7 +12,6 @@ import { Check, CheckCircle, Clock } from "lucide-react";
 import { supabase } from "@/lib/supabase";
 import { useToast } from "@/hooks/use-toast";
 import { Toaster } from "@/components/ui/toaster";
-import { useEmailVerification } from "@/hooks/useEmailVerification";
 import ScrollToTopLink from "@/components/ScrollToTopLink";
 import SmoothScrollLink from "@/components/SmoothScrollLink";
 
@@ -35,20 +34,6 @@ const Cadastro = () => {
   const [pendingVerification, setPendingVerification] = useState<{userId: string, email: string} | null>(null);
   const navigate = useNavigate();
   const { toast } = useToast();
-
-  // Hook para verificar email
-  const { isVerified, isChecking } = useEmailVerification({
-    userId: pendingVerification?.userId,
-    email: pendingVerification?.email,
-    onVerified: () => {
-      toast({
-        title: "Email confirmado!",
-        description: "Sua conta foi ativada com sucesso. Redirecionando para login...",
-        variant: "default",
-      });
-      setTimeout(() => navigate('/login'), 2000);
-    }
-  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -243,30 +228,19 @@ const Cadastro = () => {
               {pendingVerification && (
                 <div className="mb-8 p-6 bg-blue-50 border border-blue-200 rounded-lg">
                   <div className="flex items-center space-x-3 mb-4">
-                    {isVerified ? (
-                      <CheckCircle className="h-6 w-6 text-green-600" />
-                    ) : (
-                      <Clock className="h-6 w-6 text-blue-600 animate-pulse" />
-                    )}
+                    <Clock className="h-6 w-6 text-blue-600 animate-pulse" />
                     <div>
                       <h3 className="font-semibold text-blue-900">
-                        {isVerified ? 'Email Confirmado!' : 'Aguardando Confirmação de Email'}
+                        Aguardando Confirmação de Email
                       </h3>
                       <p className="text-sm text-blue-700">
-                        {isVerified 
-                          ? 'Sua conta foi ativada com sucesso!'
-                          : isChecking 
-                            ? 'Verificando automaticamente... Confirme seu email em qualquer dispositivo.'
-                            : 'Verifique seu email e clique no link de confirmação.'
-                        }
+                        Verifique seu email e clique no link de confirmação para ativar sua conta.
                       </p>
                     </div>
                   </div>
-                  {!isVerified && (
-                    <div className="text-xs text-blue-600">
-                      💡 Dica: Você pode confirmar o email no celular e detectaremos automaticamente aqui!
-                    </div>
-                  )}
+                  <div className="text-xs text-blue-600">
+                    💡 Após confirmar, você será automaticamente logado!
+                  </div>
                 </div>
               )}
 
